@@ -1,0 +1,84 @@
+/* Bottom Navigation Bar for Mobile */
+.bottom-nav-bar {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background-color: var(--color-surface-white);
+  border-top: 1px solid rgba(229, 231, 235, 0.8);
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.04);
+  z-index: 50;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 0.5rem;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  flex: 1;
+  height: 100%;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  user-select: none;
+}
+
+.bottom-nav-item svg {
+  width: 1.45rem;
+  height: 1.45rem;
+  transition: transform var(--transition-fast), color var(--transition-fast);
+}
+
+.bottom-nav-label {
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.bottom-nav-item:hover {
+  color: var(--color-primary);
+}
+
+.bottom-nav-item.active {
+  color: var(--color-primary);
+}
+
+.bottom-nav-item.active svg {
+  fill: currentColor;
+  transform: translateY(-1px);
+}
+
+.bottom-nav-item.active .bottom-nav-label {
+  font-weight: 700;
+}
+
+/* Show on Mobile and Tablet (<= 1024px) */
+@media (max-width: 1024px) {
+  .bottom-nav-bar {
+    display: flex;
+  }
+
+  body {
+    padding-bottom: 70px; /* Space so content is not obscured by bottom bar */
+  }
+
+  /* Completely hide sidebar on mobile since bottom nav handles navigation */
+  .app-sidebar {
+    display: none !important;
+  }
+
+  .sidebar-backdrop {
+    display: none !important;
+  }
+
+  .main-area {
+    margin-left: 0 !important;
+  }
+}

@@ -1,0 +1,116 @@
+/* Categories Bar (Squircle Icon with Centered Label Below) */
+
+.categories-bar-section {
+  width: 100%;
+}
+
+.categories-bar-row {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr); /* 8 equal columns spanning desktop width */
+  gap: 0.75rem;
+  width: 100%;
+  overflow: visible;
+}
+
+.category-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  user-select: none;
+  transition: transform var(--transition-fast);
+  width: 100%;
+}
+
+.category-item:hover {
+  transform: translateY(-2px);
+}
+
+.category-item:active {
+  transform: scale(0.95);
+}
+
+/* Squircle Icon Box */
+.category-squircle {
+  width: 3.4rem;
+  height: 3.4rem;
+  border-radius: var(--radius-xl);
+  background-color: var(--color-surface-white);
+  border: 1px solid #E5E7EB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4B5563;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: all var(--transition-fast);
+}
+
+.category-squircle svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  transition: color var(--transition-fast);
+}
+
+/* Active State */
+.category-item.active .category-squircle {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(46, 139, 61, 0.28);
+}
+
+.category-item.active .category-squircle svg {
+  color: #FFFFFF;
+}
+
+/* Label Underneath */
+.category-item-label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-align: center;
+  line-height: 1.25;
+  white-space: normal;
+  max-width: 82px;
+}
+
+.category-item.active .category-item-label {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+/* Mobile & Tablet Adjustments (<= 1024px: Horizontal Touch Scroll) */
+@media (max-width: 1024px) {
+  .categories-bar-row {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    gap: 0.75rem;
+    padding-bottom: 0.25rem;
+    scrollbar-width: none;
+  }
+
+  .categories-bar-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category-item {
+    flex: 0 0 68px;
+    scroll-snap-align: start;
+    width: auto;
+  }
+
+  .category-squircle {
+    width: 3.25rem;
+    height: 3.25rem;
+  }
+
+  .category-item-label {
+    max-width: 68px;
+  }
+}
