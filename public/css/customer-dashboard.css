@@ -1,0 +1,1357 @@
+/**
+ * JajanRia - Customer Dashboard Stylesheet (Singkron UI/UX & Standar AdminLTE)
+ * 3 Pure Menu: Beranda/Katalog, Pesan Saya (Chat), Ulasan Saya
+ * Chat Full-Height & Full-Width (No Page Scroll), Responsive AdminLTE Table, 100% Mobile Ready
+ */
+
+/* ==========================================================================
+   1. Tab View Switching & Chat Mode Fullscreen Lock
+   ========================================================================== */
+.dashboard-tab-pane {
+  display: none;
+  animation: fadeIn 0.15s ease-in-out;
+}
+
+.dashboard-tab-pane.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* KUNCI SCROLL HALAMAN: Saat di Tab Chat, Window/Page TIDAK BOLEH SCROLL! */
+body.in-chat-mode,
+html:has(body.in-chat-mode) {
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: hidden !important;
+}
+
+body.in-chat-mode .app-container {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+}
+
+body.in-chat-mode .main-area {
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+body.in-chat-mode .app-header {
+  flex-shrink: 0 !important;
+}
+
+body.in-chat-mode .page-footer {
+  display: none !important;
+}
+
+/* Content Canvas Melebar Penuh (100% Edge-to-Edge) Tanpa Margin/Padding Berlebih */
+body.in-chat-mode .content-canvas {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  height: 0 !important;
+  max-height: 100% !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  gap: 0 !important;
+}
+
+body.in-chat-mode #tab-chat.active {
+  flex: 1 1 100% !important;
+  min-height: 0 !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ==========================================================================
+   2. Filter Komponen Lengkap (Kategori, Rentang Harga, Area/Lokasi)
+   Clean, Crisp, Sharp Borders (No Excessive Radius)
+   ========================================================================== */
+/* ==========================================================================
+   2. Penyaringan Presisi (Interactive Quick Filter Hub)
+   Estetik, Modern, 1-Click Tap Chips & Dynamic Counter
+   ========================================================================== */
+.catalog-filter-card {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  padding: 16px 20px 18px;
+  margin-bottom: 22px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.filter-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #F1F3F5;
+  margin-bottom: 14px;
+}
+
+.filter-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-card-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.01em;
+}
+
+.filter-card-title i {
+  color: #2E8B3D;
+  font-size: 1.25rem;
+}
+
+.filter-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: #2E8B3D;
+  background: #EAF5EC;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  border: 1px solid #CDE5D2;
+}
+
+.filter-live-pill i {
+  font-size: 0.9rem;
+}
+
+.filter-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #6B7280;
+  background: #F8F9FA;
+  border: 1px solid #E2E8F0;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.filter-reset-btn i {
+  font-size: 1rem;
+  transition: transform 0.25s ease;
+}
+
+.filter-reset-btn:hover {
+  background: #FEE2E2;
+  color: #DC2626;
+  border-color: #FECACA;
+}
+
+.filter-reset-btn:hover i {
+  transform: rotate(-180deg);
+}
+
+.filter-interactive-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filter-interactive-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-row-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #4B5563;
+  min-width: 105px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.filter-row-meta i {
+  color: #2E8B3D;
+  font-size: 1.05rem;
+}
+
+.filter-chips-list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.filter-chip-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #4B5563;
+  background: #F8F9FA;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  line-height: 1.2;
+}
+
+.filter-chip-pill:hover {
+  background: #EAF5EC;
+  border-color: #2E8B3D;
+  color: #2E8B3D;
+  transform: translateY(-1px);
+}
+
+.filter-chip-pill.active {
+  background: #2E8B3D;
+  border-color: #2E8B3D;
+  color: #FFFFFF;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(46, 139, 61, 0.25);
+  transform: translateY(-1px);
+}
+
+.filter-chip-pill.active i {
+  color: #FFFFFF;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* ==========================================================================
+   3. Chat Workspace (Pesan Saya)
+   Tampilan Full-Height, Hanya Area Pesan yang di-Scroll, Rapi & Presisi
+   ========================================================================== */
+.chat-workspace-card {
+  background: #FFFFFF;
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  flex: 1 1 100%;
+  min-height: 0;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Kolom Kiri: Riwayat Percakapan dengan Penjual */
+.chat-sidebar-col {
+  border-right: 1px solid #DEE2E6;
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.chat-sidebar-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #DEE2E6;
+  background: #FFFFFF;
+  flex-shrink: 0;
+}
+
+.chat-sidebar-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chat-search-wrap {
+  position: relative;
+  margin-top: 12px;
+}
+
+.chat-search-wrap i {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9CA3AF;
+  font-size: 1.05rem;
+}
+
+.chat-search-input {
+  width: 100%;
+  height: 38px;
+  padding: 0 12px 0 36px;
+  border: 1px solid #DEE2E6;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background: #F8F9FA;
+  outline: none;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.chat-search-input:focus {
+  border-color: #2E8B3D;
+  background-color: #FFFFFF;
+}
+
+/* Area Scroll Daftar Obrolan (Hanya List yang Scroll) */
+.chat-convos-list {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.chat-convos-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.chat-convos-list::-webkit-scrollbar-thumb {
+  background: #E2E8F0;
+  border-radius: 3px;
+}
+
+.chat-convo-item {
+  padding: 14px 18px;
+  border-bottom: 1px solid #F1F3F5;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  position: relative;
+  background: #FFFFFF;
+}
+
+.chat-convo-item:hover {
+  background-color: #F8FBF9;
+}
+
+.chat-convo-item.active {
+  background-color: #EAF5EC;
+}
+
+.chat-convo-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: #2E8B3D;
+}
+
+.convo-avatar-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.convo-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #DEE2E6;
+}
+
+.convo-online-dot {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background-color: #10B981;
+  border: 2px solid #FFFFFF;
+}
+
+.convo-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.convo-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3px;
+}
+
+.convo-seller-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.convo-time {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #6C757D;
+}
+
+.convo-item-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #2E8B3D;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.convo-last-msg {
+  font-size: 0.78rem;
+  color: #6C757D;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Status Pesanan Badges */
+.order-status-badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.status-diproses {
+  background: #FFF3CD;
+  color: #856404;
+  border: 1px solid #FFEEBA;
+}
+
+.status-selesai {
+  background: #D4EDDA;
+  color: #155724;
+  border: 1px solid #C3E6CB;
+}
+
+/* Kolom Kanan: Jendela Percakapan Aktif */
+.chat-window-col {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: #F8F9FA;
+}
+
+/* Header Penjual di Dalam Chat (Fixed) */
+.chat-room-header {
+  padding: 12px 24px;
+  border-bottom: 1px solid #DEE2E6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.room-seller-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-chat-back-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.35rem;
+  color: #374151;
+  cursor: pointer;
+  padding: 4px;
+  margin-right: 4px;
+}
+
+.room-seller-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #DEE2E6;
+}
+
+.room-seller-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.room-seller-sub {
+  font-size: 0.78rem;
+  color: #6C757D;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.room-online-badge {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #10B981;
+}
+
+/* Bar Rangkuman Pesanan & Tombol Penilaian (Fixed) */
+.chat-order-card-bar {
+  padding: 10px 24px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E9ECEF;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.chat-order-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.86rem;
+  color: #374151;
+}
+
+.chat-order-info strong {
+  color: #111827;
+}
+
+.chat-order-price {
+  font-weight: 700;
+  color: #2E8B3D;
+  background: #EAF5EC;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.82rem;
+}
+
+/* Tombol Pemicu "Beri Penilaian" */
+.btn-beri-penilaian-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: #FFFFFF;
+  border: none;
+  border-radius: 6px;
+  padding: 7px 16px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(245, 158, 11, 0.35);
+  transition: all 0.15s ease;
+  animation: pulseGold 2s infinite ease-in-out;
+}
+
+@keyframes pulseGold {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.btn-beri-penilaian-trigger:hover {
+  background: linear-gradient(135deg, #D97706, #B45309);
+  transform: translateY(-1px);
+}
+
+/* Area Bubble Chat: HANYA AREA INI YANG DI-SCROLL KEBAWAH! */
+.chat-messages-scroll {
+  flex: 1 1 0;
+  min-height: 0;
+  padding: 20px 24px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-color: #F8F9FA;
+  -webkit-overflow-scrolling: touch;
+}
+
+.chat-messages-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-messages-scroll::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 3px;
+}
+
+.chat-messages-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+.chat-bubble {
+  max-width: 68%;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  position: relative;
+  word-break: break-word;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.chat-bubble.msg-seller {
+  align-self: flex-start;
+  background-color: #FFFFFF;
+  color: #1F2937;
+  border: 1px solid #E5E7EB;
+  border-bottom-left-radius: 2px;
+}
+
+.chat-bubble.msg-customer {
+  align-self: flex-end;
+  background-color: #2E8B3D;
+  color: #FFFFFF;
+  border-bottom-right-radius: 2px;
+}
+
+.bubble-time {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  font-size: 0.7rem;
+  margin-top: 4px;
+  opacity: 0.8;
+}
+
+.chat-bubble.msg-seller .bubble-time {
+  color: #6C757D;
+}
+
+.chat-bubble.msg-customer .bubble-time {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Quick Inquiry Chips (Fixed) */
+.chat-quick-chips {
+  padding: 8px 24px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  background: #FFFFFF;
+  border-top: 1px solid #E9ECEF;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.chat-quick-chips::-webkit-scrollbar {
+  height: 4px;
+}
+
+.chat-chip-btn {
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: #F1F5F2;
+  border: 1px solid #CDE5D2;
+  border-radius: 20px;
+  color: #2E8B3D;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.chat-chip-btn:hover {
+  background: #2E8B3D;
+  color: #FFFFFF;
+  border-color: #2E8B3D;
+}
+
+/* Input Form Bar (Paling Bawah - SELALU TERLIHAT & FIXED) */
+.chat-input-row {
+  padding: 12px 24px;
+  border-top: 1px solid #DEE2E6;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.02);
+}
+
+.chat-form-input {
+  flex: 1;
+  height: 44px;
+  padding: 0 16px;
+  border: 1.5px solid #DEE2E6;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #111827;
+  background: #FAFAFA;
+  outline: none;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.chat-form-input:focus {
+  border-color: #2E8B3D;
+  background: #FFFFFF;
+}
+
+.btn-send-chat {
+  height: 44px;
+  padding: 0 20px;
+  background: #2E8B3D;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.btn-send-chat:hover {
+  background: #246F31;
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   4. Ulasan Saya (Standar AdminLTE Data Table, Header Hijau #2E8B3D)
+   100% Responsif di Semua Layar Mobile & Tablet
+   ========================================================================== */
+.reviews-section-card {
+  background: #FFFFFF;
+  border: 1px solid #DEE2E6;
+  border-radius: 6px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+/* KPI Summary Cards Grid */
+.reviews-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.reviews-kpi-card {
+  background: #FFFFFF;
+  border: 1px solid #DEE2E6;
+  border-radius: 6px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.reviews-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.kpi-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.kpi-green {
+  background: #EAF5EC;
+  color: #2E8B3D;
+}
+
+.kpi-amber {
+  background: #FEF3C7;
+  color: #D97706;
+}
+
+.kpi-blue {
+  background: #E0F2FE;
+  color: #0284C7;
+}
+
+.kpi-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.kpi-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6C757D;
+  margin-top: 2px;
+}
+
+/* Header Bar */
+.reviews-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #E9ECEF;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.reviews-title-block h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reviews-title-block h3 i {
+  color: #F59E0B;
+}
+
+.reviews-title-block p {
+  font-size: 0.84rem;
+  color: #6C757D;
+  margin-top: 3px;
+}
+
+/* Tabel Standar Admin LTE (Header Hijau #2E8B3D) */
+.table-responsive-adminlte {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid #DEE2E6;
+  border-radius: 4px;
+}
+
+.table-reviews-adminlte {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.86rem;
+  background: #FFFFFF;
+}
+
+.table-reviews-adminlte thead th {
+  background-color: #2E8B3D !important;
+  color: #FFFFFF !important;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 14px 16px;
+  border: 1px solid #246F31 !important;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.table-reviews-adminlte tbody td {
+  padding: 14px 16px;
+  border: 1px solid #DEE2E6;
+  color: #374151;
+  vertical-align: middle;
+}
+
+.table-reviews-adminlte tbody tr:hover td {
+  background-color: #F8FBF9;
+}
+
+.seller-reply-box {
+  background: #F0F9F2;
+  border-left: 3px solid #2E8B3D;
+  padding: 8px 12px;
+  margin-top: 6px;
+  border-radius: 3px;
+  font-size: 0.82rem;
+  color: #1B5E20;
+}
+
+.seller-reply-author {
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 3px;
+  color: #2E8B3D;
+}
+
+.stars-rating-gold {
+  color: #F59E0B;
+  font-size: 1rem;
+  display: inline-flex;
+  gap: 2px;
+}
+
+/* ==========================================================================
+   5. Responsif Media Queries (Mobile & Tablet)
+   Seluruh Halaman, Chat & Tabel Rating Wajib 100% Responsif
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .filter-groups-grid,
+  .filter-groups-grid.filter-two-col {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-workspace-card {
+    grid-template-columns: 300px 1fr !important;
+  }
+
+  .reviews-kpi-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Filter Hub Responsif di HP */
+  .catalog-filter-card {
+    padding: 14px 16px;
+    border-radius: 14px;
+    margin-bottom: 16px;
+  }
+
+  .filter-interactive-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .filter-row-meta {
+    min-width: unset;
+  }
+
+  .filter-chips-list {
+    display: flex;
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 4px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap;
+  }
+
+  .filter-chips-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filter-chip-pill {
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 0.76rem;
+    padding: 6px 12px;
+  }
+
+  /* Layout Chat Responsif di Layar Ponsel (WhatsApp Web Style) */
+  body.in-chat-mode .bottom-nav-bar {
+    display: none !important; /* Maksimalkan tinggi layar untuk chat */
+  }
+
+  .chat-workspace-card {
+    grid-template-columns: 1fr !important;
+    height: 100% !important;
+    max-height: 100% !important;
+    border: none !important;
+  }
+
+  /* Tampilan default di HP: Daftar percakapan */
+  .chat-sidebar-col {
+    display: flex;
+    width: 100%;
+    min-width: 100%;
+    height: 100%;
+    border-right: none;
+  }
+
+  .chat-window-col {
+    display: none;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Saat ruang obrolan dibuka di mobile */
+  .chat-workspace-card.show-room .chat-sidebar-col {
+    display: none;
+  }
+
+  .chat-workspace-card.show-room .chat-window-col {
+    display: flex;
+  }
+
+  .mobile-chat-back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: #F1F3F5;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.25rem;
+    color: #111827;
+    cursor: pointer;
+    margin-right: 6px;
+    transition: background 0.15s;
+  }
+
+  .mobile-chat-back-btn:hover {
+    background: #E5E7EB;
+  }
+
+  .chat-bubble {
+    max-width: 84%;
+  }
+
+  .chat-room-header,
+  .chat-order-card-bar,
+  .chat-input-row,
+  .chat-quick-chips {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .chat-messages-scroll {
+    padding: 14px;
+  }
+
+  /* Tabel Rating Diubah Menjadi Kartu Responsif Rapi di Mobile */
+  .reviews-section-card {
+    padding: 16px 12px;
+  }
+
+  .reviews-kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .reviews-header-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .reviews-header-bar button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .table-responsive-adminlte {
+    border: none;
+  }
+
+  .table-reviews-adminlte thead {
+    display: none; /* Sembunyikan header tabel horizontal di HP */
+  }
+
+  .table-reviews-adminlte,
+  .table-reviews-adminlte tbody,
+  .table-reviews-adminlte tr,
+  .table-reviews-adminlte td {
+    display: block;
+    width: 100%;
+  }
+
+  .table-reviews-adminlte tr {
+    background: #FFFFFF;
+    border: 1px solid #DEE2E6;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    padding: 16px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  }
+
+  .table-reviews-adminlte td {
+    border: none;
+    padding: 6px 0;
+    text-align: left !important;
+  }
+
+  .table-reviews-adminlte td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    font-size: 0.72rem;
+    color: #6C757D;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 3px;
+    letter-spacing: 0.04em;
+  }
+
+  .table-reviews-adminlte td[data-label="No"] {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   6. Rating & Review Modal (UC-04: Beri Penilaian Standar JajanRia)
+   ========================================================================== */
+.review-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease-in-out;
+}
+
+.review-modal-backdrop.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.review-modal-dialog {
+  background: #FFFFFF;
+  border-radius: 8px;
+  border: 1px solid #DEE2E6;
+  max-width: 480px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  transform: translateY(15px);
+  transition: transform 0.2s ease-in-out;
+}
+
+.review-modal-backdrop.open .review-modal-dialog {
+  transform: translateY(0);
+}
+
+.review-modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid #DEE2E6;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.review-header-title-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.review-header-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  background: #FEF3C7;
+  color: #D97706;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+}
+
+.review-modal-title {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+}
+
+.review-modal-sub {
+  font-size: 0.8rem;
+  color: #6C757D;
+  margin: 2px 0 0 0;
+}
+
+.btn-review-close {
+  background: #F1F3F5;
+  border: 1px solid #DEE2E6;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #495057;
+  cursor: pointer;
+  font-size: 1.25rem;
+  transition: background 0.15s;
+}
+
+.btn-review-close:hover {
+  background: #E9ECEF;
+  color: #212529;
+}
+
+.review-modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.review-field-label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.star-picker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.star-btn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: #D1D5DB;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.star-btn:hover,
+.star-btn.active {
+  color: #F59E0B;
+  transform: scale(1.1);
+}
+
+.star-rating-hint {
+  font-size: 0.8rem;
+  color: #6B7280;
+  font-weight: 600;
+}
+
+.review-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #DEE2E6;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #111827;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  background: #F8F9FA;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.review-textarea:focus {
+  border-color: #2E8B3D;
+  background: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(46, 139, 61, 0.12);
+}
+
+.review-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid #F1F3F5;
+}
+
+.btn-review-skip {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid #DEE2E6;
+  border-radius: 4px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #6C757D;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-review-skip:hover {
+  background: #F8F9FA;
+  color: #343A40;
+}
+
+.btn-review-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  background: #2E8B3D;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.btn-review-submit:hover {
+  background: #246F31;
+}

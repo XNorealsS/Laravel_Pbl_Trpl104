@@ -1,0 +1,881 @@
+/**
+ * JajanRia - Landing Page Stylesheet (100% Full Width Sesuai Desain Figma)
+ * Warna Utama: #2E8B3D | Aksen Oranye: #F39C12 | Banner: 100% Width Edge-to-Edge
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body.landing-page {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #1F2937;
+  background-color: #FFFFFF;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  padding: 0;
+}
+
+/* Container untuk Bagian Konten Bawah (Tengah Rapi) */
+.landing-content-container {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ==========================================================================
+   1. Hero Banner 100% Full Width (Edge-to-Edge Sesuai Figma)
+   ========================================================================== */
+.hero-fullwidth-section {
+  width: 100%;
+  background-color: #2E8B3D;
+  position: relative;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+/* Foto Pedagang Asli dari bg.png Mengisi Sisi Kanan 100% Tinggi Banner */
+.hero-bg-visual-wrapper {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.hero-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: right center;
+  display: block;
+}
+
+/* Gradien Halus Menghubungkan Warna Hijau Solid di Kiri dengan Foto di Kanan */
+.hero-bg-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(to right, #2E8B3D 0%, rgba(46, 139, 61, 0.9) 35%, rgba(46, 139, 61, 0.25) 70%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Konten Teks di Atas Banner (Z-Index di Atas Gambar) */
+.hero-inner-container {
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 40px 24px 64px 24px;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 520px;
+}
+
+/* Top Bar di Dalam Banner Hijau */
+.hero-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 36px;
+}
+
+.hero-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+.hero-brand-logo {
+  width: 44px;
+  height: 44px;
+  filter: brightness(0) invert(1); /* Logo putih bersih */
+  flex-shrink: 0;
+}
+
+.hero-brand-text-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-brand-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #FFFFFF;
+  letter-spacing: -0.01em;
+}
+
+.hero-brand-subtitle {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 500;
+}
+
+/* Navigasi Cepat Top Right (Akses Login, Register, Dashboard) */
+.hero-quick-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-nav-glass {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  transition: all 0.2s ease;
+}
+
+.btn-nav-glass:hover {
+  background: #FFFFFF;
+  color: #2E8B3D;
+  border-color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+}
+
+.btn-nav-glass.btn-nav-highlight {
+  background: #F39C12;
+  border-color: #F39C12;
+  color: #FFFFFF;
+}
+
+.btn-nav-glass.btn-nav-highlight:hover {
+  background: #E67E22;
+  border-color: #E67E22;
+  color: #FFFFFF;
+}
+
+/* Konten Teks Hero (Kiri) */
+.hero-text-content {
+  max-width: 580px;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+
+.hero-heading-main {
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #FFFFFF;
+  margin-bottom: 18px;
+  letter-spacing: -0.02em;
+}
+
+.hero-paragraph {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.94);
+  margin-bottom: 32px;
+  font-weight: 400;
+}
+
+/* Tombol Oranye "Jadi Bagian Dari JajanRia ->" Sesuai Figma */
+.btn-cta-orange {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #F39C12;
+  color: #FFFFFF;
+  font-size: 0.98rem;
+  font-weight: 800;
+  padding: 14px 30px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 18px rgba(243, 156, 18, 0.45);
+  border: none;
+}
+
+.btn-cta-orange:hover {
+  background-color: #E67E22;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(230, 126, 34, 0.55);
+}
+
+.btn-cta-orange i {
+  font-size: 1.25rem;
+  transition: transform 0.2s;
+}
+
+.btn-cta-orange:hover i {
+  transform: translateX(4px);
+}
+
+/* ==========================================================================
+   2. Floating Search Bar (Melayang Simetris Tengah Sesuai Figma)
+   ========================================================================== */
+.floating-search-bar-wrap {
+  position: relative;
+  margin-top: -36px;
+  z-index: 20;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 20px;
+}
+
+.search-pill-container {
+  width: 100%;
+  max-width: 740px;
+  background: #FFFFFF;
+  border-radius: 9999px;
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.12);
+  padding: 8px 10px 8px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+}
+
+.search-pill-container:focus-within {
+  box-shadow: 0 16px 40px rgba(46, 139, 61, 0.22);
+  border-color: #2E8B3D;
+}
+
+.search-lead-icon {
+  font-size: 1.35rem;
+  color: #9CA3AF;
+  flex-shrink: 0;
+}
+
+.search-core-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.98rem;
+  font-family: inherit;
+  color: #1F2937;
+  background: transparent;
+}
+
+.search-core-input::placeholder {
+  color: #9CA3AF;
+  font-size: 0.92rem;
+}
+
+.search-btn-clear {
+  background: none;
+  border: none;
+  color: #9CA3AF;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s;
+}
+
+.search-btn-clear:hover {
+  color: #111827;
+}
+
+.search-btn-action {
+  background-color: #2E8B3D;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 9999px;
+  padding: 11px 26px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.search-btn-action:hover {
+  background-color: #246F31;
+}
+
+/* ==========================================================================
+   3. Section UMKM CERIA!! & Dual Accent Bars (Sesuai Figma)
+   ========================================================================== */
+.umkm-section {
+  padding: 60px 0 24px 0;
+}
+
+.umkm-header-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 34px;
+  flex-wrap: wrap;
+}
+
+.umkm-titles-wrap {
+  max-width: 500px;
+}
+
+.umkm-main-heading {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+
+.umkm-sub-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4B5563;
+  line-height: 1.45;
+}
+
+/* Dua Batang Aksen (Oranye & Hijau) Sesuai Figma */
+.dual-bars-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pill-bar-orange {
+  width: 170px;
+  height: 22px;
+  background-color: #F39C12;
+  border-radius: 9999px;
+}
+
+.pill-bar-green {
+  width: 440px;
+  height: 22px;
+  background-color: #2E8B3D;
+  border-radius: 9999px;
+}
+
+/* ==========================================================================
+   4. Grid 4 Kartu Jajanan Terverifikasi Sesuai Desain Figma
+   ========================================================================== */
+.cards-4-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-bottom: 42px;
+}
+
+.food-item-card {
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.food-item-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.09);
+  border-color: rgba(46, 139, 61, 0.4);
+}
+
+/* Gambar Thumbnail */
+.card-media-wrap {
+  position: relative;
+  width: 100%;
+  height: 190px;
+  overflow: hidden;
+  background-color: #F3F4F6;
+}
+
+.card-media-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  display: block;
+}
+
+.food-item-card:hover .card-media-img {
+  transform: scale(1.06);
+}
+
+/* Badge Toko Terverifikasi */
+.badge-toko-verified {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background-color: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(4px);
+  color: #2E8B3D;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+}
+
+.badge-toko-verified i {
+  font-size: 0.92rem;
+}
+
+/* Tombol Heart Favorit */
+.btn-fav-heart {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  background-color: rgba(255, 255, 255, 0.96);
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6B7280;
+  font-size: 1.2rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+  transition: color 0.2s, transform 0.1s;
+}
+
+.btn-fav-heart:hover {
+  color: #EF4444;
+  transform: scale(1.1);
+}
+
+.btn-fav-heart.active {
+  color: #EF4444;
+}
+
+/* Isi Deskripsi Kartu */
+.card-details-box {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.card-food-name {
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 2px;
+}
+
+.card-vendor-sub {
+  font-size: 0.84rem;
+  color: #6B7280;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.card-rating-distance {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.84rem;
+  color: #374151;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.star-icon {
+  color: #F59E0B;
+  font-size: 0.98rem;
+}
+
+.reviews-txt {
+  color: #6B7280;
+  font-weight: 400;
+}
+
+.dot-separator {
+  color: #D1D5DB;
+}
+
+/* Tag Pills */
+.card-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+  margin-top: auto;
+}
+
+.tag-badge-green {
+  background-color: #EAF5EC;
+  color: #2E8B3D;
+  font-size: 0.74rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+}
+
+/* Tombol Aksi Bawah Kartu */
+.card-action-btns-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-view-menu {
+  flex: 1;
+  text-align: center;
+  padding: 10px 14px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #374151;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-view-menu:hover {
+  border-color: #2E8B3D;
+  color: #2E8B3D;
+  background-color: #F0F9F2;
+}
+
+.btn-basket-icon {
+  width: 42px;
+  height: 42px;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2E8B3D;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-basket-icon:hover {
+  background-color: #2E8B3D;
+  border-color: #2E8B3D;
+  color: #FFFFFF;
+}
+
+/* ==========================================================================
+   5. Dua Batang Aksen Bawah (Aligned to Left Sesuai Figma)
+   ========================================================================== */
+.bottom-accent-bars-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 48px;
+}
+
+.bottom-accent-bars-wrap .pill-bar-orange {
+  width: 170px;
+}
+
+.bottom-accent-bars-wrap .pill-bar-green {
+  width: 250px;
+}
+
+/* ==========================================================================
+   6. Standar AdminLTE Modal: Tabel Menu & Harga
+   Header Table Berwarna Hijau #2E8B3D, Border Rapi, Responsive
+   ========================================================================== */
+.modal-backdrop {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-backdrop.active {
+  display: flex;
+}
+
+.modal-card-adminlte {
+  background: #FFFFFF;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 820px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+  border: 1px solid #DEE2E6;
+  overflow: hidden;
+}
+
+.modal-header-adminlte {
+  padding: 16px 22px;
+  border-bottom: 1px solid #DEE2E6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #F8F9FA;
+}
+
+.modal-title-adminlte {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-title-adminlte i {
+  color: #2E8B3D;
+  font-size: 1.35rem;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  cursor: pointer;
+  color: #6B7280;
+  line-height: 1;
+}
+
+.modal-close-btn:hover {
+  color: #111827;
+}
+
+.modal-body-adminlte {
+  padding: 22px;
+  overflow-y: auto;
+}
+
+/* Standar Table AdminLTE: thead th berwarna hijau #2E8B3D */
+.table-responsive-adminlte {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table-adminlte {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #DEE2E6;
+  font-size: 0.88rem;
+  text-align: left;
+}
+
+.table-adminlte thead th {
+  background-color: #2E8B3D !important;
+  color: #FFFFFF !important;
+  font-weight: 700;
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 12px 16px;
+  border: 1px solid #246F31;
+  vertical-align: middle;
+}
+
+.table-adminlte tbody td {
+  padding: 12px 16px;
+  border: 1px solid #DEE2E6;
+  color: #374151;
+  vertical-align: middle;
+}
+
+.table-adminlte tbody tr:hover td {
+  background-color: #F8F9FA;
+}
+
+.table-adminlte .badge-status {
+  display: inline-block;
+  padding: 3px 8px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  border-radius: 4px;
+}
+
+.badge-ready {
+  background-color: #EAF5EC;
+  color: #2E8B3D;
+  border: 1px solid #A7D7B2;
+}
+
+.modal-footer-adminlte {
+  padding: 14px 22px;
+  border-top: 1px solid #DEE2E6;
+  display: flex;
+  justify-content: flex-end;
+  background: #F8F9FA;
+}
+
+.btn-close-modal {
+  padding: 8px 20px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #374151;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  background-color: #FFFFFF;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-close-modal:hover {
+  background-color: #F3F4F6;
+}
+
+/* ==========================================================================
+   7. Footer Publik Bersih
+   ========================================================================== */
+.site-footer {
+  background-color: #F9FAFB;
+  border-top: 1px solid #E5E7EB;
+  padding: 36px 0;
+  color: #6B7280;
+  font-size: 0.88rem;
+}
+
+.footer-content-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footer-nav-list {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+}
+
+.footer-nav-list a {
+  color: #6B7280;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.footer-nav-list a:hover {
+  color: #2E8B3D;
+}
+
+/* ==========================================================================
+   8. Media Queries Responsif (Desktop, Tablet & Mobile)
+   ========================================================================== */
+@media (max-width: 1200px) {
+  .cards-4-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .pill-bar-green {
+    width: 280px;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-bg-visual-wrapper {
+    width: 100%;
+    opacity: 0.35; /* Tetap terlihat di background mobile */
+  }
+
+  .hero-bg-mask {
+    display: none;
+  }
+
+  .hero-inner-container {
+    padding: 32px 20px 54px 20px;
+    min-height: 440px;
+  }
+
+  .hero-heading-main {
+    font-size: 2.1rem;
+  }
+
+  .floating-search-bar-wrap {
+    margin-top: -30px;
+  }
+
+  .search-pill-container {
+    padding: 6px 8px 6px 16px;
+    gap: 10px;
+  }
+
+  .search-btn-action {
+    padding: 9px 18px;
+    font-size: 0.86rem;
+  }
+
+  .dual-bars-wrapper {
+    width: 100%;
+  }
+
+  .pill-bar-orange {
+    flex: 1;
+    width: auto;
+  }
+
+  .pill-bar-green {
+    flex: 2;
+    width: auto;
+  }
+}
+
+@media (max-width: 640px) {
+  .cards-4-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-heading-main {
+    font-size: 1.75rem;
+  }
+
+  .hero-paragraph {
+    font-size: 0.92rem;
+  }
+
+  .hero-quick-nav {
+    display: none;
+  }
+
+  .footer-content-row {
+    flex-direction: column;
+    text-align: center;
+  }
+}

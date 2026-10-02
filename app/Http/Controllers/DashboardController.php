@@ -18,31 +18,30 @@ class DashboardController extends Controller
             'avatar' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
             'unread_notifications' => 1,
             'current_location' => [
-                'name' => 'Sekitar Kampus',
-                'detail' => 'STIKes Muhammadiyah Lhokseumawe',
+                'name' => 'Kampus Polibatam',
+                'detail' => 'Politeknik Negeri Batam, Batam Center',
             ],
         ];
 
-        // Banner Promo Dinamis (Render Gambar Banner Asli / Siap Diunggah Admin)
-        // Gambar banner siap pakai yang memadukan promosi kuliner kampus
+        // Banner Promo Dinamis E-Katalog & Direktori UMKM JajanRia
         $banners = [
             [
                 'id' => 1,
                 'title' => 'Jajanan Favorit Di Sekitar Kampus!',
-                'subtitle' => 'Dukung UMKM lokal, nikmati rasa terbaik.',
+                'subtitle' => 'Dukung UMKM lokal, temukan aneka rasa terbaik.',
                 'image' => 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=900&auto=format&fit=crop&q=80',
                 'link' => '#umkm-terdekat',
-                'badge' => 'Promo Hari Ini',
-                'cta' => 'Lihat Promo'
+                'badge' => 'E-Katalog Kampus',
+                'cta' => 'Lihat Lapak UMKM'
             ],
             [
                 'id' => 2,
-                'title' => 'Diskon Mahasiswa Akhir Bulan Hemat 30%',
-                'subtitle' => 'Makan kenyang kantong tetap aman.',
+                'title' => 'Menu Hemat Mahasiswa Akhir Bulan',
+                'subtitle' => 'Pilihan menu lezat, porsi pas, harga ramah kantong.',
                 'image' => 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=900&auto=format&fit=crop&q=80',
                 'link' => '#menu-pilihan',
-                'badge' => 'Diskon Spesial',
-                'cta' => 'Klaim Diskon'
+                'badge' => 'Pilihan Favorit',
+                'cta' => 'Jelajahi Menu'
             ],
             [
                 'id' => 3,
@@ -51,16 +50,16 @@ class DashboardController extends Controller
                 'image' => 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=900&auto=format&fit=crop&q=80',
                 'link' => '#menu-pilihan',
                 'badge' => 'Tempat Nugas',
-                'cta' => 'Cek Kedai'
+                'cta' => 'Cek Kedai Kopi'
             ],
             [
                 'id' => 4,
                 'title' => 'Jajanan Tradisional Manis & Renyah',
-                'subtitle' => 'Pisang goreng madu, risoles mayo, dan kue basah.',
+                'subtitle' => 'Pisang goreng madu, risoles mayo, dan aneka jajanan pasar.',
                 'image' => 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=900&auto=format&fit=crop&q=80',
-                'link' => '#umkm-terdekat',
+                'link' => '#menu-pilihan',
                 'badge' => 'Jajanan Sore',
-                'cta' => 'Pesan Sekarang'
+                'cta' => 'Lihat Pilihan'
             ],
         ];
 
@@ -76,7 +75,7 @@ class DashboardController extends Controller
             ['id' => 'lainnya', 'name' => 'Lainnya', 'slug' => 'lainnya', 'active' => false, 'icon' => 'more'],
         ];
 
-        // Section 1: UMKM Terdekat
+        // Section 1: Profil Lapak UMKM (Kartu Nama Digital Penjual)
         $nearby_stores = [
             [
                 'id' => 1,
@@ -84,10 +83,13 @@ class DashboardController extends Controller
                 'category_slug' => 'makanan-berat',
                 'distance' => '0.3 km',
                 'distance_num' => 0.3,
+                'location_code' => 'kantin',
+                'address' => 'Kantin Gedung Utama Polibatam (Sebelah Koperasi)',
+                'hours' => '07.30 - 17.00 WIB',
+                'status' => 'Buka Sekarang',
                 'rating' => 4.8,
                 'reviews_count' => 124,
                 'image' => 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=500&auto=format&fit=crop&q=80',
-                'whatsapp' => '6281234567890',
             ],
             [
                 'id' => 2,
@@ -95,10 +97,13 @@ class DashboardController extends Controller
                 'category_slug' => 'minuman',
                 'distance' => '0.7 km',
                 'distance_num' => 0.7,
+                'location_code' => 'tower',
+                'address' => 'Depan Tower Perkuliahan A (Area Gazebo)',
+                'hours' => '09.00 - 21.00 WIB',
+                'status' => 'Buka Sekarang',
                 'rating' => 4.6,
                 'reviews_count' => 89,
                 'image' => 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=80',
-                'whatsapp' => '6281234567891',
             ],
             [
                 'id' => 3,
@@ -106,10 +111,13 @@ class DashboardController extends Controller
                 'category_slug' => 'cemilan',
                 'distance' => '0.5 km',
                 'distance_num' => 0.5,
+                'location_code' => 'gerbang',
+                'address' => 'Depan Gerbang Utama Polibatam (Radius 100m)',
+                'hours' => '10.00 - 18.00 WIB',
+                'status' => 'Buka Sekarang',
                 'rating' => 4.7,
                 'reviews_count' => 67,
                 'image' => 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=500&auto=format&fit=crop&q=80',
-                'whatsapp' => '6281234567892',
             ],
             [
                 'id' => 4,
@@ -117,10 +125,13 @@ class DashboardController extends Controller
                 'category_slug' => 'cemilan',
                 'distance' => '0.4 km',
                 'distance_num' => 0.4,
+                'location_code' => 'kda',
+                'address' => 'Deretan Ruko KDA Batam Center (Blok B No. 4)',
+                'hours' => '11.00 - 20.00 WIB',
+                'status' => 'Buka Sekarang',
                 'rating' => 4.7,
                 'reviews_count' => 15,
                 'image' => 'https://images.unsplash.com/photo-1617093727343-374698b1b08d?w=500&auto=format&fit=crop&q=80',
-                'whatsapp' => '6281234567893',
             ],
             [
                 'id' => 5,
@@ -128,14 +139,17 @@ class DashboardController extends Controller
                 'category_slug' => 'makanan-berat',
                 'distance' => '0.6 km',
                 'distance_num' => 0.6,
+                'location_code' => 'kantin',
+                'address' => 'Kantin Gedung Utama Polibatam (Pojok Kuliner)',
+                'hours' => '08.00 - 16.00 WIB',
+                'status' => 'Buka Sekarang',
                 'rating' => 4.5,
                 'reviews_count' => 52,
                 'image' => 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=500&auto=format&fit=crop&q=80',
-                'whatsapp' => '6281234567894',
             ],
         ];
 
-        // Section 2: Menu Pilihan
+        // Section 2: Etalase Menu Pilihan (Katalog Produk Kuliner)
         $recommended_menus = [
             [
                 'id' => 101,
@@ -143,38 +157,38 @@ class DashboardController extends Controller
                 'seller' => 'Warung Bu Nita',
                 'price' => 'Rp 12.000',
                 'price_num' => 12000,
+                'location_code' => 'kantin',
                 'rating' => 4.8,
                 'category_slug' => 'makanan-berat',
                 'tags' => ['Makanan Berat', 'Nasi Goreng'],
                 'image' => 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=500&auto=format&fit=crop&q=80',
                 'description' => 'Nasi goreng racikan bumbu khas dengan telur ceplok, suwiran ayam, acar segar, dan kerupuk renyah.',
-                'whatsapp' => '6281234567890',
             ],
             [
                 'id' => 102,
                 'name' => 'Es Teh Manis',
-                'seller' => 'Es Teh Pakde',
+                'seller' => 'Warung Bu Nita',
                 'price' => 'Rp 5.000',
                 'price_num' => 5000,
+                'location_code' => 'kantin',
                 'rating' => 4.6,
                 'category_slug' => 'minuman',
                 'tags' => ['Minuman', 'Es Teh Segar'],
                 'image' => 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=500&auto=format&fit=crop&q=80',
                 'description' => 'Es teh melati segar manis alami dengan es batu kristal higienis pelepas dahaga.',
-                'whatsapp' => '6281234567895',
             ],
             [
                 'id' => 103,
-                'name' => 'Mie Aceh',
+                'name' => 'Mie Aceh Daging & Udang',
                 'seller' => 'Mie Aceh Bang Din',
                 'price' => 'Rp 18.000',
                 'price_num' => 18000,
+                'location_code' => 'gerbang',
                 'rating' => 4.7,
                 'category_slug' => 'makanan-berat',
                 'tags' => ['Makanan Berat', 'Mie Aceh'],
                 'image' => 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=500&auto=format&fit=crop&q=80',
                 'description' => 'Mie kuning kenyal dengan kuah kari pedas kental khas Aceh, irisan daging empuk dan emping.',
-                'whatsapp' => '6281234567892',
             ],
             [
                 'id' => 104,
@@ -182,38 +196,38 @@ class DashboardController extends Controller
                 'seller' => 'Kedai Kopi Sudut',
                 'price' => 'Rp 12.000',
                 'price_num' => 12000,
+                'location_code' => 'tower',
                 'rating' => 4.7,
                 'category_slug' => 'minuman',
                 'tags' => ['Minuman', 'Kopi'],
                 'image' => 'https://images.unsplash.com/photo-1517256064527-09c73fc73e38?w=500&auto=format&fit=crop&q=80',
                 'description' => 'Espresso blend lokal berpadu susu segar creamy dan gula aren murni.',
-                'whatsapp' => '6281234567891',
             ],
             [
                 'id' => 105,
                 'name' => 'Pisang Goreng Madu',
-                'seller' => 'Pisang Madu Juara',
+                'seller' => 'Pisang Goreng Madu',
                 'price' => 'Rp 10.000',
                 'price_num' => 10000,
+                'location_code' => 'gerbang',
                 'rating' => 4.7,
                 'category_slug' => 'cemilan',
                 'tags' => ['Cemilan', 'Tradisional'],
                 'image' => 'https://images.unsplash.com/photo-1528975604071-b4dc52a2d18c?w=500&auto=format&fit=crop&q=80',
                 'description' => 'Pisang raja legit berlapis madu digoreng garing renyah karamel.',
-                'whatsapp' => '6281234567892',
             ],
             [
                 'id' => 106,
                 'name' => 'Dimsum Komplit',
-                'seller' => 'Dimsum Jaya',
+                'seller' => 'Seblak Teh Rani',
                 'price' => 'Rp 15.000',
                 'price_num' => 15000,
+                'location_code' => 'kda',
                 'rating' => 4.5,
                 'category_slug' => 'cemilan',
                 'tags' => ['Cemilan', 'Dimsum'],
                 'image' => 'https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=500&auto=format&fit=crop&q=80',
                 'description' => 'Dimsum ayam udang lembut disajikan hangat dengan chili oil dan saus asam manis.',
-                'whatsapp' => '6281234567896',
             ],
         ];
 

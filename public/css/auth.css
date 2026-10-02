@@ -1,0 +1,453 @@
+/**
+ * JajanRia - Auth Stylesheet (Login & Register)
+ * Bersih, Rapi, Sederhana, Responsif & Mengikuti Desain Mockup
+ * Warna Utama: #2E8B3D | Background: img/bg.png
+ */
+
+/* Import font jika diperlukan */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body.auth-body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #1F2937;
+  background-color: #FFFFFF;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Container Split Screen */
+.auth-wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* ==========================================================================
+   1. Kolom Kiri: Visual Branding (Hijau #2E8B3D dengan Background img/bg.png)
+   ========================================================================== */
+.auth-visual-side {
+  flex: 1;
+  position: relative;
+  background: linear-gradient(135deg, rgba(46, 139, 61, 0.88) 0%, rgba(46, 139, 61, 0.94) 100%),
+              url('../img/bg.png') center/cover no-repeat;
+  color: #FFFFFF;
+  padding: 56px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Logo di Sudut Kiri Atas */
+.auth-visual-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+.brand-icon-wrap {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.brand-icon-wrap img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  filter: brightness(0) invert(1); /* Jadikan logo putih bersih */
+}
+
+.brand-text-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: #FFFFFF;
+}
+
+.brand-tagline {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* Teks Tengah */
+.auth-visual-content {
+  max-width: 520px;
+  margin: 40px 0;
+}
+
+.auth-visual-heading {
+  font-size: 2.25rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 18px;
+  color: #FFFFFF;
+}
+
+.auth-visual-desc {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 400;
+}
+
+/* Footer Kiri */
+.auth-visual-footer {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ==========================================================================
+   2. Kolom Kanan: Form Area (Login & Registrasi)
+   ========================================================================== */
+.auth-form-side {
+  flex: 1.1;
+  background-color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 32px;
+  position: relative;
+}
+
+/* Tombol Balik ke Beranda */
+.back-home-btn {
+  position: absolute;
+  top: 28px;
+  right: 36px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #6B7280;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.back-home-btn:hover {
+  color: #2E8B3D;
+  background-color: #F0F9F2;
+}
+
+/* Card Form */
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+}
+
+.auth-card.auth-card-wide {
+  max-width: 480px;
+}
+
+.form-header-title {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #111827;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+/* Form Group */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.form-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.form-helper-text {
+  font-size: 0.75rem;
+  color: #9CA3AF;
+  font-weight: 400;
+}
+
+/* Input Fields (Sesuai Mockup Berwarna Biru/Abu Lembut #F0F4FA) */
+.form-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  background-color: #EEF4FA;
+  border: 1px solid #D6E0EA;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-family: inherit;
+  color: #1F2937;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.form-input::placeholder {
+  color: #9CA3AF;
+  font-size: 0.84rem;
+}
+
+.form-input:focus {
+  outline: none;
+  background-color: #FFFFFF;
+  border-color: #2E8B3D;
+  box-shadow: 0 0 0 3px rgba(46, 139, 61, 0.15);
+}
+
+/* Input Password dengan Icon Toggle */
+.password-input-wrap {
+  position: relative;
+}
+
+.password-input-wrap .form-input {
+  padding-right: 42px;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6B7280;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.toggle-password-btn:hover {
+  color: #2E8B3D;
+}
+
+/* Upload Foto Usaha Field (Sesuai Gambar Mockup) */
+.file-upload-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: #EEF4FA;
+  border: 1px solid #D6E0EA;
+  border-radius: 8px;
+  padding: 6px 12px;
+  height: 48px;
+}
+
+.btn-upload-trigger {
+  background-color: #2E8B3D;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-upload-trigger:hover {
+  background-color: #246F31;
+}
+
+.file-name-display {
+  font-size: 0.82rem;
+  color: #4B5563;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+/* Tombol Aksi Utama Hijau #2E8B3D */
+.btn-submit-green {
+  width: 100%;
+  height: 46px;
+  background-color: #2E8B3D;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(46, 139, 61, 0.25);
+}
+
+.btn-submit-green:hover {
+  background-color: #246F31;
+  box-shadow: 0 6px 16px rgba(46, 139, 61, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-submit-green:active {
+  transform: translateY(0);
+}
+
+/* Link Bawah Tombol */
+.auth-switch-note {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 0.85rem;
+  color: #4B5563;
+}
+
+.auth-switch-link {
+  color: #2E8B3D;
+  font-weight: 700;
+  text-decoration: none;
+  margin-left: 4px;
+  transition: text-decoration 0.2s;
+}
+
+.auth-switch-link:hover {
+  text-decoration: underline;
+}
+
+/* Divider "Lainnya" */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 22px 0;
+  text-align: center;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.auth-divider-text {
+  padding: 0 14px;
+  font-size: 0.8rem;
+  color: #9CA3AF;
+  font-weight: 500;
+}
+
+/* Tombol Masuk Google */
+.btn-google-auth {
+  width: 100%;
+  height: 44px;
+  background-color: #FFFFFF;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.btn-google-auth:hover {
+  background-color: #F9FAFB;
+  border-color: #9CA3AF;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.google-icon-svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Alert Notification */
+.auth-alert-success {
+  background-color: #EAF5EC;
+  border: 1px solid #A7D7B2;
+  color: #1B5E20;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 0.84rem;
+  font-weight: 600;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ==========================================================================
+   3. Responsive Media Queries (Mobile & Tablet)
+   ========================================================================== */
+@media (max-width: 900px) {
+  .auth-wrapper {
+    flex-direction: column;
+  }
+
+  .auth-visual-side {
+    padding: 32px 24px;
+    min-height: 280px;
+    justify-content: flex-start;
+  }
+
+  .auth-visual-content {
+    margin: 20px 0;
+  }
+
+  .auth-visual-heading {
+    font-size: 1.6rem;
+    margin-bottom: 10px;
+  }
+
+  .auth-visual-desc {
+    font-size: 0.9rem;
+  }
+
+  .auth-visual-footer {
+    display: none;
+  }
+
+  .auth-form-side {
+    padding: 36px 20px;
+  }
+
+  .back-home-btn {
+    top: 14px;
+    right: 18px;
+  }
+
+  .auth-card,
+  .auth-card.auth-card-wide {
+    max-width: 100%;
+  }
+}

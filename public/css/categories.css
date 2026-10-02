@@ -1,97 +1,174 @@
-/* Categories Bar (Squircle Icon with Centered Label Below) */
+/* ==========================================================================
+   Categories Bar (Modern Interactive Squircle Cards & Header Container)
+   ========================================================================== */
 
 .categories-bar-section {
   width: 100%;
+  margin-bottom: 16px;
+}
+
+.category-card-container {
+  background: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 16px;
+  padding: 16px 20px 18px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+.category-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #F1F3F5;
+}
+
+.category-header-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  letter-spacing: -0.01em;
+}
+
+.category-header-title i {
+  color: #2E8B3D;
+  font-size: 1.25rem;
+}
+
+.category-header-hint {
+  font-size: 0.78rem;
+  color: #6C757D;
+  font-weight: 500;
 }
 
 .categories-bar-row {
   display: grid;
-  grid-template-columns: repeat(8, 1fr); /* 8 equal columns spanning desktop width */
-  gap: 0.75rem;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 10px;
   width: 100%;
-  overflow: visible;
 }
 
 .category-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.45rem;
-  background: none;
-  border: none;
-  padding: 0;
+  gap: 8px;
+  background: #F8F9FA;
+  border: 1px solid #E9ECEF;
+  border-radius: 12px;
+  padding: 12px 6px;
   cursor: pointer;
   user-select: none;
-  transition: transform var(--transition-fast);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   width: 100%;
+  text-decoration: none;
 }
 
 .category-item:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  background: #F0FDF4;
+  border-color: #2E8B3D;
+  box-shadow: 0 4px 14px rgba(46, 139, 61, 0.12);
 }
 
 .category-item:active {
-  transform: scale(0.95);
+  transform: scale(0.97);
 }
 
 /* Squircle Icon Box */
 .category-squircle {
-  width: 3.4rem;
-  height: 3.4rem;
-  border-radius: var(--radius-xl);
-  background-color: var(--color-surface-white);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #FFFFFF;
   border: 1px solid #E5E7EB;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #4B5563;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
-  transition: all var(--transition-fast);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+  transition: all 0.22s ease;
 }
 
 .category-squircle svg {
   width: 1.35rem;
   height: 1.35rem;
-  transition: color var(--transition-fast);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+/* Subtle icon tint by category */
+.cat-icon-all svg { color: #2E8B3D; }
+.cat-icon-makanan-berat svg { color: #EA580C; }
+.cat-icon-cemilan svg { color: #D97706; }
+.cat-icon-minuman svg { color: #0284C7; }
+.cat-icon-tradisional svg { color: #059669; }
+.cat-icon-snack svg { color: #CA8A04; }
+.cat-icon-kopi svg { color: #78350F; }
+.cat-icon-lainnya svg { color: #6366F1; }
+
+.category-item:hover .category-squircle svg {
+  transform: scale(1.08);
 }
 
 /* Active State */
+.category-item.active {
+  background: linear-gradient(135deg, #2E8B3D 0%, #206E2E 100%);
+  border-color: #2E8B3D;
+  box-shadow: 0 6px 18px rgba(46, 139, 61, 0.28);
+  transform: translateY(-2px);
+}
+
 .category-item.active .category-squircle {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
+  background: rgba(255, 255, 255, 0.22);
+  border-color: transparent;
   color: #FFFFFF;
-  box-shadow: 0 4px 14px rgba(46, 139, 61, 0.28);
+  box-shadow: none;
 }
 
 .category-item.active .category-squircle svg {
-  color: #FFFFFF;
+  color: #FFFFFF !important;
+  transform: scale(1.1);
 }
 
 /* Label Underneath */
 .category-item-label {
   font-size: 0.74rem;
-  font-weight: 600;
-  color: var(--color-text-secondary);
+  font-weight: 700;
+  color: #4B5563;
   text-align: center;
   line-height: 1.25;
   white-space: normal;
   max-width: 82px;
+  transition: color 0.15s ease;
+}
+
+.category-item:hover .category-item-label {
+  color: #2E8B3D;
 }
 
 .category-item.active .category-item-label {
-  color: var(--color-primary);
-  font-weight: 700;
+  color: #FFFFFF;
+  font-weight: 800;
 }
 
 /* Mobile & Tablet Adjustments (<= 1024px: Horizontal Touch Scroll) */
 @media (max-width: 1024px) {
+  .category-card-container {
+    padding: 14px 16px;
+    border-radius: 12px;
+  }
+
   .categories-bar-row {
     display: flex;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    gap: 0.75rem;
-    padding-bottom: 0.25rem;
+    gap: 10px;
+    padding-bottom: 4px;
     scrollbar-width: none;
   }
 
@@ -100,17 +177,19 @@
   }
 
   .category-item {
-    flex: 0 0 68px;
+    flex: 0 0 84px;
     scroll-snap-align: start;
     width: auto;
+    padding: 10px 4px;
   }
 
   .category-squircle {
-    width: 3.25rem;
-    height: 3.25rem;
+    width: 40px;
+    height: 40px;
   }
 
   .category-item-label {
-    max-width: 68px;
+    max-width: 76px;
+    font-size: 0.72rem;
   }
 }

@@ -36,12 +36,12 @@
       </div>
       <div class="location-text">
         <div class="location-title-row">
-          <span class="location-title">{{ $user['current_location']['name'] ?? 'Sekitar Kampus' }}</span>
+          <span class="location-title">{{ $user['current_location']['name'] ?? 'Kampus Polibatam' }}</span>
           <svg class="location-dropdown-arrow" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
           </svg>
         </div>
-        <span class="location-subtitle">{{ $user['current_location']['detail'] ?? 'STIKes Muhammadiyah Lhokseumawe' }}</span>
+        <span class="location-subtitle">{{ $user['current_location']['detail'] ?? 'Politeknik Negeri Batam, Batam Center' }}</span>
       </div>
     </button>
 
@@ -55,12 +55,20 @@
       @endif
     </button>
 
+    <!-- Landing Page Quick Link -->
+    <a href="{{ route('landing') }}" class="notification-btn" title="Ke Landing Page" style="text-decoration:none;">
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+      </svg>
+    </a>
+
     <!-- Profile Avatar Thumbnail -->
-    <img
-      class="header-profile-thumb"
-      src="{{ $user['avatar'] ?? 'https://via.placeholder.com/100' }}"
-      alt="Avatar {{ $user['name'] ?? 'Pengguna' }}"
-      title="{{ $user['name'] ?? 'Profil Pengguna' }}"
-    >
+    <a href="{{ route('login') }}" title="{{ $user['name'] ?? 'Profil Pengguna' }} (Klik untuk Ganti Akun / Logout)">
+      <img
+        class="header-profile-thumb"
+        src="{{ $user['avatar'] ?? 'https://via.placeholder.com/100' }}"
+        alt="Avatar {{ $user['name'] ?? 'Pengguna' }}"
+      >
+    </a>
   </div>
 </header>

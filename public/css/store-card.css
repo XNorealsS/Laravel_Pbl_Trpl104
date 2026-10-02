@@ -1,159 +1,250 @@
-/* Section Layouts: UMKM Terdekat & Menu Pilihan (Desktop & Mobile Optimized) */
+/* ==========================================================================
+   Section Layouts: Profil Lapak UMKM & Etalase Menu Kuliner
+   Modern, Estetik, Card Elevation & Responsive Layout
+   ========================================================================== */
 
 .feed-section {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.85rem;
   width: 100%;
+  margin-bottom: 24px;
 }
 
 .feed-section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
 }
 
 .feed-section-title {
   font-size: 1.05rem;
   font-weight: 800;
-  color: var(--color-text-main);
+  color: #111827;
   letter-spacing: -0.015em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.feed-section-link {
+.feed-section-subtitle {
+  font-size: 0.8rem;
+  color: #6C757D;
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+.feed-section-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 5px;
   font-size: 0.78rem;
+  color: #2E8B3D;
   font-weight: 700;
-  color: var(--color-primary);
-  transition: color var(--transition-fast);
-  text-decoration: none;
+  background: #EAF5EC;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  border: 1px solid #CDE5D2;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.feed-section-link:hover {
-  color: var(--color-primary-dark);
-}
-
-.feed-section-link svg {
-  width: 0.85rem;
-  height: 0.85rem;
-  stroke-width: 2.5;
-}
-
-/* 1. UMKM Terdekat Card Grid (Desktop: 5 Columns, Mobile: Horizontal Scroll) */
+/* ==========================================================================
+   1. Profil Lapak UMKM (5 Columns Desktop, Horizontal Swipe Mobile)
+   ========================================================================== */
 .stores-grid-layout {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 1rem;
+  gap: 14px;
   width: 100%;
 }
 
 .store-mini-card {
   width: 100%;
-  background-color: var(--color-surface-white);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
   display: flex;
   flex-direction: column;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.22s ease, border-color 0.22s ease;
   cursor: pointer;
   text-decoration: none;
   color: inherit;
+  position: relative;
 }
 
 .store-mini-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  border-color: #cbd5e1;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  border-color: #2E8B3D;
 }
 
 .store-mini-img-box {
   position: relative;
   width: 100%;
-  height: 105px; /* Compact height on desktop */
+  height: 120px;
   overflow: hidden;
   background-color: #F3F4F6;
+}
+
+.store-mini-img-box::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 45%;
+  background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 100%);
+  pointer-events: none;
 }
 
 .store-mini-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--transition-normal);
+  transition: transform 0.35s ease;
 }
 
 .store-mini-card:hover .store-mini-img {
-  transform: scale(1.05);
+  transform: scale(1.06);
+}
+
+.store-status-pill {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  background: rgba(46, 139, 61, 0.92);
+  backdrop-filter: blur(4px);
+  color: #FFFFFF;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.status-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #A7F3D0;
+  box-shadow: 0 0 0 2px rgba(167, 243, 208, 0.4);
+  animation: pulseDot 1.8s infinite;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(0.9); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.8; }
 }
 
 .store-mini-body {
-  padding: 0.55rem 0.7rem;
+  padding: 10px 12px 12px;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 4px;
 }
 
 .store-mini-name {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--color-text-main);
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #111827;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.store-mini-name i {
+  color: #2E8B3D;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.store-mini-address {
+  font-size: 0.74rem;
+  color: #6C757D;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 3px;
 }
 
 .store-mini-meta {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  font-size: 0.7rem;
-  color: var(--color-text-muted);
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid #F1F3F5;
+  font-size: 0.72rem;
+}
+
+.store-dist-tag {
+  color: #4B5563;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 500;
 }
 
 .store-mini-rating {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.15rem;
-  color: #F59E0B;
-  font-weight: 700;
+  gap: 3px;
+  color: #D97706;
+  font-weight: 800;
+  background: #FEF3C7;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
-/* 2. Menu Pilihan Card Grid (Desktop: 6 Columns, Mobile: Horizontal Scroll) */
+/* ==========================================================================
+   2. Etalase Menu Kuliner (6 Columns Desktop, Horizontal Swipe Mobile)
+   ========================================================================== */
 .menus-grid-layout {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 1rem;
+  gap: 14px;
   width: 100%;
 }
 
 .menu-mini-card {
   width: 100%;
-  background-color: var(--color-surface-white);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
+  background-color: #FFFFFF;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
   display: flex;
   flex-direction: column;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.22s ease, border-color 0.22s ease;
   cursor: pointer;
   text-decoration: none;
   color: inherit;
 }
 
 .menu-mini-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  border-color: #cbd5e1;
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  border-color: #2E8B3D;
 }
 
 .menu-mini-img-box {
   position: relative;
   width: 100%;
-  height: 105px;
+  height: 110px;
   overflow: hidden;
   background-color: #F3F4F6;
 }
@@ -162,45 +253,70 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform var(--transition-normal);
+  transition: transform 0.35s ease;
 }
 
 .menu-mini-card:hover .menu-mini-img {
-  transform: scale(1.05);
+  transform: scale(1.06);
 }
 
 .menu-mini-body {
-  padding: 0.55rem 0.7rem;
+  padding: 10px 12px 12px;
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 4px;
 }
 
 .menu-mini-title {
-  font-size: 0.82rem;
-  font-weight: 700;
-  color: var(--color-text-main);
+  font-size: 0.86rem;
+  font-weight: 800;
+  color: #111827;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+.menu-mini-seller {
+  font-size: 0.74rem;
+  color: #6C757D;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.menu-mini-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid #F1F3F5;
+}
+
 .menu-mini-price {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--color-primary);
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #2E8B3D;
 }
 
 .menu-mini-rating {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.2rem;
-  font-size: 0.7rem;
-  color: #F59E0B;
-  font-weight: 700;
+  gap: 2px;
+  font-size: 0.72rem;
+  color: #D97706;
+  font-weight: 800;
+  background: #FEF3C7;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
-/* Mobile Adjustments (<= 1024px: Horizontal Touch Scroll) */
+/* ==========================================================================
+   Mobile & Tablet Adjustments (<= 1024px: Horizontal Touch Scroll)
+   ========================================================================== */
 @media (max-width: 1024px) {
   .stores-grid-layout,
   .menus-grid-layout {
@@ -208,8 +324,8 @@
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
-    gap: 0.75rem;
-    padding-bottom: 0.35rem;
+    gap: 12px;
+    padding-bottom: 6px;
     scrollbar-width: none;
   }
 
@@ -218,15 +334,23 @@
     display: none;
   }
 
-  .store-mini-card,
-  .menu-mini-card {
-    flex: 0 0 140px;
-    width: 140px;
+  .store-mini-card {
+    flex: 0 0 170px;
+    width: 170px;
     scroll-snap-align: start;
   }
 
-  .store-mini-img-box,
+  .menu-mini-card {
+    flex: 0 0 155px;
+    width: 155px;
+    scroll-snap-align: start;
+  }
+
+  .store-mini-img-box {
+    height: 105px;
+  }
+
   .menu-mini-img-box {
-    height: 94px;
+    height: 98px;
   }
 }
