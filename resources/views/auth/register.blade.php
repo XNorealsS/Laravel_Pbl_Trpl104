@@ -25,13 +25,7 @@
     <div class="auth-visual-side">
       <!-- Logo & Tagline -->
       <a href="{{ route('landing') }}" class="auth-visual-brand" title="Ke Beranda JajanRia">
-        <div class="brand-icon-wrap">
-          <img src="{{ asset('img/logo.png') }}" alt="Logo JajanRia">
-        </div>
-        <div class="brand-text-block">
-          <span class="brand-title">JajanRia</span>
-          <span class="brand-tagline">Jajanan Enak, Dekat, Mudah</span>
-        </div>
+        <img src="{{ asset('img/logo-bg.png') }}" alt="JajanRia - Jajanan Enak, Dekat, Mudah" style="height: 48px; width: auto; object-fit: contain;">
       </a>
 
       <!-- Konten Sambutan -->
