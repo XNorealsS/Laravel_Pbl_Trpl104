@@ -27,10 +27,16 @@
         </div>
         <nav class="topbar-actions">
           @if(session('user'))
-            <div class="user-chip">
+            <div class="user-chip" title="{{ session('user.nama') }}">
               <span class="avatar">{{ strtoupper(substr(session('user.nama'), 0, 1)) }}</span>
-              <span>{{ session('user.nama') }}</span>
+              <span class="user-chip-name">{{ session('user.nama') }}</span>
             </div>
+            @if(session('user.role') === 'pengunjung')
+              <button type="button" class="btn btn-topbar-chat" onclick="document.getElementById('btnToggleChat')?.click()" title="Buka Percakapan & Pesanan Saya">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span class="topbar-chat-text">Pesan Saya</span>
+              </button>
+            @endif
             @if(session('user.role') === 'seller')
               <a href="{{ route('seller') }}" class="btn primary">Dashboard</a>
             @elseif(session('user.role') === 'admin')

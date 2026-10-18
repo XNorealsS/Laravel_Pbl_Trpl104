@@ -13,39 +13,46 @@
   <!-- Boxicons Icon Library -->
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 
-  <!-- Panel Stylesheet -->
+  <!-- AdminLTE Standard Stylesheet -->
   <link rel="stylesheet" href="{{ asset('css/panel.css') }}?v={{ filemtime(public_path('css/panel.css')) }}">
 </head>
 <body class="panel-body">
 
   <div class="panel-layout">
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div class="panel-sidebar-backdrop" id="panelSidebarBackdrop"></div>
+
     <!-- ==========================================================================
-         Sidebar Navigation Seller
+         Sidebar Navigation Seller (Solid Hijau JajanRia #2E8B3D Sesuai STIKesMu)
          ========================================================================== -->
     <aside class="panel-sidebar" id="panelSidebar">
       <div>
+        <!-- Brand Header Logo -->
         <div class="panel-sidebar-brand">
-          <a href="{{ route('landing') }}" class="panel-brand-wrap">
+          <a href="{{ route('landing') }}" class="panel-brand-wrap" title="JajanRia Polibatam">
             <div class="panel-brand-logo">
-              <img src="{{ asset('img/logo-bg.png') }}" alt="Logo JajanRia" style="object-fit: contain;">
+              <img src="{{ asset('img/logo.png') }}" alt="Logo JajanRia">
             </div>
-            <div>
-              <span class="panel-brand-text">Jajan<span>Ria</span></span>
+            <div class="panel-brand-text-block">
+              <span class="panel-brand-title">JajanRia</span>
+              <span class="panel-brand-subtitle">SELLER UMKM</span>
             </div>
           </a>
           <span class="panel-role-pill pill-seller">Seller</span>
         </div>
 
+        <!-- Sidebar Navigation Menu -->
         <nav class="panel-nav">
-          <span class="panel-nav-header">Menu Utama</span>
+          <span class="panel-nav-header">Menu Utama Lapak</span>
           <button type="button" class="panel-nav-btn active" data-tab="tab-overview">
             <i class='bx bx-grid-alt'></i>
             <span>Ringkasan Toko</span>
+            <i class='bx bx-chevron-right panel-nav-chevron'></i>
           </button>
           <button type="button" class="panel-nav-btn" data-tab="tab-products">
             <i class='bx bx-dish'></i>
             <span>Kelola Menu & Katalog</span>
-            <span class="panel-nav-badge" id="sidebarProdCount">{{ $produk->count() }}</span>
+            <span class="panel-nav-badge badge-emerald" id="sidebarProdCount">{{ $produk->count() }}</span>
           </button>
           <button type="button" class="panel-nav-btn" data-tab="tab-orders">
             <i class='bx bx-chat'></i>
@@ -57,23 +64,13 @@
           </button>
           <button type="button" class="panel-nav-btn" data-tab="tab-profile">
             <i class='bx bx-store-alt'></i>
-            <span>Profil UMKM</span>
+            <span>Profil Lapak UMKM</span>
           </button>
           <button type="button" class="panel-nav-btn" data-tab="tab-reviews">
             <i class='bx bx-star'></i>
             <span>Rating & Ulasan</span>
-            <span class="panel-nav-badge" style="background: #EFF6FF; color: #1E40AF;">{{ $ulasanList->count() }}</span>
+            <span class="panel-nav-badge badge-danger">{{ $ulasanList->count() }}</span>
           </button>
-
-          <span class="panel-nav-header">Navigasi Luar</span>
-          <a href="{{ route('store.detail', $umkm->id_umkm) }}" class="panel-nav-btn">
-            <i class='bx bx-store'></i>
-            <span>Lihat Lapak Saya</span>
-          </a>
-          <a href="{{ route('landing') }}" class="panel-nav-btn">
-            <i class='bx bx-home'></i>
-            <span>Landing Page</span>
-          </a>
         </nav>
       </div>
 
@@ -85,29 +82,42 @@
             <h5 class="panel-user-name" id="sellerStoreName">{{ Str::limit($umkm->nama_usaha, 16) }}</h5>
             <span class="panel-user-sub">Mitra Terverifikasi</span>
           </div>
-          <a href="{{ route('logout') }}" class="panel-logout-btn" title="Keluar / Logout">
-            <i class='bx bx-log-out'></i>
-          </a>
         </div>
       </div>
     </aside>
 
     <!-- ==========================================================================
-         Main Workspace
+         Main Workspace (Navbar + Content + Tables)
          ========================================================================== -->
     <main class="panel-main">
-      <!-- Topbar Header -->
+      <!-- Topbar Header Standar AdminLTE (Sesuai STIKesMu) -->
       <header class="panel-header">
         <div class="panel-header-left">
-          <button type="button" class="panel-mobile-toggle" id="panelMobileToggle" aria-label="Buka Menu">
+          <button type="button" class="panel-mobile-toggle" id="panelMobileToggle" aria-label="Buka Menu Sidebar">
             <i class='bx bx-menu'></i>
           </button>
-          <h2 class="panel-header-title" id="pageTitleHeading">Ringkasan Toko UMKM</h2>
+          <div class="navbar-context-badge">
+            <i class='bx bxs-store'></i>
+            <span>{{ $umkm->nama_usaha }} • {{ $umkm->area }}</span>
+          </div>
         </div>
+
         <div class="panel-header-right">
-          <a href="{{ route('store.detail', $umkm->id_umkm) }}" class="btn-header-link" target="_blank">
-            <i class='bx bx-show'></i>
-            <span>Lihat Tampilan Pembeli</span>
+          <span class="badge-system-ok">
+            <i class='bx bx-check-circle'></i> Toko Siap Melayani
+          </span>
+
+          <div class="navbar-user-chip">
+            <img class="navbar-user-avatar" src="{{ $umkm->foto_url ?? 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=100&auto=format&fit=crop&q=80' }}" alt="Logo Lapak" onerror="this.src='https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=100'">
+            <div class="navbar-user-meta">
+              <span class="navbar-user-name">{{ Str::limit($umkm->nama_usaha, 18) }}</span>
+              <span class="navbar-user-role">Mitra Seller UMKM</span>
+            </div>
+          </div>
+
+          <a href="{{ route('logout') }}" class="btn-navbar-logout" title="Keluar Akun">
+            <i class='bx bx-log-out'></i>
+            <span>Keluar</span>
           </a>
         </div>
       </header>
@@ -115,74 +125,124 @@
       <!-- Content Canvas -->
       <div class="panel-content">
 
+        <!-- Breadcrumbs Navigation -->
+        <nav class="admin-breadcrumb" aria-label="Breadcrumb">
+          <a href="{{ route('seller') }}">Seller</a>
+          <span>&gt;</span>
+          <span id="breadcrumbCurrent">Ringkasan Toko</span>
+          <span>&gt;</span>
+          <span>Semua Data</span>
+        </nav>
+
+        <!-- Page Header Title Row -->
+        <div class="admin-page-header">
+          <div class="admin-page-title-box">
+            <h1 class="panel-header-title" id="pageTitleHeading">Ringkasan Toko UMKM</h1>
+            <p class="admin-page-desc" id="pageSubtitleHeading">Pantau pesanan chat masuk, kelola menu street food, dan tingkatkan reputasi lapak.</p>
+          </div>
+          <div class="admin-header-actions" id="sellerHeaderActions">
+            <a href="{{ route('store.detail', $umkm->id_umkm) }}" class="btn-action-sm btn-action-outline-primary" target="_blank" style="padding: 6px 14px; font-size: 0.82rem;">
+              <i class='bx bx-show'></i>
+              <span>Tampilan Pembeli</span>
+            </a>
+            <button type="button" class="btn-adminlte-green" onclick="openAddProductModalShortcut()">
+              <i class='bx bx-plus'></i>
+              <span>Tambah Menu</span>
+            </button>
+          </div>
+        </div>
+
         {{-- Flash Messages --}}
         @if(session('success'))
-          <div style="background: #DEF7EC; border: 1px solid #31C48D; color: #03543F; padding: 12px 18px; border-radius: 12px; margin-bottom: 24px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
-            <i class='bx bx-check-circle' style="font-size: 1.3rem;"></i>
+          <div style="background: #D4EDDA; border: 1px solid #C3E6CB; color: #155724; padding: 10px 16px; border-radius: 4px; margin-bottom: 20px; font-weight: 600; font-size: 0.88rem; display: flex; align-items: center; gap: 8px;">
+            <i class='bx bx-check-circle' style="font-size: 1.25rem;"></i>
             <span>{{ session('success') }}</span>
           </div>
         @endif
         @if(session('error'))
-          <div style="background: #FDE8E8; border: 1px solid #F98080; color: #9B1C1C; padding: 12px 18px; border-radius: 12px; margin-bottom: 24px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
-            <i class='bx bx-error-circle' style="font-size: 1.3rem;"></i>
+          <div style="background: #F8D7DA; border: 1px solid #F5C6CB; color: #721C24; padding: 10px 16px; border-radius: 4px; margin-bottom: 20px; font-weight: 600; font-size: 0.88rem; display: flex; align-items: center; gap: 8px;">
+            <i class='bx bx-error-circle' style="font-size: 1.25rem;"></i>
             <span>{{ session('error') }}</span>
           </div>
         @endif
 
         <!-- ====================================================================
-             1. TAB: OVERVIEW / RINGKASAN TOKO (2.2.10)
+             1. TAB: OVERVIEW / RINGKASAN TOKO
              ==================================================================== -->
         <section class="tab-view active" id="tab-overview">
-          <!-- Statistics Cards Grid -->
+          <!-- AdminLTE Iconic Small-Boxes Grid (Persis Seperti Contoh STIKesMu) -->
           <div class="stats-cards-grid">
-            <div class="stat-card-box">
-              <div class="stat-icon-wrapper icon-emerald">
+            <!-- Box 1: Blue (Menu Terdaftar) -->
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3 id="overviewProdCount">{{ $produk->count() }}</h3>
+                <p>Menu Terdaftar</p>
+                <span class="subtext">Katalog produk aktif di etalase</span>
+              </div>
+              <div class="icon">
                 <i class='bx bx-dish'></i>
               </div>
-              <div class="stat-details">
-                <span class="stat-detail-num" id="overviewProdCount">{{ $produk->count() }}</span>
-                <span class="stat-detail-label">Menu Terdaftar</span>
-              </div>
+              <button type="button" class="small-box-footer" onclick="switchSellerTab('tab-products')">
+                Lihat daftar <i class='bx bx-right-arrow-circle'></i>
+              </button>
             </div>
-            <div class="stat-card-box">
-              <div class="stat-icon-wrapper icon-amber">
+
+            <!-- Box 2: Red (Pesan & Pesanan Masuk) -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ $pesananList->count() }}</h3>
+                <p>Pesanan & Chat</p>
+                <span class="subtext">{{ $pendingOrders }} Pesanan sedang diproses</span>
+              </div>
+              <div class="icon">
                 <i class='bx bx-chat'></i>
               </div>
-              <div class="stat-details">
-                <span class="stat-detail-num">{{ $pesananList->count() }}</span>
-                <span class="stat-detail-label">Total Pesanan & Chat</span>
-              </div>
+              <button type="button" class="small-box-footer" onclick="switchSellerTab('tab-orders')">
+                Lihat daftar <i class='bx bx-right-arrow-circle'></i>
+              </button>
             </div>
-            <div class="stat-card-box">
-              <div class="stat-icon-wrapper icon-blue">
+
+            <!-- Box 3: Yellow (Rata-Rata Rating) -->
+            <div class="small-box bg-warning">
+              <div class="inner">
+                <h3>{{ $rataRating ? number_format($rataRating, 1) : '5.0' }}</h3>
+                <p>Rata-Rata Rating</p>
+                <span class="subtext">Dari total {{ $ulasanList->count() }} ulasan mahasiswa</span>
+              </div>
+              <div class="icon">
                 <i class='bx bx-star'></i>
               </div>
-              <div class="stat-details">
-                <span class="stat-detail-num">{{ $rataRating ? number_format($rataRating, 1) : '5.0' }}</span>
-                <span class="stat-detail-label">Rata-Rata Rating</span>
-              </div>
+              <button type="button" class="small-box-footer" onclick="switchSellerTab('tab-reviews')">
+                Lihat daftar <i class='bx bx-right-arrow-circle'></i>
+              </button>
             </div>
-            <div class="stat-card-box">
-              <div class="stat-icon-wrapper icon-purple">
+
+            <!-- Box 4: Green (Ulasan Pelanggan) -->
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3>{{ $ulasanList->count() }}</h3>
+                <p>Ulasan Masuk</p>
+                <span class="subtext">Feedback langsung pembeli</span>
+              </div>
+              <div class="icon">
                 <i class='bx bx-user-check'></i>
               </div>
-              <div class="stat-details">
-                <span class="stat-detail-num">{{ $ulasanList->count() }}</span>
-                <span class="stat-detail-label">Ulasan Pelanggan</span>
-              </div>
+              <button type="button" class="small-box-footer" onclick="switchSellerTab('tab-reviews')">
+                Lihat daftar <i class='bx bx-right-arrow-circle'></i>
+              </button>
             </div>
           </div>
 
-          <!-- Quick Actions and Recent Activity -->
+          <!-- Pesanan Masuk Terkini (AdminLTE Standar Thead Hijau #2E8B3D) -->
           <div class="panel-card">
             <div class="panel-card-header">
-              <div>
-                <h3 class="panel-card-title"><i class='bx bx-time'></i> Pesanan Masuk Terkini</h3>
-                <p class="panel-card-desc">Permintaan pemesanan lewat chat website yang perlu dikonfirmasi.</p>
-              </div>
-              <button type="button" class="btn-primary-action" onclick="switchSellerTab('tab-orders')">
-                <i class='bx bx-right-arrow-alt'></i>
-                <span>Buka Ruang Pesan</span>
+              <h3 class="panel-card-title">
+                <i class='bx bx-time'></i>
+                <span>Pesanan & Komunikasi Chat Terkini</span>
+              </h3>
+              <button type="button" class="btn-action-sm btn-action-outline-primary" onclick="switchSellerTab('tab-orders')">
+                <i class='bx bx-message-detail'></i>
+                <span>Buka Seluruh Pesanan</span>
               </button>
             </div>
 
@@ -190,46 +250,50 @@
               <table class="panel-table">
                 <thead>
                   <tr>
-                    <th>Pelanggan</th>
+                    <th style="width: 45px; text-align: center;">#</th>
+                    <th>Nama Pelanggan</th>
                     <th>Menu Dipesan</th>
-                    <th>Waktu</th>
-                    <th>Status</th>
-                    <th>Aksi Cepat</th>
+                    <th style="width: 140px;">Waktu Pesan</th>
+                    <th style="width: 130px; text-align: center;">Status Pesanan</th>
+                    <th style="width: 150px; text-align: center;">Aksi Cepat</th>
                   </tr>
                 </thead>
                 <tbody id="overviewOrdersTableBody">
-                  @forelse($pesananList->take(5) as $order)
+                  @forelse($pesananList->take(6) as $index => $order)
                     <tr>
+                      <td style="text-align: center; font-weight: 600; color: #6C757D;">{{ $index + 1 }}</td>
                       <td>
                         <strong>{{ $order->pengunjung ? $order->pengunjung->nama : 'Pengunjung' }}</strong>
                       </td>
                       <td>{{ $order->produk ? $order->produk->nama_produk : 'Menu JajanRia' }}</td>
                       <td>{{ $order->created_at ? $order->created_at->diffForHumans() : '-' }}</td>
-                      <td>
-                        <span class="badge-status-pill badge-{{ $order->status }}">
-                          {{ strtoupper($order->status) }}
-                        </span>
+                      <td style="text-align: center;">
+                        @if($order->status === 'diproses')
+                          <span class="badge-adminlte badge-warning">Diproses</span>
+                        @else
+                          <span class="badge-adminlte badge-success">Selesai</span>
+                        @endif
                       </td>
-                      <td>
+                      <td style="text-align: center;">
                         @if($order->status === 'diproses')
                           <form action="{{ route('seller.orders.status', $order->id_pesanan) }}" method="POST" style="display:inline;">
                             @csrf
                             <input type="hidden" name="status" value="selesai">
-                            <button type="submit" class="btn-primary-action" style="padding: 5px 12px; font-size: 0.78rem;">
+                            <button type="submit" class="btn-action-sm btn-action-success" title="Tandai pesanan selesai untuk mengaktifkan ulasan">
                               <i class='bx bx-check'></i> Tandai Selesai
                             </button>
                           </form>
                         @else
-                          <span style="color: #059669; font-weight: 700; font-size: 0.8rem;">
-                            <i class='bx bx-check-circle'></i> Selesai
+                          <span style="color: #28A745; font-weight: 700; font-size: 0.8rem;">
+                            <i class='bx bx-check-circle'></i> Siap Diulas
                           </span>
                         @endif
                       </td>
                     </tr>
                   @empty
                     <tr>
-                      <td colspan="5" style="text-align: center; color: #9CA3AF; padding: 24px;">
-                        Belum ada pesanan masuk. Saat pembeli melakukan pemesanan via chat, data akan tampil di sini.
+                      <td colspan="6" style="text-align: center; color: #6C757D; padding: 24px;">
+                        Belum ada pesanan masuk. Saat pembeli memulai chat dan memesan, data akan tampil di sini.
                       </td>
                     </tr>
                   @endforelse
@@ -240,69 +304,106 @@
         </section>
 
         <!-- ====================================================================
-             2. TAB: KELOLA PRODUK (CRUD) - 2.2.12 / UC-06
+             2. TAB: KELOLA PRODUK (CRUD) - UC-06
              ==================================================================== -->
         <section class="tab-view" id="tab-products">
+          <div class="filter-tab-pills">
+            <button type="button" class="filter-tab-pill active">
+              <span>Semua Menu</span>
+              <span class="pill-counter">{{ $produk->count() }}</span>
+            </button>
+            <button type="button" class="filter-tab-pill">
+              <span>Tersedia</span>
+              <span class="pill-counter">{{ $produk->where('tersedia', true)->count() }}</span>
+            </button>
+            <button type="button" class="filter-tab-pill">
+              <span>Habis</span>
+              <span class="pill-counter">{{ $produk->where('tersedia', false)->count() }}</span>
+            </button>
+          </div>
+
+          <!-- Toolbar Pencarian & Filter Produk -->
+          <div class="filter-bar-card">
+            <div class="filter-search-wrap">
+              <i class='bx bx-search'></i>
+              <input type="text" id="productSearchInput" class="filter-search-input" placeholder="Cari nama menu, komposisi rasa, atau harga...">
+            </div>
+            <select class="filter-select" id="productCategoryFilterSelect">
+              <option value="all">Semua Kategori</option>
+              @foreach($kategoriList as $k)
+                <option value="{{ $k->nama_kategori }}">{{ $k->nama_kategori }}</option>
+              @endforeach
+            </select>
+            <button type="button" class="btn-adminlte-green" onclick="filterSellerProductTable()">
+              <i class='bx bx-check'></i>
+              <span>Terapkan</span>
+            </button>
+          </div>
+
           <div class="panel-card">
             <div class="panel-card-header">
-              <div>
-                <h3 class="panel-card-title"><i class='bx bx-dish'></i> Kelola Etalase Produk Lapak (CRUD)</h3>
-                <p class="panel-card-desc">Tambah, perbarui harga, ubah foto, dan atur ketersediaan menu Anda.</p>
-              </div>
-              <div class="panel-action-btns">
-                <button type="button" class="btn-primary-action" id="btnOpenAddProductModal">
-                  <i class='bx bx-plus'></i>
-                  <span>Tambah Produk Baru</span>
-                </button>
-              </div>
+              <h3 class="panel-card-title">
+                <i class='bx bx-dish'></i>
+                <span>Kelola Etalase Produk Lapak (CRUD)</span>
+              </h3>
+              <button type="button" class="btn-adminlte-green" id="btnOpenAddProductModal">
+                <i class='bx bx-plus'></i>
+                <span>Tambah Produk Baru</span>
+              </button>
             </div>
 
             <div class="table-responsive">
-              <table class="panel-table">
+              <table class="panel-table" id="sellerProductTable">
                 <thead>
                   <tr>
+                    <th style="width: 45px; text-align: center;">#</th>
                     <th>Informasi Menu</th>
-                    <th>Kategori</th>
-                    <th>Harga</th>
-                    <th>Status Stok</th>
-                    <th>Aksi</th>
+                    <th>Kategori Menu</th>
+                    <th>Harga Jajanan</th>
+                    <th style="width: 120px; text-align: center;">Status Ketersediaan</th>
+                    <th style="width: 140px; text-align: center;">Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="sellerProductTableBody">
-                  @forelse($produk as $p)
+                  @forelse($produk as $idx => $p)
                     <tr>
+                      <td style="text-align: center; font-weight: 600; color: #6C757D;">{{ $idx + 1 }}</td>
                       <td>
                         <div class="table-prod-info">
                           <img class="table-prod-img" src="{{ $p->foto_url ?? 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100&auto=format&fit=crop&q=80' }}" alt="{{ $p->nama_produk }}" onerror="this.src='https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=100'">
                           <div>
                             <div class="table-prod-title">{{ $p->nama_produk }}</div>
-                            <div class="table-prod-cat">{{ $p->deskripsi ? Str::limit($p->deskripsi, 45) : 'Street food nikmat' }}</div>
+                            <div class="table-prod-cat">{{ $p->deskripsi ? Str::limit($p->deskripsi, 45) : 'Street food nikmat dan higienis' }}</div>
                           </div>
                         </div>
                       </td>
                       <td>
-                        <span style="font-weight: 600; color: #4B5563;">
+                        <span class="badge-adminlte badge-info">
                           {{ $p->kategori ? $p->kategori->nama_kategori : 'Umum' }}
                         </span>
                       </td>
                       <td>
-                        <strong style="color: var(--color-primary-dark);">
+                        <strong style="color: #2E8B3D; font-size: 0.95rem;">
                           Rp {{ number_format($p->harga, 0, ',', '.') }}
                         </strong>
                       </td>
-                      <td>
-                        <span class="badge-status-pill {{ $p->tersedia ? 'badge-completed' : 'badge-pending' }}">
-                          {{ $p->tersedia ? 'Tersedia' : 'Habis' }}
-                        </span>
+                      <td style="text-align: center;">
+                        <form action="{{ route('seller.products.toggle_availability', $p->id_produk) }}" method="POST" style="display:inline;">
+                          @csrf
+                          <button type="submit" class="btn-action-sm {{ $p->tersedia ? 'btn-action-success' : 'btn-action-danger' }}" title="Klik untuk {{ $p->tersedia ? 'Kosongkan ketersediaan (Stok Habis)' : 'Aktifkan ketersediaan (Stok Ada)' }}" style="padding: 4px 10px; font-size: 0.78rem;">
+                            <i class='bx {{ $p->tersedia ? "bx-check-circle" : "bx-x-circle" }}'></i>
+                            <span>{{ $p->tersedia ? 'Tersedia (Klik Kosongkan)' : 'Habis (Klik Aktifkan)' }}</span>
+                          </button>
+                        </form>
                       </td>
-                      <td>
-                        <div style="display: flex; gap: 8px;">
-                          <button type="button" class="btn-primary-action" style="padding: 6px 12px; font-size: 0.76rem; background: #3B82F6;" onclick='openEditProductModal(@json($p))' title="Edit Menu">
+                      <td style="text-align: center;">
+                        <div style="display: flex; gap: 6px; justify-content: center;">
+                          <button type="button" class="btn-action-sm btn-action-outline-primary" onclick='openEditProductModal(@json($p))' title="Edit Informasi Menu">
                             <i class='bx bx-edit'></i> Edit
                           </button>
-                          <form action="{{ route('seller.products.delete', $p->id_produk) }}" method="POST" onsubmit="return confirm('Hapus menu ini dari daftar?')" style="display:inline;">
+                          <form action="{{ route('seller.products.delete', $p->id_produk) }}" method="POST" onsubmit="return confirm('Hapus menu ini dari katalog?')" style="display:inline;">
                             @csrf
-                            <button type="submit" class="btn-primary-action" style="padding: 6px 12px; font-size: 0.76rem; background: #DC2626;" title="Hapus Menu">
+                            <button type="submit" class="btn-action-sm btn-action-danger" title="Hapus Menu">
                               <i class='bx bx-trash'></i> Hapus
                             </button>
                           </form>
@@ -311,7 +412,7 @@
                     </tr>
                   @empty
                     <tr>
-                      <td colspan="5" style="text-align: center; color: #9CA3AF; padding: 24px;">
+                      <td colspan="6" style="text-align: center; color: #6C757D; padding: 24px;">
                         Belum ada produk di etalase Anda. Klik tombol "Tambah Produk Baru" untuk menambahkan menu pertama!
                       </td>
                     </tr>
@@ -323,35 +424,49 @@
         </section>
 
         <!-- ====================================================================
-             3. TAB: KELOLA PESAN & PESANAN - 2.2.13 / UC-07
+             3. TAB: KELOLA PESAN & PESANAN - UC-07
              ==================================================================== -->
         <section class="tab-view" id="tab-orders">
+          <div class="filter-tab-pills">
+            <button type="button" class="filter-tab-pill active">
+              <span>Semua Percakapan</span>
+              <span class="pill-counter">{{ $pesananList->count() }}</span>
+            </button>
+            <button type="button" class="filter-tab-pill">
+              <span>Perlu Diproses</span>
+              <span class="pill-counter">{{ $pendingOrders }}</span>
+            </button>
+          </div>
+
           <div class="panel-card">
             <div class="panel-card-header">
-              <div>
-                <h3 class="panel-card-title"><i class='bx bx-chat'></i> Kelola Pesan Masuk & Status Pesanan</h3>
-                <p class="panel-card-desc">Perbarui status ke "Diproses" atau "Selesai" untuk memicu tombol penilaian ulasan bagi pembeli.</p>
-              </div>
+              <h3 class="panel-card-title">
+                <i class='bx bx-chat'></i>
+                <span>Kelola Pesan Masuk & Status Pesanan</span>
+              </h3>
+              <span style="font-size: 0.8rem; color: #6C757D;">Ubah status menjadi "Selesai" untuk memicu tombol penilaian ulasan pembeli</span>
             </div>
 
             <div class="table-responsive">
               <table class="panel-table">
                 <thead>
                   <tr>
-                    <th>ID / Pengunjung</th>
+                    <th style="width: 45px; text-align: center;">#</th>
+                    <th>ID / Nama Pengunjung</th>
                     <th>Pesanan / Menu</th>
-                    <th>Pesan Terakhir</th>
-                    <th>Status Pesanan</th>
-                    <th>Tindakan Seller</th>
+                    <th>Komunikasi Terakhir</th>
+                    <th style="width: 130px; text-align: center;">Status Pesanan</th>
+                    <th style="width: 160px; text-align: center;">Tindakan Seller</th>
                   </tr>
                 </thead>
                 <tbody id="sellerOrdersFullTableBody">
-                  @forelse($pesananList as $order)
+                  @forelse($pesananList as $idx => $order)
                     @php $lastMsg = $chatPengunjung->get($order->id_pengunjung)?->last(); @endphp
                     <tr>
+                      <td style="text-align: center; font-weight: 600; color: #6C757D;">{{ $idx + 1 }}</td>
                       <td>
                         <strong>#ORD-{{ str_pad($order->id_pesanan, 4, '0', STR_PAD_LEFT) }}</strong>
-                        <div style="font-size: 0.78rem; color: #6B7280;">{{ $order->pengunjung ? $order->pengunjung->nama : 'Pengunjung' }}</div>
+                        <div style="font-size: 0.74rem; color: #6C757D;">{{ $order->pengunjung ? $order->pengunjung->nama : 'Pengunjung' }}</div>
                       </td>
                       <td>
                         <strong>{{ $order->produk ? $order->produk->nama_produk : 'Menu JajanRia' }}</strong>
@@ -361,30 +476,32 @@
                           {{ $lastMsg ? Str::limit($lastMsg->pesan, 45) : 'Komunikasi langsung via obrolan website' }}
                         </span>
                       </td>
-                      <td>
-                        <span class="badge-status-pill badge-{{ $order->status }}">
-                          {{ strtoupper($order->status) }}
-                        </span>
+                      <td style="text-align: center;">
+                        @if($order->status === 'diproses')
+                          <span class="badge-adminlte badge-warning">Diproses</span>
+                        @else
+                          <span class="badge-adminlte badge-success">Selesai</span>
+                        @endif
                       </td>
-                      <td>
+                      <td style="text-align: center;">
                         @if($order->status === 'diproses')
                           <form action="{{ route('seller.orders.status', $order->id_pesanan) }}" method="POST" style="display:inline;">
                             @csrf
                             <input type="hidden" name="status" value="selesai">
-                            <button type="submit" class="btn-primary-action" style="padding: 6px 14px; font-size: 0.8rem;">
+                            <button type="submit" class="btn-action-sm btn-action-success">
                               <i class='bx bx-check'></i> Tandai Selesai
                             </button>
                           </form>
                         @else
-                          <span style="color: #059669; font-weight: 700; font-size: 0.82rem;">
-                            <i class='bx bx-check-circle'></i> Selesai (Penilaian Aktif)
+                          <span style="color: #28A745; font-weight: 700; font-size: 0.82rem;">
+                            <i class='bx bx-check-circle'></i> Penilaian Aktif
                           </span>
                         @endif
                       </td>
                     </tr>
                   @empty
                     <tr>
-                      <td colspan="5" style="text-align: center; color: #9CA3AF; padding: 24px;">
+                      <td colspan="6" style="text-align: center; color: #6C757D; padding: 24px;">
                         Belum ada percakapan atau pesanan aktif dari pengunjung.
                       </td>
                     </tr>
@@ -396,102 +513,108 @@
         </section>
 
         <!-- ====================================================================
-             4. TAB: KELOLA PROFIL UMKM - 2.2.11 / UC-05
+             4. TAB: KELOLA PROFIL UMKM - UC-05
              ==================================================================== -->
         <section class="tab-view" id="tab-profile">
           <div class="panel-card">
             <div class="panel-card-header">
-              <div>
-                <h3 class="panel-card-title"><i class='bx bx-store-alt'></i> Profil Lapak UMKM</h3>
-                <p class="panel-card-desc">Informasi lapak Anda akan tampil di etalase utama JajanRia.</p>
-              </div>
+              <h3 class="panel-card-title">
+                <i class='bx bx-store-alt'></i>
+                <span>Kelola Informasi & Profil Lapak UMKM</span>
+              </h3>
+              <span style="font-size: 0.8rem; color: #6C757D;">Informasi ini akan langsung ditampilkan pada kartu katalog dan detail warung Anda</span>
             </div>
 
-            <form action="{{ route('seller.profile.update') }}" method="POST" class="panel-form-grid">
-              @csrf
-              <div>
-                <label class="form-label" for="storeNameInput">Nama Lapak / Warung</label>
-                <input type="text" name="nama_usaha" id="storeNameInput" class="panel-input" value="{{ $umkm->nama_usaha }}" required>
-              </div>
+            <div style="padding: 18px;">
+              <form action="{{ route('seller.profile.update') }}" method="POST" class="panel-form-grid">
+                @csrf
+                <div>
+                  <label class="form-label" for="storeNameInput">Nama Lapak / Warung</label>
+                  <input type="text" name="nama_usaha" id="storeNameInput" class="panel-input" value="{{ $umkm->nama_usaha }}" required>
+                </div>
 
-              <div>
-                <label class="form-label" for="storePhoneInput">Nomor Kontak WhatsApp</label>
-                <input type="text" name="kontak" id="storePhoneInput" class="panel-input" value="{{ $umkm->kontak }}" required>
-              </div>
+                <div>
+                  <label class="form-label" for="storePhoneInput">Nomor Kontak WhatsApp</label>
+                  <input type="text" name="kontak" id="storePhoneInput" class="panel-input" value="{{ $umkm->kontak }}" required>
+                </div>
 
-              <div>
-                <label class="form-label" for="storeAreaInput">Area Lingkungan Kampus</label>
-                <select name="area" id="storeAreaInput" class="panel-input" required>
-                  @foreach(config('jajanria.area_sekitar', ['Depan Gerbang Utama', 'Samping Asrama', 'Kantin Polibatam', 'Kawasan Ruko Imperium', 'Simpang Dam', 'Centre Point']) as $ar)
-                    <option value="{{ $ar }}" {{ $umkm->area == $ar ? 'selected' : '' }}>{{ $ar }}</option>
-                  @endforeach
-                  <option value="Lainnya" {{ !in_array($umkm->area, config('jajanria.area_sekitar', [])) ? 'selected' : '' }}>{{ $umkm->area }}</option>
-                </select>
-              </div>
+                <div>
+                  <label class="form-label" for="storeAreaInput">Area Lingkungan Kampus</label>
+                  <select name="area" id="storeAreaInput" class="panel-input" required>
+                    @foreach(config('jajanria.area_sekitar', ['Depan Gerbang Utama', 'Samping Asrama', 'Kantin Polibatam', 'Kawasan Ruko Imperium', 'Simpang Dam', 'Centre Point']) as $ar)
+                      <option value="{{ $ar }}" {{ $umkm->area == $ar ? 'selected' : '' }}>{{ $ar }}</option>
+                    @endforeach
+                    <option value="Lainnya" {{ !in_array($umkm->area, config('jajanria.area_sekitar', [])) ? 'selected' : '' }}>{{ $umkm->area }}</option>
+                  </select>
+                </div>
 
-              <div>
-                <label class="form-label" for="storeAddressInput">Alamat Detail / Titik Lapak</label>
-                <input type="text" name="lokasi" id="storeAddressInput" class="panel-input" value="{{ $umkm->lokasi }}" required>
-              </div>
+                <div>
+                  <label class="form-label" for="storeAddressInput">Alamat Detail / Titik Lapak</label>
+                  <input type="text" name="lokasi" id="storeAddressInput" class="panel-input" value="{{ $umkm->lokasi }}" required>
+                </div>
 
-              <div class="panel-form-full">
-                <label class="form-label" for="storeDescInput">Deskripsi Usaha</label>
-                <textarea name="deskripsi" id="storeDescInput" class="panel-input" rows="4">{{ $umkm->deskripsi }}</textarea>
-              </div>
+                <div class="panel-form-full">
+                  <label class="form-label" for="storeDescInput">Deskripsi Usaha</label>
+                  <textarea name="deskripsi" id="storeDescInput" class="panel-input" rows="4">{{ $umkm->deskripsi }}</textarea>
+                </div>
 
-              <div class="panel-form-full">
-                <label class="form-label" for="storePhotoUrlInput">Tautan Foto Banner Lapak (URL)</label>
-                <input type="url" name="foto_url" id="storePhotoUrlInput" class="panel-input" value="{{ $umkm->foto_url }}">
-              </div>
+                <div class="panel-form-full">
+                  <label class="form-label" for="storePhotoUrlInput">Tautan Foto Banner Lapak (URL)</label>
+                  <input type="url" name="foto_url" id="storePhotoUrlInput" class="panel-input" value="{{ $umkm->foto_url }}" placeholder="https://example.com/foto-warung.jpg">
+                </div>
 
-              <div class="panel-form-full">
-                <button type="submit" class="btn-primary-action">
-                  <i class='bx bx-save'></i>
-                  <span>Simpan Perubahan Profil</span>
-                </button>
-              </div>
-            </form>
+                <div class="panel-form-full" style="margin-top: 10px;">
+                  <button type="submit" class="btn-adminlte-green" style="padding: 9px 24px;">
+                    <i class='bx bx-save'></i>
+                    <span>Simpan Perubahan Profil Lapak</span>
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </section>
 
         <!-- ====================================================================
-             5. TAB: RATING & TANGGAPAN ULASAN - 2.2.14 / UC-08 / F011
+             5. TAB: RATING & TANGGAPAN ULASAN - UC-08 / F011
              ==================================================================== -->
         <section class="tab-view" id="tab-reviews">
           <div class="panel-card">
             <div class="panel-card-header">
-              <div>
-                <h3 class="panel-card-title"><i class='bx bx-star'></i> Ulasan Pelanggan & Tanggapan Seller</h3>
-                <p class="panel-card-desc">Pantau kepuasan mahasiswa dan berikan tanggapan ramah terhadap ulasan mereka.</p>
-              </div>
+              <h3 class="panel-card-title">
+                <i class='bx bx-star'></i>
+                <span>Ulasan Pelanggan & Tanggapan Seller</span>
+              </h3>
+              <span style="font-size: 0.8rem; color: #6C757D;">Berikan respon ramah untuk menjaga kepuasan pembeli dan loyalitas mahasiswa</span>
             </div>
 
             <div class="table-responsive">
               <table class="panel-table">
                 <thead>
                   <tr>
-                    <th>Mahasiswa</th>
-                    <th>Rating</th>
-                    <th>Ulasan</th>
-                    <th>Tanggapan Seller</th>
-                    <th>Aksi</th>
+                    <th style="width: 45px; text-align: center;">#</th>
+                    <th>Nama Mahasiswa</th>
+                    <th style="width: 120px; text-align: center;">Rating Skor</th>
+                    <th>Isi Ulasan Mahasiswa</th>
+                    <th>Tanggapan dari Penjual</th>
+                    <th style="width: 120px; text-align: center;">Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="sellerReviewsTableBody">
-                  @forelse($ulasanList as $u)
+                  @forelse($ulasanList as $idx => $u)
                     <tr>
+                      <td style="text-align: center; font-weight: 600; color: #6C757D;">{{ $idx + 1 }}</td>
                       <td>
                         <strong>{{ $u->pengunjung ? $u->pengunjung->nama : 'Mahasiswa' }}</strong>
-                        <div style="font-size: 0.75rem; color: #6B7280;">{{ $u->created_at ? $u->created_at->format('d M Y') : '-' }}</div>
+                        <div style="font-size: 0.74rem; color: #6C757D;">{{ $u->created_at ? $u->created_at->format('d M Y') : '-' }}</div>
                       </td>
-                      <td>
+                      <td style="text-align: center;">
                         <span style="color: #F59E0B; font-weight: 700; font-size: 0.95rem;">
                           {{ str_repeat('★', $u->rating) }}
                         </span>
                         <span style="color: #D1D5DB;">{{ str_repeat('★', 5 - $u->rating) }}</span>
                       </td>
                       <td>
-                        <p style="margin: 0; font-size: 0.85rem; color: #374151;">{{ $u->komentar }}</p>
+                        <p style="margin: 0; font-size: 0.84rem; color: #212529;">{{ $u->komentar }}</p>
                       </td>
                       <td>
                         @if($u->balasan_seller)
@@ -499,18 +622,18 @@
                             {{ $u->balasan_seller }}
                           </div>
                         @else
-                          <span style="color: #9CA3AF; font-style: italic; font-size: 0.82rem;">Belum ditanggapi</span>
+                          <span style="color: #6C757D; font-style: italic; font-size: 0.82rem;">Belum ditanggapi</span>
                         @endif
                       </td>
-                      <td>
-                        <button type="button" class="btn-primary-action" style="padding: 6px 12px; font-size: 0.78rem;" onclick='openReplyModal({{ $u->id_ulasan }}, @json($u->pengunjung ? $u->pengunjung->nama : "Mahasiswa"), @json($u->komentar))'>
+                      <td style="text-align: center;">
+                        <button type="button" class="btn-action-sm btn-action-outline-primary" onclick='openReplyModal({{ $u->id_ulasan }}, @json($u->pengunjung ? $u->pengunjung->nama : "Mahasiswa"), @json($u->komentar))'>
                           <i class='bx bx-reply'></i> {{ $u->balasan_seller ? 'Edit Balasan' : 'Tanggapi' }}
                         </button>
                       </td>
                     </tr>
                   @empty
                     <tr>
-                      <td colspan="5" style="text-align: center; color: #9CA3AF; padding: 24px;">
+                      <td colspan="6" style="text-align: center; color: #6C757D; padding: 24px;">
                         Belum ada ulasan yang masuk untuk lapak ini.
                       </td>
                     </tr>
@@ -520,6 +643,7 @@
             </div>
           </div>
         </section>
+
       </div>
     </main>
   </div>
@@ -531,12 +655,10 @@
     <div class="review-modal-dialog">
       <div class="review-modal-header">
         <div class="review-header-title-box">
-          <div class="review-header-icon" style="background: var(--color-primary-light); color: var(--color-primary);">
-            <i class='bx bx-dish'></i>
-          </div>
+          <i class='bx bx-dish' style="font-size: 1.4rem; color: #2E8B3D;"></i>
           <div>
-            <h3 class="review-modal-title" id="productModalTitle">Tambah Produk Baru</h3>
-            <p class="review-modal-sub">Lengkapi data menu street food Anda</p>
+            <h3 class="review-modal-title" id="productModalTitle">Tambah Menu Produk Baru</h3>
+            <p class="review-modal-sub">Lengkapi informasi etalase kuliner Anda</p>
           </div>
         </div>
         <button type="button" class="btn-review-close" id="btnCloseProductModal">
@@ -573,7 +695,7 @@
 
         <div class="review-modal-actions">
           <button type="button" class="btn-review-skip" id="btnCancelProductModal">Batal</button>
-          <button type="submit" class="btn-primary-action">
+          <button type="submit" class="btn-adminlte-green">
             <i class='bx bx-check'></i>
             <span>Simpan Produk</span>
           </button>
@@ -589,9 +711,7 @@
     <div class="review-modal-dialog">
       <div class="review-modal-header">
         <div class="review-header-title-box">
-          <div class="review-header-icon" style="background: #EFF6FF; color: #1E40AF;">
-            <i class='bx bx-edit'></i>
-          </div>
+          <i class='bx bx-edit' style="font-size: 1.4rem; color: #007BFF;"></i>
           <div>
             <h3 class="review-modal-title">Edit Menu Produk</h3>
             <p class="review-modal-sub">Perbarui informasi harga atau ketersediaan</p>
@@ -629,9 +749,14 @@
           <textarea name="deskripsi" id="editProdDesc" class="panel-input" rows="2"></textarea>
         </div>
 
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" name="tersedia" id="editProdAvailable" value="1" style="width: 16px; height: 16px;">
+          <label for="editProdAvailable" style="font-size: 0.85rem; font-weight: 600; cursor: pointer;">Menu Tersedia untuk Dipesan</label>
+        </div>
+
         <div class="review-modal-actions">
           <button type="button" class="btn-review-skip" id="btnCancelEditModal">Batal</button>
-          <button type="submit" class="btn-primary-action">
+          <button type="submit" class="btn-adminlte-green">
             <i class='bx bx-save'></i>
             <span>Simpan Perubahan</span>
           </button>
@@ -647,9 +772,7 @@
     <div class="review-modal-dialog">
       <div class="review-modal-header">
         <div class="review-header-title-box">
-          <div class="review-header-icon">
-            <i class='bx bx-reply'></i>
-          </div>
+          <i class='bx bx-reply' style="font-size: 1.4rem; color: #2E8B3D;"></i>
           <div>
             <h3 class="review-modal-title">Tanggapi Ulasan Pembeli</h3>
             <p class="review-modal-sub" id="replyReviewUser">Ulasan dari Pelanggan</p>
@@ -664,17 +787,17 @@
         @csrf
         <div>
           <label class="form-label">Teks Ulasan:</label>
-          <p id="replyReviewQuote" style="font-size: 0.88rem; font-style: italic; color: #4B5563; background: #F9FAFB; padding: 10px 14px; border-radius: 8px; border-left: 3px solid var(--color-primary);"></p>
+          <p id="replyReviewQuote" style="font-size: 0.86rem; font-style: italic; color: #4B5563; background: #F8F9FA; padding: 10px 14px; border-radius: 4px; border-left: 3px solid #2E8B3D; margin: 0;"></p>
         </div>
 
         <div>
           <label class="form-label" for="replyReviewText">Tanggapan Anda Sebagai Penjual:</label>
-          <textarea name="balasan" id="replyReviewText" class="panel-input" rows="3" placeholder="Terima kasih banyak atas kunjungannya, kami nantikan pesanan berikutnya..." required></textarea>
+          <textarea name="balasan_seller" id="replyReviewText" class="panel-input" rows="3" placeholder="Terima kasih banyak atas kunjungannya, kami nantikan pesanan berikutnya..." required></textarea>
         </div>
 
         <div class="review-modal-actions">
           <button type="button" class="btn-review-skip" id="btnCancelReplyModal">Batal</button>
-          <button type="submit" class="btn-primary-action">
+          <button type="submit" class="btn-adminlte-green">
             <i class='bx bx-send'></i>
             <span>Kirim Tanggapan</span>
           </button>
@@ -682,9 +805,6 @@
       </form>
     </div>
   </div>
-
-  <!-- Toast Container -->
-  <div id="toastContainer" class="toast-container"></div>
 
   <!-- Vanilla JavaScript -->
   <script src="{{ asset('js/seller.js') }}?v={{ filemtime(public_path('js/seller.js')) }}"></script>

@@ -371,33 +371,47 @@
   <div class="dashboard-tab-pane" id="tab-reviews">
     <div class="reviews-section-card">
       
-      <!-- KPI Summary Cards (Standar AdminLTE Metric Cards) -->
-      <div class="reviews-kpi-grid">
-        <div class="reviews-kpi-card">
-          <div class="kpi-icon-wrap kpi-green">
+      <!-- KPI Summary Cards Standar AdminLTE (Small-Boxes Sesuai STIKesMu) -->
+      <div class="stats-cards-grid grid-3">
+        <div class="small-box bg-warning">
+          <div class="inner">
+            <h3 id="kpiAvgRating">4.7</h3>
+            <p>Rata-Rata Skor Rating</p>
+            <span class="subtext">Dari seluruh ulasan kuliner yang Anda tulis</span>
+          </div>
+          <div class="icon">
             <i class='bx bxs-star'></i>
           </div>
-          <div class="kpi-info">
-            <span class="kpi-value" id="kpiAvgRating">4.7</span>
-            <span class="kpi-label">Rata-rata Skor Rating</span>
+          <div class="small-box-footer">
+            Reputasi Ulasan Mahasiswa <i class='bx bx-check-circle'></i>
           </div>
         </div>
-        <div class="reviews-kpi-card">
-          <div class="kpi-icon-wrap kpi-amber">
-            <i class='bx bx-message-square-check'></i>
+
+        <div class="small-box bg-info">
+          <div class="inner">
+            <h3 id="kpiTotalReviews">3</h3>
+            <p>Total Ulasan Diberikan</p>
+            <span class="subtext">Penilaian mitra UMKM sekitar kampus</span>
           </div>
-          <div class="kpi-info">
-            <span class="kpi-value" id="kpiTotalReviews">3</span>
-            <span class="kpi-label">Total Ulasan Diberikan</span>
+          <div class="icon">
+            <i class='bx bx-chat'></i>
+          </div>
+          <div class="small-box-footer">
+            Riwayat Penilaian Aktif <i class='bx bx-right-arrow-circle'></i>
           </div>
         </div>
-        <div class="reviews-kpi-card">
-          <div class="kpi-icon-wrap kpi-blue">
+
+        <div class="small-box bg-success">
+          <div class="inner">
+            <h3 id="kpiSellerReplies">2 Toko</h3>
+            <p>Telah Dibalas Penjual</p>
+            <span class="subtext">Respon resmi dari pemilik warung</span>
+          </div>
+          <div class="icon">
             <i class='bx bx-reply'></i>
           </div>
-          <div class="kpi-info">
-            <span class="kpi-value" id="kpiSellerReplies">2 Toko</span>
-            <span class="kpi-label">Telah Dibalas Penjual</span>
+          <div class="small-box-footer">
+            Interaksi Seller Terverifikasi <i class='bx bx-check-double'></i>
           </div>
         </div>
       </div>

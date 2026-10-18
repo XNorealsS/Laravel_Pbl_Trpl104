@@ -116,20 +116,18 @@
           <span class="auth-divider-text">Lainnya</span>
         </div>
 
-        <!-- Tombol Masuk dengan Google (Pengunjung - UC-01, F001) -->
-        <form action="{{ route('login') }}" method="POST" style="margin-bottom: 12px;">
-          @csrf
-          <input type="hidden" name="provider" value="google">
-          <button type="submit" class="btn-google-auth" style="width: 100%; cursor: pointer;" title="Masuk Dengan Akun Google">
+        <!-- Tombol Masuk dengan Google (Pengunjung - UC-01, F001 via Firebase) -->
+        <div style="margin-bottom: 12px;">
+          <button type="button" id="btnGoogleLogin" class="btn-google-auth" style="width: 100%; cursor: pointer;" title="Masuk Dengan Akun Google">
             <svg class="google-icon-svg" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
             </svg>
-            <span>Masuk Dengan Google</span>
+            <span id="googleBtnText">Masuk Dengan Google</span>
           </button>
-        </form>
+        </div>
 
         <!-- Akses Cepat Pengujian Peran (Demo Penguji / Dosen) -->
         <div style="margin-top: 18px; padding-top: 14px; border-top: 1px dashed #e5e7eb; text-align: center;">
@@ -168,6 +166,76 @@
         const isPassword = passwordInput.getAttribute('type') === 'password';
         passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
         eyeIcon.className = isPassword ? 'bx bx-hide' : 'bx bx-show';
+      });
+    }
+  </script>
+
+  <!-- Firebase Google Authentication SDK (Modular v13.0.0) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+    import { getAuth, signInWithPopup, GoogleAuthProvider } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+
+    // Konfigurasi Firebase resmi JajanRia
+    const firebaseConfig = {
+      apiKey: "AIzaSyDq3JxZo3PHGRoFjrF2coympWeQT-VPIOU",
+      authDomain: "jajanria-5caca.firebaseapp.com",
+      projectId: "jajanria-5caca",
+      storageBucket: "jajanria-5caca.firebasestorage.app",
+      messagingSenderId: "563141693431",
+      appId: "1:563141693431:web:9221d6082187c13b4de8f2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const btnGoogle = document.getElementById('btnGoogleLogin');
+    const btnText = document.getElementById('googleBtnText');
+
+    if (btnGoogle) {
+      btnGoogle.addEventListener('click', async function() {
+        try {
+          btnGoogle.disabled = true;
+          if (btnText) btnText.textContent = "Menghubungkan ke Google...";
+
+          const result = await signInWithPopup(auth, provider);
+          const user = result.user;
+
+          if (btnText) btnText.textContent = "Memverifikasi akun...";
+
+          const response = await fetch("{{ route('auth.firebase.google') }}", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+              nama: user.displayName || 'Pengunjung Google',
+              email: user.email,
+              firebase_uid: user.uid,
+              foto_profil: user.photoURL
+            })
+          });
+
+          const data = await response.json();
+          if (data.status === 'success') {
+            window.location.href = data.redirect || "{{ route('landing') }}";
+          } else {
+            alert(data.message || 'Gagal login dengan akun Google.');
+            btnGoogle.disabled = false;
+            if (btnText) btnText.textContent = "Masuk Dengan Google";
+          }
+        } catch (error) {
+          console.error("Firebase auth error:", error);
+          btnGoogle.disabled = false;
+          if (btnText) btnText.textContent = "Masuk Dengan Google";
+          
+          if (error.code === 'auth/popup-closed-by-user') {
+            // Popup ditutup oleh pengguna
+            return;
+          }
+          alert('Google Sign-In: ' + (error.message || 'Terjadi kesalahan saat masuk dengan Google.'));
+        }
       });
     }
   </script>

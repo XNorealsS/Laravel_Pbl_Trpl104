@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Kategori;
 use App\Models\Pengguna;
+use App\Models\Pesan;
+use App\Models\Pesanan;
 use App\Models\Produk;
 use App\Models\Ulasan;
 use App\Models\Umkm;
@@ -32,13 +34,19 @@ class AdminController extends Controller
         // 4. Moderasi ulasan (UC-11)
         $ulasanList = Ulasan::with(['pengunjung', 'umkm'])->latest()->get();
 
-        // 5. Statistik ringkasan platform
+        // 5. Pemantauan log pesan/obrolan untuk keperluan moderasi (UC-11, F018)
+        $pesanList = Pesan::with(['pengunjung', 'umkm'])->latest('waktu')->take(12)->get();
+
+        // 6. Statistik lengkap monitoring platform (UC-11, F019)
         $stats = [
             'total_umkm' => Umkm::count(),
             'umkm_aktif' => Umkm::tampil()->count(),
             'total_produk' => Produk::count(),
             'total_ulasan' => Ulasan::count(),
             'pending_verifikasi' => $pendingSellers->count(),
+            'total_pengguna' => Pengguna::count(),
+            'total_pesan' => Pesan::count(),
+            'total_pesanan' => Pesanan::count(),
         ];
 
         return view('admin.dashboard', compact(
@@ -46,6 +54,7 @@ class AdminController extends Controller
             'allUmkms',
             'kategoriList',
             'ulasanList',
+            'pesanList',
             'stats'
         ));
     }

@@ -32,4 +32,17 @@ class Pesan extends Model
     {
         return $this->belongsTo(Umkm::class, 'id_umkm', 'id_umkm');
     }
+
+    /**
+     * Alias pesan <-> isi_pesan untuk kemudahan akses di view/laporan.
+     */
+    public function getPesanAttribute(): ?string
+    {
+        return $this->attributes['isi_pesan'] ?? null;
+    }
+
+    public function setPesanAttribute(?string $value): void
+    {
+        $this->attributes['isi_pesan'] = $value;
+    }
 }

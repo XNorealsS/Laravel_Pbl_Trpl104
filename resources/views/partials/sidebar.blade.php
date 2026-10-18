@@ -1,18 +1,15 @@
-<!-- Sidebar Navigation: Pure 3 Menu (Customer Terautentikasi) -->
+<!-- Sidebar Navigation: Pure 3 Menu (Customer Terautentikasi - Standar AdminLTE Hijau JajanRia) -->
 <aside class="app-sidebar" id="appSidebar" aria-label="Navigasi Utama">
   <div>
-    <!-- Brand Logo Header -->
+    <!-- Brand Logo Header Sesuai Contoh STIKesMu -->
     <div class="sidebar-brand">
-      <a href="{{ route('landing') }}" class="brand-wrapper" title="Ke Landing Page JajanRia" style="text-decoration:none;">
+      <a href="{{ route('landing') }}" class="brand-wrapper" title="Ke Landing Page JajanRia">
         <div class="brand-icon">
           <img src="{{ asset('img/logo.png') }}" alt="Logo JajanRia" class="brand-logo-img">
         </div>
-        <div>
-          <div class="brand-title">
-            <span class="brand-title-main">Jajan</span>
-            <span class="brand-title-accent">Ria</span>
-          </div>
-          <p class="brand-tagline">Jajanan Enak, Dekat, Mudah</p>
+        <div class="brand-text-block">
+          <span class="brand-title-main">JajanRia</span>
+          <span class="brand-tagline">KULINER POLIBATAM</span>
         </div>
       </a>
 
@@ -26,10 +23,12 @@
 
     <!-- Navigation Links: PURE 3 MENU ONLY (Sesuai Permintaan User) -->
     <nav class="sidebar-nav">
+      <span class="sidebar-nav-header">Menu Customer</span>
+
       <!-- 1. Beranda / Katalog -->
       <button type="button" class="nav-link active" data-tab-target="tab-katalog" id="sidebarNavKatalog">
         <div class="nav-link-content">
-          <i class='bx bx-store-alt' style="font-size: 1.25rem;"></i>
+          <i class='bx bx-store-alt'></i>
           <span>Beranda / Katalog</span>
         </div>
       </button>
@@ -37,7 +36,7 @@
       <!-- 2. Pesan Saya (Chat) -->
       <button type="button" class="nav-link" data-tab-target="tab-chat" id="sidebarNavChat">
         <div class="nav-link-content">
-          <i class='bx bx-chat' style="font-size: 1.25rem;"></i>
+          <i class='bx bx-chat'></i>
           <span>Pesan Saya</span>
         </div>
         <span class="nav-badge" id="chatUnreadCountBadge">2</span>
@@ -46,15 +45,15 @@
       <!-- 3. Ulasan Saya -->
       <button type="button" class="nav-link" data-tab-target="tab-reviews" id="sidebarNavReviews">
         <div class="nav-link-content">
-          <i class='bx bx-star' style="font-size: 1.25rem;"></i>
+          <i class='bx bx-star'></i>
           <span>Ulasan Saya</span>
         </div>
-        <span class="nav-badge" style="background-color: #F59E0B;" id="reviewCountBadge">3</span>
+        <span class="nav-badge" style="background-color: #FFC107; color: #212529;" id="reviewCountBadge">3</span>
       </button>
     </nav>
   </div>
 
-  <!-- Bottom Profile Card & Logout -->
+  <!-- Bottom Profile Card -->
   <div class="sidebar-profile">
     <div class="profile-card">
       <div class="profile-info">
@@ -64,9 +63,6 @@
           <p class="profile-role">Customer Terautentikasi</p>
         </div>
       </div>
-      <a href="{{ route('login') }}" class="profile-logout-btn" title="Keluar Akun" style="color: #EF4444; font-size: 1.25rem; display: flex; align-items: center;">
-        <i class='bx bx-log-out'></i>
-      </a>
     </div>
   </div>
 </aside>

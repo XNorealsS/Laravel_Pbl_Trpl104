@@ -35,4 +35,43 @@ class Ulasan extends Model
     {
         return $this->belongsTo(Pesanan::class, 'id_pesanan', 'id_pesanan');
     }
+
+    /**
+     * Alias kompatibilitas sesuai laporan SRS: isi_ulasan <-> komentar.
+     */
+    public function getIsiUlasanAttribute(): ?string
+    {
+        return $this->attributes['komentar'] ?? null;
+    }
+
+    public function setIsiUlasanAttribute(?string $value): void
+    {
+        $this->attributes['komentar'] = $value;
+    }
+
+    /**
+     * Alias kompatibilitas sesuai laporan SRS: tanggapan_seller <-> balasan_seller.
+     */
+    public function getTanggapanSellerAttribute(): ?string
+    {
+        return $this->attributes['balasan_seller'] ?? null;
+    }
+
+    public function setTanggapanSellerAttribute(?string $value): void
+    {
+        $this->attributes['balasan_seller'] = $value;
+    }
+
+    /**
+     * Alias kompatibilitas sesuai laporan SRS: dimoderasi <-> disembunyikan.
+     */
+    public function getDimoderasiAttribute(): bool
+    {
+        return (bool) ($this->attributes['disembunyikan'] ?? false);
+    }
+
+    public function setDimoderasiAttribute($value): void
+    {
+        $this->attributes['disembunyikan'] = (bool) $value;
+    }
 }

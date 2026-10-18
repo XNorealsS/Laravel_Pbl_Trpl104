@@ -1,16 +1,17 @@
 /**
  * JajanRia Admin Panel Script (UC-09, UC-10, UC-11)
- * Pure Vanilla JavaScript (Tab navigation, modals, and responsive controls)
+ * Pure Vanilla JavaScript (Tab navigation, breadcrumbs, search filters, modals, and responsive controls)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
   initAdminNav();
   initAdminModals();
   initMobileSidebar();
+  initAdminFilters();
 });
 
 /**
- * 1. Admin Tab Navigation
+ * 1. Admin Tab Navigation & Breadcrumb Sync
  */
 function initAdminNav() {
   const navBtns = document.querySelectorAll('.panel-nav-btn[data-tab]');
@@ -36,26 +37,51 @@ function switchAdminTab(tabId) {
   const navBtns = document.querySelectorAll('.panel-nav-btn[data-tab]');
   const tabViews = document.querySelectorAll('.tab-view');
   const pageTitle = document.getElementById('adminPageTitle');
+  const pageSubtitle = document.getElementById('adminPageSubtitle');
+  const breadcrumb = document.getElementById('breadcrumbCurrent');
 
   navBtns.forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === tabId));
   tabViews.forEach(v => v.classList.toggle('active', v.id === tabId));
 
-  const titles = {
-    'tab-monitoring': 'Monitoring & Statistik Sistem (UC-11)',
-    'tab-verification': 'Verifikasi Seller Baru (UC-09)',
-    'tab-umkm': 'Kelola Mitra UMKM & Pengguna (UC-10)',
-    'tab-categories': 'Kelola Kategori Street Food (UC-10)',
-    'tab-moderation': 'Moderasi Ulasan & Testimoni (UC-11)'
+  const tabMeta = {
+    'tab-monitoring': {
+      title: 'Monitoring Aktivitas Sistem (UC-11)',
+      subtitle: 'Pengawasan lalu lintas transaksi chat, penilaian, dan verifikasi mitra.',
+      breadcrumb: 'Monitoring & Statistik'
+    },
+    'tab-verification': {
+      title: 'Verifikasi Calon Seller Baru (UC-09)',
+      subtitle: 'Periksa keabsahan dan data lapak UMKM sebelum dipublikasikan.',
+      breadcrumb: 'Verifikasi Seller'
+    },
+    'tab-umkm': {
+      title: 'Kelola Mitra UMKM & Pengguna (UC-10)',
+      subtitle: 'Kelola akses operasional lapak pedagang dan integritas akun.',
+      breadcrumb: 'Kelola Mitra UMKM'
+    },
+    'tab-categories': {
+      title: 'Kelola Kategori Street Food (UC-10)',
+      subtitle: 'Pengelompokan menu jajanan untuk mempermudah pencarian mahasiswa.',
+      breadcrumb: 'Kelola Kategori Menu'
+    },
+    'tab-moderation': {
+      title: 'Moderasi Ulasan & Testimoni (UC-11)',
+      subtitle: 'Sembunyikan atau pulihkan komentar publik demi menjaga etika platform.',
+      breadcrumb: 'Moderasi Ulasan'
+    }
   };
 
-  if (pageTitle && titles[tabId]) {
-    pageTitle.textContent = titles[tabId];
+  if (tabMeta[tabId]) {
+    if (pageTitle) pageTitle.textContent = tabMeta[tabId].title;
+    if (pageSubtitle) pageSubtitle.textContent = tabMeta[tabId].subtitle;
+    if (breadcrumb) breadcrumb.textContent = tabMeta[tabId].breadcrumb;
   }
 
   // Close mobile sidebar if open
-  const sidebar = document.getElementById('panelSidebar');
-  if (sidebar) sidebar.classList.remove('open');
+  closeMobileSidebar();
 }
+
+window.switchAdminTab = switchAdminTab;
 
 /**
  * 2. Admin Modals Management (Tambah Kategori)
@@ -78,15 +104,108 @@ function initAdminModals() {
 }
 
 /**
- * 3. Mobile Sidebar Toggle
+ * 3. Mobile Sidebar Toggle & Backdrop
  */
 function initMobileSidebar() {
   const toggleBtn = document.getElementById('panelMobileToggle');
   const sidebar = document.getElementById('panelSidebar');
+  const backdrop = document.getElementById('panelSidebarBackdrop');
 
   if (toggleBtn && sidebar) {
     toggleBtn.addEventListener('click', () => {
       sidebar.classList.toggle('open');
+      if (backdrop) backdrop.classList.toggle('active');
+    });
+  }
+
+  if (backdrop) {
+    backdrop.addEventListener('click', closeMobileSidebar);
+  }
+}
+
+function closeMobileSidebar() {
+  const sidebar = document.getElementById('panelSidebar');
+  const backdrop = document.getElementById('panelSidebarBackdrop');
+  if (sidebar) sidebar.classList.remove('open');
+  if (backdrop) backdrop.classList.remove('active');
+}
+
+/**
+ * 4. Client-side Table Search & Filter Handlers
+ */
+function initAdminFilters() {
+  const monInput = document.getElementById('monitoringSearchInput');
+  if (monInput) {
+    monInput.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') filterMonitoringTable();
+    });
+  }
+
+  const verInput = document.getElementById('verifySearchInput');
+  if (verInput) {
+    verInput.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') filterVerifyTable();
+    });
+  }
+
+  const umkmInput = document.getElementById('umkmSearchInput');
+  if (umkmInput) {
+    umkmInput.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') filterUmkmTable();
     });
   }
 }
+
+window.filterMonitoringTable = function() {
+  const q = (document.getElementById('monitoringSearchInput')?.value || '').toLowerCase().trim();
+  const ratingFilter = document.getElementById('monitoringRatingSelect')?.value || 'all';
+  const rows = document.querySelectorAll('#monitoringTable tbody tr');
+
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    const matchesQuery = !q || text.includes(q);
+    let matchesRating = true;
+
+    if (ratingFilter !== 'all') {
+      const ratingCell = row.children[4]?.textContent || '';
+      if (ratingFilter === '5') matchesRating = ratingCell.includes('5/5');
+      else if (ratingFilter === '4') matchesRating = ratingCell.includes('4/5');
+      else if (ratingFilter === '3') matchesRating = ratingCell.includes('1/5') || ratingCell.includes('2/5') || ratingCell.includes('3/5');
+    }
+
+    row.style.display = (matchesQuery && matchesRating) ? '' : 'none';
+  });
+};
+
+window.resetMonitoringFilter = function() {
+  const input = document.getElementById('monitoringSearchInput');
+  const select = document.getElementById('monitoringRatingSelect');
+  if (input) input.value = '';
+  if (select) select.value = 'all';
+  filterMonitoringTable();
+};
+
+window.filterVerifyTable = function() {
+  const q = (document.getElementById('verifySearchInput')?.value || '').toLowerCase().trim();
+  const rows = document.querySelectorAll('#verifyTable tbody tr');
+
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    row.style.display = (!q || text.includes(q)) ? '' : 'none';
+  });
+};
+
+window.filterUmkmTable = function() {
+  const q = (document.getElementById('umkmSearchInput')?.value || '').toLowerCase().trim();
+  const area = document.getElementById('umkmAreaSelect')?.value || 'all';
+  const rows = document.querySelectorAll('#umkmTable tbody tr');
+
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    const areaCell = (row.children[3]?.textContent || '').toLowerCase();
+    const matchesQuery = !q || text.includes(q);
+    const matchesArea = area === 'all' || areaCell.includes(area.toLowerCase());
+
+    row.style.display = (matchesQuery && matchesArea) ? '' : 'none';
+  });
+};

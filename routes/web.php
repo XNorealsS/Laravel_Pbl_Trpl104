@@ -32,6 +32,7 @@ Route::get('/dashboard', function () {
 // 2. Autentikasi (Google untuk Pengunjung, Email/Password untuk Seller & Admin - UC-01, F001)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/auth/firebase-google', [AuthController::class, 'firebaseGoogleLogin'])->name('auth.firebase.google');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
@@ -53,6 +54,7 @@ Route::prefix('seller')->group(function () {
     Route::post('/products', [SellerController::class, 'storeProduct'])->name('seller.products.store');
     Route::post('/products/{id}/update', [SellerController::class, 'updateProduct'])->name('seller.products.update');
     Route::post('/products/{id}/delete', [SellerController::class, 'deleteProduct'])->name('seller.products.delete');
+    Route::post('/products/{id}/toggle-availability', [SellerController::class, 'toggleProductAvailability'])->name('seller.products.toggle_availability');
 
     // Ubah status pesanan: "diproses" -> "selesai" (memicu tombol penilaian pembeli)
     Route::post('/orders/{id}/status', [SellerController::class, 'updateOrderStatus'])->name('seller.orders.status');

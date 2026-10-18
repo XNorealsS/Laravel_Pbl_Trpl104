@@ -13,34 +13,41 @@
   <!-- Boxicons Icon Library -->
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 
-  <!-- Panel Stylesheet -->
+  <!-- AdminLTE Standard Stylesheet -->
   <link rel="stylesheet" href="{{ asset('css/panel.css') }}?v={{ filemtime(public_path('css/panel.css')) }}">
 </head>
 <body class="panel-body">
 
   <div class="panel-layout">
+    <!-- Mobile Sidebar Backdrop Overlay -->
+    <div class="panel-sidebar-backdrop" id="panelSidebarBackdrop"></div>
+
     <!-- ==========================================================================
-         Sidebar Navigation Admin
+         Sidebar Navigation Admin (Solid Hijau JajanRia #2E8B3D Sesuai STIKesMu)
          ========================================================================== -->
     <aside class="panel-sidebar" id="panelSidebar">
       <div>
+        <!-- Brand Header Logo -->
         <div class="panel-sidebar-brand">
-          <a href="{{ route('landing') }}" class="panel-brand-wrap">
+          <a href="{{ route('landing') }}" class="panel-brand-wrap" title="JajanRia Polibatam">
             <div class="panel-brand-logo">
-              <img src="{{ asset('img/logo-bg.png') }}" alt="Logo JajanRia" style="object-fit: contain;">
+              <img src="{{ asset('img/logo.png') }}" alt="Logo JajanRia">
             </div>
-            <div>
-              <span class="panel-brand-text">Jajan<span>Ria</span></span>
+            <div class="panel-brand-text-block">
+              <span class="panel-brand-title">JajanRia</span>
+              <span class="panel-brand-subtitle">UMKM POLIBATAM</span>
             </div>
           </a>
           <span class="panel-role-pill pill-admin">Admin</span>
         </div>
 
+        <!-- Sidebar Navigation Menu -->
         <nav class="panel-nav">
           <span class="panel-nav-header">Manajemen Sistem</span>
           <button type="button" class="panel-nav-btn active" data-tab="tab-monitoring">
             <i class='bx bx-line-chart'></i>
             <span>Monitoring & Statistik</span>
+            <i class='bx bx-chevron-right panel-nav-chevron'></i>
           </button>
           <button type="button" class="panel-nav-btn" data-tab="tab-verification">
             <i class='bx bx-user-check'></i>
@@ -52,7 +59,7 @@
           <button type="button" class="panel-nav-btn" data-tab="tab-umkm">
             <i class='bx bx-store-alt'></i>
             <span>Kelola Mitra UMKM</span>
-            <span class="panel-nav-badge">{{ $stats['total_umkm'] }}</span>
+            <span class="panel-nav-badge badge-emerald">{{ $stats['total_umkm'] }}</span>
           </button>
           <button type="button" class="panel-nav-btn" data-tab="tab-categories">
             <i class='bx bx-category'></i>
@@ -62,159 +69,313 @@
           <button type="button" class="panel-nav-btn" data-tab="tab-moderation">
             <i class='bx bx-shield-quarter'></i>
             <span>Moderasi Ulasan</span>
-            <span class="panel-nav-badge" style="background: #FEE2E2; color: #DC2626;">{{ $ulasanList->count() }}</span>
+            <span class="panel-nav-badge badge-danger">{{ $ulasanList->count() }}</span>
           </button>
-
-          <span class="panel-nav-header">Navigasi Luar</span>
-          <a href="{{ route('landing') }}" class="panel-nav-btn">
-            <i class='bx bx-home'></i>
-            <span>Beranda Publik</span>
-          </a>
-          <a href="{{ route('seller') }}" class="panel-nav-btn">
-            <i class='bx bx-store'></i>
-            <span>Dashboard Seller</span>
-          </a>
         </nav>
-      </div>
-
-      <!-- Sidebar User Footer -->
-      <div class="panel-sidebar-footer">
-        <div class="panel-user-box">
-          <img class="panel-user-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Admin JajanRia">
-          <div>
-            <h5 class="panel-user-name">{{ session('user.nama', 'Administrator') }}</h5>
-            <span class="panel-user-sub">Pengelola Platform</span>
-          </div>
-          <a href="{{ route('logout') }}" class="panel-logout-btn" title="Keluar / Logout">
-            <i class='bx bx-log-out'></i>
-          </a>
-        </div>
       </div>
     </aside>
 
     <!-- ==========================================================================
-         Main Workspace
+         Main Workspace (Navbar + Content + Tables)
          ========================================================================== -->
     <main class="panel-main">
-      <!-- Topbar Header -->
+      <!-- Topbar Header Standar AdminLTE (Sesuai STIKesMu) -->
       <header class="panel-header">
         <div class="panel-header-left">
-          <button type="button" class="panel-mobile-toggle" id="panelMobileToggle" aria-label="Buka Menu">
+          <button type="button" class="panel-mobile-toggle" id="panelMobileToggle" aria-label="Buka Menu Sidebar">
             <i class='bx bx-menu'></i>
           </button>
-          <h2 class="panel-header-title" id="adminPageTitle">Monitoring Aktivitas Sistem (UC-11)</h2>
+          <div class="navbar-context-badge">
+            <i class='bx bxs-store'></i>
+            <span>JajanRia • Etalase UMKM Kampus Polibatam</span>
+          </div>
         </div>
+
         <div class="panel-header-right">
-          <span style="font-size: 0.8rem; font-weight: 700; color: #10B981; background: #DEF7EC; padding: 5px 12px; border-radius: 9999px; display: inline-flex; align-items: center; gap: 5px;">
+          <span class="badge-system-ok">
             <i class='bx bx-check-circle'></i> Sistem Operasional Normal
           </span>
+
+          <div class="navbar-user-chip">
+            <div class="navbar-user-avatar">
+              {{ strtoupper(substr(session('user.nama', 'Admin'), 0, 1)) }}
+            </div>
+            <div class="navbar-user-meta">
+              <span class="navbar-user-name">{{ session('user.nama', 'Administrator') }}</span>
+              <span class="navbar-user-role">Administrator PMB</span>
+            </div>
+          </div>
+
+          <a href="{{ route('logout') }}" class="btn-navbar-logout" title="Keluar Akun">
+            <i class='bx bx-log-out'></i>
+            <span>Keluar</span>
+          </a>
         </div>
       </header>
 
       <!-- Content Canvas -->
       <div class="panel-content">
 
+        <!-- Breadcrumbs Navigation -->
+        <nav class="admin-breadcrumb" aria-label="Breadcrumb">
+          <a href="{{ route('admin') }}">Admin</a>
+          <span>&gt;</span>
+          <span id="breadcrumbCurrent">Monitoring & Statistik</span>
+          <span>&gt;</span>
+          <span>Semua Data</span>
+        </nav>
+
+        <!-- Page Header Title Row -->
+        <div class="admin-page-header">
+          <div class="admin-page-title-box">
+            <h1 class="panel-header-title" id="adminPageTitle">Monitoring Aktivitas Sistem (UC-11)</h1>
+            <p class="admin-page-desc" id="adminPageSubtitle">Pengawasan lalu lintas transaksi chat, penilaian, dan verifikasi mitra.</p>
+          </div>
+          <div class="admin-header-actions" id="adminHeaderActions">
+            <button type="button" class="btn-adminlte-green" onclick="window.location.reload()">
+              <i class='bx bx-refresh'></i>
+              <span>Segarkan Data</span>
+            </button>
+          </div>
+        </div>
+
         {{-- Flash Messages --}}
         @if(session('success'))
-          <div style="background: #DEF7EC; border: 1px solid #31C48D; color: #03543F; padding: 12px 18px; border-radius: 12px; margin-bottom: 24px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
-            <i class='bx bx-check-circle' style="font-size: 1.3rem;"></i>
+          <div style="background: #D4EDDA; border: 1px solid #C3E6CB; color: #155724; padding: 10px 16px; border-radius: 4px; margin-bottom: 20px; font-weight: 600; font-size: 0.88rem; display: flex; align-items: center; gap: 8px;">
+            <i class='bx bx-check-circle' style="font-size: 1.25rem;"></i>
             <span>{{ session('success') }}</span>
           </div>
         @endif
         @if(session('error'))
-          <div style="background: #FDE8E8; border: 1px solid #F98080; color: #9B1C1C; padding: 12px 18px; border-radius: 12px; margin-bottom: 24px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
-            <i class='bx bx-error-circle' style="font-size: 1.3rem;"></i>
+          <div style="background: #F8D7DA; border: 1px solid #F5C6CB; color: #721C24; padding: 10px 16px; border-radius: 4px; margin-bottom: 20px; font-weight: 600; font-size: 0.88rem; display: flex; align-items: center; gap: 8px;">
+            <i class='bx bx-error-circle' style="font-size: 1.25rem;"></i>
             <span>{{ session('error') }}</span>
           </div>
         @endif
 
         <!-- ====================================================================
-             1. TAB: MONITORING & STATISTIK (2.2.6 / UC-11 / F019)
+             1. TAB: MONITORING & STATISTIK (UC-11 / F019)
              ==================================================================== -->
         <section class="tab-view active" id="tab-monitoring">
-          <!-- Stats Cards Grid -->
-          <div class="stats-cards-grid">
-            <div class="stat-card-box">
-              <div class="stat-icon-wrapper icon-emerald">
+          <!-- AdminLTE Iconic Small-Boxes Grid (Persis Seperti Contoh STIKesMu) -->
+          <div class="stats-cards-grid grid-5">
+            <!-- Card 1: Blue (Total Mitra UMKM Aktif) -->
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3>{{ $stats['umkm_aktif'] }}</h3>
+                <p>Mitra UMKM Aktif</p>
+                <span class="subtext">{{ $stats['total_umkm'] }} Total lapak terdaftar</span>
+              </div>
+              <div class="icon">
                 <i class='bx bx-store-alt'></i>
               </div>
-              <div class="stat-details">
-                <span class="stat-detail-num" id="totalStoresCount">{{ $stats['umkm_aktif'] }} / {{ $stats['total_umkm'] }}</span>
-                <span class="stat-detail-label">Mitra UMKM Aktif</span>
-              </div>
+              <button type="button" class="small-box-footer" onclick="switchAdminTab('tab-umkm')">
+                Lihat daftar <i class='bx bx-right-arrow-circle'></i>
+              </button>
             </div>
-            <div class="stat-card-box">
-              <div class="stat-icon-wrapper icon-amber">
+
+            <!-- Card 2: Red (Pending Verifikasi Seller) -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ $stats['pending_verifikasi'] }}</h3>
+                <p>Menunggu Verif</p>
+                <span class="subtext">Pengajuan pedagang baru</span>
+              </div>
+              <div class="icon">
+                <i class='bx bx-user-pin'></i>
+              </div>
+              <button type="button" class="small-box-footer" onclick="switchAdminTab('tab-verification')">
+                Lihat daftar <i class='bx bx-right-arrow-circle'></i>
+              </button>
+            </div>
+
+            <!-- Card 3: Yellow (Total Menu Street Food) -->
+            <div class="small-box bg-warning">
+              <div class="inner">
+                <h3>{{ $stats['total_produk'] }}</h3>
+                <p>Menu Street Food</p>
+                <span class="subtext">Katalog kuliner kampus</span>
+              </div>
+              <div class="icon">
                 <i class='bx bx-dish'></i>
               </div>
-              <div class="stat-details">
-                <span class="stat-detail-num">{{ $stats['total_produk'] }}</span>
-                <span class="stat-detail-label">Total Menu Street Food</span>
-              </div>
+              <button type="button" class="small-box-footer" onclick="switchAdminTab('tab-categories')">
+                Lihat daftar <i class='bx bx-right-arrow-circle'></i>
+              </button>
             </div>
-            <div class="stat-card-box">
-              <div class="stat-icon-wrapper icon-blue">
+
+            <!-- Card 4: Cyan/Primary (Pengguna Terdaftar) -->
+            <div class="small-box bg-primary">
+              <div class="inner">
+                <h3>{{ $stats['total_pengguna'] }}</h3>
+                <p>Pengguna Akun</p>
+                <span class="subtext">Customer & mitra aktif</span>
+              </div>
+              <div class="icon">
                 <i class='bx bx-user'></i>
               </div>
-              <div class="stat-details">
-                <span class="stat-detail-num">{{ \App\Models\Pengguna::count() }}</span>
-                <span class="stat-detail-label">Pengguna Terdaftar</span>
-              </div>
+              <button type="button" class="small-box-footer" onclick="switchAdminTab('tab-umkm')">
+                Lihat daftar <i class='bx bx-right-arrow-circle'></i>
+              </button>
             </div>
-            <div class="stat-card-box">
-              <div class="stat-icon-wrapper icon-purple">
+
+            <!-- Card 5: Green (Total Ulasan Masuk) -->
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3>{{ $stats['total_ulasan'] }}</h3>
+                <p>Ulasan Masuk</p>
+                <span class="subtext">Feedback ulasan pembeli</span>
+              </div>
+              <div class="icon">
                 <i class='bx bx-chat'></i>
               </div>
-              <div class="stat-details">
-                <span class="stat-detail-num">{{ $stats['total_ulasan'] }}</span>
-                <span class="stat-detail-label">Ulasan Masuk</span>
-              </div>
+              <button type="button" class="small-box-footer" onclick="switchAdminTab('tab-moderation')">
+                Lihat daftar <i class='bx bx-right-arrow-circle'></i>
+              </button>
             </div>
           </div>
 
-          <!-- Log Aktivitas Terkini (F018) -->
+          <!-- Quick Tab Filter Pills -->
+          <div class="filter-tab-pills">
+            <button type="button" class="filter-tab-pill active">
+              <span>Semua Aktivitas</span>
+              <span class="pill-counter">{{ $ulasanList->count() }}</span>
+            </button>
+            <button type="button" class="filter-tab-pill" onclick="switchAdminTab('tab-verification')">
+              <span>Pengajuan Seller</span>
+              <span class="pill-counter">{{ $stats['pending_verifikasi'] }}</span>
+            </button>
+            <button type="button" class="filter-tab-pill" onclick="switchAdminTab('tab-umkm')">
+              <span>Mitra UMKM</span>
+              <span class="pill-counter">{{ $stats['total_umkm'] }}</span>
+            </button>
+          </div>
+
+          <!-- Toolbar Pencarian & Filter Sesuai STIKesMu -->
+          <div class="filter-bar-card">
+            <div class="filter-search-wrap">
+              <i class='bx bx-search'></i>
+              <input type="text" id="monitoringSearchInput" class="filter-search-input" placeholder="Cari nama pengunjung, lapak tujuan, atau kata komentar...">
+            </div>
+            <select class="filter-select" id="monitoringRatingSelect">
+              <option value="all">Semua Rating Bintang</option>
+              <option value="5">Bintang 5</option>
+              <option value="4">Bintang 4</option>
+              <option value="3">Bintang 3 ke bawah</option>
+            </select>
+            <div class="filter-actions-group">
+              <button type="button" class="btn-adminlte-green" onclick="filterMonitoringTable()">
+                <i class='bx bx-check'></i>
+                <span>Terapkan</span>
+              </button>
+              <button type="button" class="btn-adminlte-reset" onclick="resetMonitoringFilter()" title="Reset Filter">
+                <i class='bx bx-rotate-left'></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Log Aktivitas Terkini (AdminLTE Standar Thead Hijau #2E8B3D) -->
           <div class="panel-card">
             <div class="panel-card-header">
-              <div>
-                <h3 class="panel-card-title"><i class='bx bx-pulse'></i> Ringkasan Ulasan & Aktivitas Terkini</h3>
-                <p class="panel-card-desc">Pengawasan lalu lintas transaksi chat, penilaian, dan verifikasi mitra.</p>
-              </div>
+              <h3 class="panel-card-title">
+                <i class='bx bx-list-ul'></i>
+                <span>Ringkasan Ulasan & Aktivitas Terkini</span>
+              </h3>
+              <span style="font-size: 0.8rem; color: #6C757D;">Menampilkan {{ min(10, $ulasanList->count()) }} riwayat transaksi ulasan terbaru</span>
+            </div>
+
+            <div class="table-responsive">
+              <table class="panel-table" id="monitoringTable">
+                <thead>
+                  <tr>
+                    <th style="width: 45px; text-align: center;">#</th>
+                    <th>Waktu Catatan</th>
+                    <th>Pengunjung / Mahasiswa</th>
+                    <th>Lapak UMKM Tujuan</th>
+                    <th style="width: 110px; text-align: center;">Rating</th>
+                    <th>Isi Komentar Ulasan</th>
+                    <th style="width: 120px; text-align: center;">Status</th>
+                    <th style="width: 90px; text-align: center;">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="adminLogsTableBody">
+                  @forelse($ulasanList->take(10) as $index => $r)
+                    <tr>
+                      <td style="text-align: center; font-weight: 600; color: #6C757D;">{{ $index + 1 }}</td>
+                      <td>{{ $r->created_at ? $r->created_at->format('d/m/Y H:i') : '-' }}</td>
+                      <td><strong>{{ $r->pengunjung ? $r->pengunjung->nama : 'Pengunjung' }}</strong></td>
+                      <td>{{ $r->umkm ? $r->umkm->nama_usaha : '-' }}</td>
+                      <td style="text-align: center;">
+                        <span style="color: #F59E0B; font-weight: 700;">★ {{ $r->rating }}/5</span>
+                      </td>
+                      <td>{{ Str::limit($r->komentar, 60) }}</td>
+                      <td style="text-align: center;">
+                        @if($r->disembunyikan)
+                          <span class="badge-adminlte badge-warning">Disembunyikan</span>
+                        @else
+                          <span class="badge-adminlte badge-success">Tampil Publik</span>
+                        @endif
+                      </td>
+                      <td style="text-align: center;">
+                        <button type="button" class="btn-action-sm btn-action-outline-primary" onclick="switchAdminTab('tab-moderation')" title="Detail Moderasi">
+                          <i class='bx bx-show'></i> Detail
+                        </button>
+                      </td>
+                    </tr>
+                  @empty
+                    <tr>
+                      <td colspan="8" style="text-align: center; color: #6C757D; padding: 28px;">
+                        Belum ada aktivitas ulasan terekam dalam sistem.
+                      </td>
+                    </tr>
+                  @endforelse
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Log Monitoring Obrolan / Chat Masuk (F018) -->
+          <div class="panel-card" style="margin-top: 24px;">
+            <div class="panel-card-header">
+              <h3 class="panel-card-title">
+                <i class='bx bx-message-square-detail'></i>
+                <span>Pemantauan Aktivitas Obrolan / Pesan Internal (F018)</span>
+              </h3>
+              <span style="font-size: 0.8rem; color: #6C757D;">Menampilkan {{ min(12, $pesanList->count()) }} pesan chat terbaru antara Pengunjung dan Seller</span>
             </div>
 
             <div class="table-responsive">
               <table class="panel-table">
                 <thead>
                   <tr>
-                    <th>Waktu</th>
-                    <th>Pengunjung</th>
-                    <th>Lapak Tujuan</th>
-                    <th>Rating</th>
-                    <th>Komentar</th>
-                    <th>Status</th>
+                    <th style="width: 45px; text-align: center;">#</th>
+                    <th>Waktu Catatan</th>
+                    <th>Pengirim</th>
+                    <th>Pengunjung / Akun</th>
+                    <th>Lapak UMKM Tujuan</th>
+                    <th>Ringkasan Pesan</th>
                   </tr>
                 </thead>
-                <tbody id="adminLogsTableBody">
-                  @forelse($ulasanList->take(6) as $r)
+                <tbody>
+                  @forelse($pesanList as $pIdx => $msg)
                     <tr>
-                      <td>{{ $r->created_at ? $r->created_at->format('d/m/Y H:i') : '-' }}</td>
-                      <td><strong>{{ $r->pengunjung ? $r->pengunjung->nama : 'Pengunjung' }}</strong></td>
-                      <td>{{ $r->umkm ? $r->umkm->nama_usaha : '-' }}</td>
+                      <td style="text-align: center; font-weight: 600; color: #6C757D;">{{ $pIdx + 1 }}</td>
+                      <td>{{ $msg->waktu ? $msg->waktu->format('d/m/Y H:i') : '-' }}</td>
                       <td>
-                        <span style="color: #F59E0B; font-weight: 700;">★ {{ $r->rating }}/5</span>
-                      </td>
-                      <td>{{ Str::limit($r->komentar, 50) }}</td>
-                      <td>
-                        @if($r->disembunyikan)
-                          <span class="badge-status-pill badge-pending">Disembunyikan</span>
+                        @if($msg->pengirim === 'pengunjung')
+                          <span class="badge-adminlte badge-info">Pengunjung</span>
                         @else
-                          <span class="badge-status-pill badge-completed">Tampil Publik</span>
+                          <span class="badge-adminlte badge-success">Seller</span>
                         @endif
                       </td>
+                      <td><strong>{{ $msg->pengunjung ? $msg->pengunjung->nama : 'Customer' }}</strong></td>
+                      <td>{{ $msg->umkm ? $msg->umkm->nama_usaha : '-' }}</td>
+                      <td>{{ Str::limit($msg->isi_pesan, 70) }}</td>
                     </tr>
                   @empty
                     <tr>
-                      <td colspan="6" style="text-align: center; color: #9CA3AF; padding: 24px;">
-                        Belum ada aktivitas ulasan terekam dalam sistem.
+                      <td colspan="6" style="text-align: center; color: #6C757D; padding: 24px;">
+                        Belum ada aktivitas obrolan atau pesan chat terekam dalam sistem.
                       </td>
                     </tr>
                   @endforelse
@@ -225,58 +386,81 @@
         </section>
 
         <!-- ====================================================================
-             2. TAB: VERIFIKASI SELLER BARU (2.2.7 / UC-09 / F015)
+             2. TAB: VERIFIKASI SELLER BARU (UC-09 / F015)
              ==================================================================== -->
         <section class="tab-view" id="tab-verification">
+          <!-- Filter Tabs -->
+          <div class="filter-tab-pills">
+            <button type="button" class="filter-tab-pill active">
+              <span>Menunggu Verifikasi</span>
+              <span class="pill-counter">{{ $pendingSellers->count() }}</span>
+            </button>
+          </div>
+
+          <!-- Toolbar Pencarian -->
+          <div class="filter-bar-card">
+            <div class="filter-search-wrap">
+              <i class='bx bx-search'></i>
+              <input type="text" id="verifySearchInput" class="filter-search-input" placeholder="Cari nama calon seller, nama lapak, atau email...">
+            </div>
+            <button type="button" class="btn-adminlte-green" onclick="filterVerifyTable()">
+              <i class='bx bx-check'></i>
+              <span>Terapkan</span>
+            </button>
+          </div>
+
           <div class="panel-card">
             <div class="panel-card-header">
-              <div>
-                <h3 class="panel-card-title"><i class='bx bx-user-check'></i> Pengajuan Akun Seller Baru</h3>
-                <p class="panel-card-desc">Periksa identitas dan informasi pedagang street food sebelum disetujui tampil di katalog publik.</p>
-              </div>
+              <h3 class="panel-card-title">
+                <i class='bx bx-user-check'></i>
+                <span>Pengajuan Akun Calon Seller UMKM Baru</span>
+              </h3>
+              <span style="font-size: 0.8rem; color: #6C757D;">Persetujuan identitas pedagang sebelum lapak tampil di katalog publik</span>
             </div>
 
             <div class="table-responsive">
-              <table class="panel-table">
+              <table class="panel-table" id="verifyTable">
                 <thead>
                   <tr>
-                    <th>Pemilik Akun</th>
-                    <th>Nama Lapak</th>
-                    <th>Lokasi Lapak</th>
+                    <th style="width: 45px; text-align: center;">#</th>
+                    <th>Nama Pemilik Akun</th>
+                    <th>Nama Lapak UMKM</th>
+                    <th>Area Lingkungan Kampus</th>
                     <th>Kontak WhatsApp</th>
-                    <th>Status Pengajuan</th>
-                    <th>Keputusan Admin</th>
+                    <th style="text-align: center;">Status Pengajuan</th>
+                    <th style="text-align: center; width: 170px;">Keputusan Admin</th>
                   </tr>
                 </thead>
                 <tbody id="verifyTableBody">
-                  @forelse($pendingSellers as $s)
+                  @forelse($pendingSellers as $idx => $s)
+                    @php $umkmData = $s->lapak ?? $s->umkm->first(); @endphp
                     <tr>
+                      <td style="text-align: center; font-weight: 600; color: #6C757D;">{{ $idx + 1 }}</td>
                       <td>
                         <strong>{{ $s->nama }}</strong>
-                        <div style="font-size: 0.78rem; color: #6B7280;">{{ $s->email }}</div>
+                        <div style="font-size: 0.74rem; color: #6C757D;">{{ $s->email }}</div>
                       </td>
-                      @php $umkmData = $s->lapak ?? $s->umkm->first(); @endphp
                       <td>
                         <strong>{{ $umkmData ? $umkmData->nama_usaha : 'Lapak Belum Diisi' }}</strong>
                       </td>
-                      <td>{{ $umkmData ? $umkmData->area . ' - ' . $umkmData->lokasi : '-' }}</td>
+                      <td>{{ $umkmData ? $umkmData->area . ' (' . $umkmData->lokasi . ')' : '-' }}</td>
                       <td>{{ $umkmData ? $umkmData->kontak : '-' }}</td>
-                      <td>
-                        <span class="badge-status-pill badge-pending">Menunggu Verifikasi</span>
+                      <td style="text-align: center;">
+                        <span class="badge-adminlte badge-warning">Menunggu Verif</span>
                       </td>
-                      <td>
-                        <div style="display: flex; gap: 8px;">
+                      <td style="text-align: center;">
+                        <div style="display: flex; gap: 6px; justify-content: center;">
                           <form action="{{ route('admin.sellers.verify', $s->id_user) }}" method="POST" style="display:inline;">
                             @csrf
                             <input type="hidden" name="status" value="terverifikasi">
-                            <button type="submit" class="btn-primary-action" style="padding: 6px 14px; font-size: 0.78rem; background: #059669;">
+                            <button type="submit" class="btn-action-sm btn-action-success" title="Setujui pendaftaran seller">
                               <i class='bx bx-check'></i> Setujui
                             </button>
                           </form>
-                          <form action="{{ route('admin.sellers.verify', $s->id_user) }}" method="POST" style="display:inline;">
+                          <form action="{{ route('admin.sellers.verify', $s->id_user) }}" method="POST" style="display:inline;" onsubmit="return confirm('Tolak pendaftaran seller ini?')">
                             @csrf
                             <input type="hidden" name="status" value="ditolak">
-                            <button type="submit" class="btn-primary-action" style="padding: 6px 14px; font-size: 0.78rem; background: #DC2626;">
+                            <button type="submit" class="btn-action-sm btn-action-danger" title="Tolak pendaftaran">
                               <i class='bx bx-x'></i> Tolak
                             </button>
                           </form>
@@ -285,7 +469,7 @@
                     </tr>
                   @empty
                     <tr>
-                      <td colspan="6" style="text-align: center; color: #059669; font-weight: 600; padding: 28px;">
+                      <td colspan="7" style="text-align: center; color: #28A745; font-weight: 600; padding: 28px;">
                         <i class='bx bx-check-circle' style="font-size: 1.8rem; vertical-align: middle;"></i>
                         <div style="margin-top: 6px;">Tidak ada pengajuan seller baru yang menunggu verifikasi. Seluruh akun telah diproses.</div>
                       </td>
@@ -298,56 +482,89 @@
         </section>
 
         <!-- ====================================================================
-             3. TAB: KELOLA MITRA UMKM & PENGGUNA (2.2.8 & 2.2.9 / UC-10 / F016)
+             3. TAB: KELOLA MITRA UMKM & PENGGUNA (UC-10 / F016)
              ==================================================================== -->
         <section class="tab-view" id="tab-umkm">
+          <div class="filter-tab-pills">
+            <button type="button" class="filter-tab-pill active">
+              <span>Semua Mitra</span>
+              <span class="pill-counter">{{ $allUmkms->count() }}</span>
+            </button>
+            <button type="button" class="filter-tab-pill">
+              <span>Mitra Aktif</span>
+              <span class="pill-counter">{{ $stats['umkm_aktif'] }}</span>
+            </button>
+          </div>
+
+          <div class="filter-bar-card">
+            <div class="filter-search-wrap">
+              <i class='bx bx-search'></i>
+              <input type="text" id="umkmSearchInput" class="filter-search-input" placeholder="Cari nama lapak, pemilik akun, atau area kampus...">
+            </div>
+            <select class="filter-select" id="umkmAreaSelect">
+              <option value="all">Semua Area Kampus</option>
+              @foreach(config('jajanria.area_sekitar', ['Depan Gerbang Utama', 'Samping Asrama', 'Kantin Polibatam', 'Kawasan Ruko Imperium', 'Simpang Dam', 'Centre Point']) as $ar)
+                <option value="{{ $ar }}">{{ $ar }}</option>
+              @endforeach
+            </select>
+            <button type="button" class="btn-adminlte-green" onclick="filterUmkmTable()">
+              <i class='bx bx-check'></i>
+              <span>Terapkan</span>
+            </button>
+          </div>
+
           <div class="panel-card">
             <div class="panel-card-header">
-              <div>
-                <h3 class="panel-card-title"><i class='bx bx-store-alt'></i> Daftar Seluruh Mitra UMKM Terdaftar</h3>
-                <p class="panel-card-desc">Kelola status aktif akun, akses operasional lapak, dan integritas data UMKM.</p>
-              </div>
+              <h3 class="panel-card-title">
+                <i class='bx bx-store-alt'></i>
+                <span>Daftar Seluruh Mitra UMKM Street Food Terdaftar</span>
+              </h3>
+              <span style="font-size: 0.8rem; color: #6C757D;">Kelola status aktif akun, akses operasional lapak, dan integritas data UMKM</span>
             </div>
 
             <div class="table-responsive">
-              <table class="panel-table">
+              <table class="panel-table" id="umkmTable">
                 <thead>
                   <tr>
+                    <th style="width: 45px; text-align: center;">#</th>
                     <th>Nama Toko UMKM</th>
-                    <th>Pemilik Akun</th>
-                    <th>Area Kampus</th>
-                    <th>Total Menu</th>
-                    <th>Status Akun</th>
-                    <th>Tindakan Admin</th>
+                    <th>Pemilik Akun & Kontak</th>
+                    <th>Area Lingkungan Kampus</th>
+                    <th style="text-align: center;">Total Menu</th>
+                    <th style="text-align: center;">Status Akun</th>
+                    <th style="text-align: center; width: 140px;">Tindakan Admin</th>
                   </tr>
                 </thead>
                 <tbody id="storesTableBody">
-                  @forelse($allUmkms as $u)
+                  @forelse($allUmkms as $idx => $u)
                     <tr>
+                      <td style="text-align: center; font-weight: 600; color: #6C757D;">{{ $idx + 1 }}</td>
                       <td>
                         <strong>{{ $u->nama_usaha }}</strong>
+                        <div style="font-size: 0.74rem; color: #6C757D;">{{ $u->lokasi }}</div>
                       </td>
                       <td>
-                        {{ $u->pemilik ? $u->pemilik->nama : '-' }}
-                        <div style="font-size: 0.75rem; color: #6B7280;">{{ $u->pemilik ? $u->pemilik->email : '-' }}</div>
+                        <strong>{{ $u->pemilik ? $u->pemilik->nama : '-' }}</strong>
+                        <div style="font-size: 0.74rem; color: #6C757D;">{{ $u->kontak }}</div>
                       </td>
                       <td>{{ $u->area }}</td>
-                      <td>
-                        <span style="font-weight: 700; color: #2E8B3D;">{{ $u->produk->count() }} menu</span>
+                      <td style="text-align: center;">
+                        <span class="badge-adminlte badge-info">{{ $u->produk->count() }} menu</span>
                       </td>
-                      <td>
+                      <td style="text-align: center;">
                         @if($u->pemilik && $u->pemilik->is_active)
-                          <span class="badge-status-pill badge-completed">Aktif</span>
+                          <span class="badge-adminlte badge-success">Aktif</span>
                         @else
-                          <span class="badge-status-pill badge-pending">Nonaktif</span>
+                          <span class="badge-adminlte badge-secondary">Nonaktif</span>
                         @endif
                       </td>
-                      <td>
+                      <td style="text-align: center;">
                         @if($u->pemilik)
-                          <form action="{{ route('admin.users.toggle', $u->id_user) }}" method="POST" style="display:inline;">
+                          <form action="{{ route('admin.users.toggle', $u->id_user) }}" method="POST" style="display:inline;" onsubmit="return confirm('Ubah status akun ini?')">
                             @csrf
-                            <button type="submit" class="btn-primary-action" style="padding: 6px 12px; font-size: 0.78rem; background: {{ $u->pemilik->is_active ? '#DC2626' : '#059669' }};">
-                              <i class='bx bx-power-off'></i> {{ $u->pemilik->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
+                            <button type="submit" class="btn-action-sm {{ $u->pemilik->is_active ? 'btn-action-danger' : 'btn-action-success' }}">
+                              <i class='bx bx-power-off'></i>
+                              <span>{{ $u->pemilik->is_active ? 'Nonaktifkan' : 'Aktifkan' }}</span>
                             </button>
                           </form>
                         @endif
@@ -355,7 +572,7 @@
                     </tr>
                   @empty
                     <tr>
-                      <td colspan="6" style="text-align: center; color: #9CA3AF; padding: 24px;">
+                      <td colspan="7" style="text-align: center; color: #6C757D; padding: 24px;">
                         Belum ada UMKM terdaftar dalam sistem.
                       </td>
                     </tr>
@@ -367,16 +584,16 @@
         </section>
 
         <!-- ====================================================================
-             4. TAB: KELOLA KATEGORI PRODUK (2.2.8 / UC-10 / F016)
+             4. TAB: KELOLA KATEGORI PRODUK (UC-10 / F016)
              ==================================================================== -->
         <section class="tab-view" id="tab-categories">
           <div class="panel-card">
             <div class="panel-card-header">
-              <div>
-                <h3 class="panel-card-title"><i class='bx bx-category'></i> Kelola Kategori Produk Street Food</h3>
-                <p class="panel-card-desc">Pengelompokan menu untuk mempermudah pencarian dan penyaringan jajanan mahasiswa.</p>
-              </div>
-              <button type="button" class="btn-primary-action" id="btnOpenAddCategoryModal">
+              <h3 class="panel-card-title">
+                <i class='bx bx-category'></i>
+                <span>Kelola Kategori Produk Street Food Kampus</span>
+              </h3>
+              <button type="button" class="btn-adminlte-green" id="btnOpenAddCategoryModal">
                 <i class='bx bx-plus'></i>
                 <span>Tambah Kategori Baru</span>
               </button>
@@ -386,26 +603,26 @@
               <table class="panel-table">
                 <thead>
                   <tr>
-                    <th>ID</th>
-                    <th>Nama Kategori</th>
-                    <th>Jumlah Menu Terdaftar</th>
-                    <th>Aksi</th>
+                    <th style="width: 60px; text-align: center;">ID</th>
+                    <th>Nama Klasifikasi Kategori Menu</th>
+                    <th style="text-align: center; width: 180px;">Jumlah Menu Terdaftar</th>
+                    <th style="text-align: center; width: 120px;">Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="categoriesTableBody">
                   @forelse($kategoriList as $cat)
                     <tr>
-                      <td>#{{ $cat->id_kategori }}</td>
+                      <td style="text-align: center; font-weight: 700; color: #6C757D;">#{{ $cat->id_kategori }}</td>
                       <td>
                         <strong>{{ $cat->nama_kategori }}</strong>
                       </td>
-                      <td>
-                        <span style="font-weight: 700; color: #2E8B3D;">{{ $cat->produk_count }} menu</span>
+                      <td style="text-align: center;">
+                        <span class="badge-adminlte badge-info">{{ $cat->produk_count }} menu</span>
                       </td>
-                      <td>
+                      <td style="text-align: center;">
                         <form action="{{ route('admin.categories.delete', $cat->id_kategori) }}" method="POST" onsubmit="return confirm('Hapus kategori ini?')" style="display:inline;">
                           @csrf
-                          <button type="submit" class="btn-primary-action" style="padding: 6px 12px; font-size: 0.78rem; background: #DC2626;">
+                          <button type="submit" class="btn-action-sm btn-action-danger">
                             <i class='bx bx-trash'></i> Hapus
                           </button>
                         </form>
@@ -413,8 +630,8 @@
                     </tr>
                   @empty
                     <tr>
-                      <td colspan="4" style="text-align: center; color: #9CA3AF; padding: 24px;">
-                        Belum ada data kategori menu.
+                      <td colspan="4" style="text-align: center; color: #6C757D; padding: 24px;">
+                        Belum ada data kategori menu. Klik tombol di atas untuk menambahkan.
                       </td>
                     </tr>
                   @endforelse
@@ -428,61 +645,71 @@
              5. TAB: MODERASI ULASAN (UC-11 / F017)
              ==================================================================== -->
         <section class="tab-view" id="tab-moderation">
+          <div class="filter-tab-pills">
+            <button type="button" class="filter-tab-pill active">
+              <span>Semua Ulasan</span>
+              <span class="pill-counter">{{ $ulasanList->count() }}</span>
+            </button>
+          </div>
+
           <div class="panel-card">
             <div class="panel-card-header">
-              <div>
-                <h3 class="panel-card-title"><i class='bx bx-shield-quarter'></i> Moderasi Ulasan & Testimoni</h3>
-                <p class="panel-card-desc">Sembunyikan atau pulihkan ulasan publik yang melanggar kesopanan atau etika platform.</p>
-              </div>
+              <h3 class="panel-card-title">
+                <i class='bx bx-shield-quarter'></i>
+                <span>Moderasi & Pengawasan Ulasan Pembeli</span>
+              </h3>
+              <span style="font-size: 0.8rem; color: #6C757D;">Sembunyikan atau pulihkan ulasan publik yang melanggar etika platform</span>
             </div>
 
             <div class="table-responsive">
               <table class="panel-table">
                 <thead>
                   <tr>
-                    <th>Pelapor / Pembeli</th>
-                    <th>Lapak Tujuan</th>
-                    <th>Rating</th>
-                    <th>Isi Ulasan</th>
-                    <th>Status Moderasi</th>
-                    <th>Tindakan Admin</th>
+                    <th style="width: 45px; text-align: center;">#</th>
+                    <th>Nama Pembeli</th>
+                    <th>Lapak UMKM Tujuan</th>
+                    <th style="width: 110px; text-align: center;">Rating</th>
+                    <th>Isi Ulasan Mahasiswa</th>
+                    <th style="width: 130px; text-align: center;">Status Moderasi</th>
+                    <th style="width: 140px; text-align: center;">Tindakan Admin</th>
                   </tr>
                 </thead>
                 <tbody id="moderationTableBody">
-                  @forelse($ulasanList as $u)
+                  @forelse($ulasanList as $idx => $u)
                     <tr>
+                      <td style="text-align: center; font-weight: 600; color: #6C757D;">{{ $idx + 1 }}</td>
                       <td>
                         <strong>{{ $u->pengunjung ? $u->pengunjung->nama : 'Pembeli' }}</strong>
                       </td>
                       <td>
                         <strong>{{ $u->umkm ? $u->umkm->nama_usaha : '-' }}</strong>
                       </td>
-                      <td>
+                      <td style="text-align: center;">
                         <span style="color: #F59E0B; font-weight: 700;">★ {{ $u->rating }}/5</span>
                       </td>
                       <td>
-                        <p style="margin: 0; font-size: 0.85rem; color: #374151;">{{ $u->komentar }}</p>
+                        <p style="margin: 0; font-size: 0.84rem; color: #212529;">{{ $u->komentar }}</p>
                       </td>
-                      <td>
+                      <td style="text-align: center;">
                         @if($u->disembunyikan)
-                          <span class="badge-status-pill badge-pending">Disembunyikan</span>
+                          <span class="badge-adminlte badge-warning">Disembunyikan</span>
                         @else
-                          <span class="badge-status-pill badge-completed">Tampil Publik</span>
+                          <span class="badge-adminlte badge-success">Tampil Publik</span>
                         @endif
                       </td>
-                      <td>
+                      <td style="text-align: center;">
                         <form action="{{ route('admin.reviews.toggle_hide', $u->id_ulasan) }}" method="POST" style="display:inline;">
                           @csrf
-                          <button type="submit" class="btn-primary-action" style="padding: 6px 12px; font-size: 0.78rem; background: {{ $u->disembunyikan ? '#059669' : '#DC2626' }};">
+                          <button type="submit" class="btn-action-sm {{ $u->disembunyikan ? 'btn-action-success' : 'btn-action-danger' }}">
                             <i class='bx bx-{{ $u->disembunyikan ? "show" : "hide" }}'></i>
-                            {{ $u->disembunyikan ? 'Tampilkan Kembali' : 'Sembunyikan' }}
+                            <span>{{ $u->disembunyikan ? 'Pulihkan' : 'Sembunyikan' }}</span>
                           </button>
                         </form>
                       </td>
                     </tr>
                   @empty
                     <tr>
-                      <td colspan="6" style="text-align: center; color: #9CA3AF; padding: 24px;">
+                      <td colspan="7" style="text-align: center; color: #6C757D; padding: 24px;">
                         Belum ada ulasan pembeli dalam sistem.
                       </td>
                     </tr>
@@ -492,6 +719,7 @@
             </div>
           </div>
         </section>
+
       </div>
     </main>
   </div>
@@ -503,12 +731,10 @@
     <div class="review-modal-dialog">
       <div class="review-modal-header">
         <div class="review-header-title-box">
-          <div class="review-header-icon" style="background: var(--color-primary-light); color: var(--color-primary);">
-            <i class='bx bx-category'></i>
-          </div>
+          <i class='bx bx-category' style="font-size: 1.4rem; color: #2E8B3D;"></i>
           <div>
             <h3 class="review-modal-title">Tambah Kategori Menu Baru</h3>
-            <p class="review-modal-sub">Definisikan klasifikasi street food</p>
+            <p class="review-modal-sub">Definisikan klasifikasi jajanan street food</p>
           </div>
         </div>
         <button type="button" class="btn-review-close" id="btnCloseCatModal">
@@ -525,7 +751,7 @@
 
         <div class="review-modal-actions">
           <button type="button" class="btn-review-skip" id="btnCancelCatModal">Batal</button>
-          <button type="submit" class="btn-primary-action">
+          <button type="submit" class="btn-adminlte-green">
             <i class='bx bx-save'></i>
             <span>Simpan Kategori</span>
           </button>
@@ -533,9 +759,6 @@
       </form>
     </div>
   </div>
-
-  <!-- Toast Container -->
-  <div id="toastContainer" class="toast-container"></div>
 
   <!-- Vanilla JavaScript -->
   <script src="{{ asset('js/admin.js') }}?v={{ filemtime(public_path('js/admin.js')) }}"></script>

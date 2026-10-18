@@ -168,6 +168,22 @@ class SellerController extends Controller
     }
 
     /**
+     * Kosongkan ketersediaan atau aktifkan ketersediaan produk (UC-07 Skenario Alternatif).
+     */
+    public function toggleProductAvailability(int $id)
+    {
+        $umkm = $this->getSellerUmkm();
+        $produk = Produk::where('id_produk', $id)->where('id_umkm', $umkm->id_umkm)->firstOrFail();
+
+        $produk->update([
+            'tersedia' => !$produk->tersedia,
+        ]);
+
+        $statusText = $produk->tersedia ? 'Tersedia' : 'Kosong / Habis';
+        return back()->with('success', "Status ketersediaan \"{$produk->nama_produk}\" berhasil diubah menjadi: {$statusText}");
+    }
+
+    /**
      * Update status pesanan: "diproses" -> "selesai" (UC-07, F007).
      * Memicu tombol "Beri Penilaian" pada chat pembeli.
      */

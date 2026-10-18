@@ -13,15 +13,14 @@ use Illuminate\Http\Request;
 class ChatController extends Controller
 {
     /**
-     * Dapatkan id pengunjung dari session atau gunakan default pengunjung aktif.
+     * Dapatkan id pengunjung dari session login.
      */
-    private function getPengunjungId(): int
+    private function getPengunjungId(): ?int
     {
         if (session()->has('user.id_user')) {
             return (int) session('user.id_user');
         }
-        $p = Pengguna::where('role', 'pengunjung')->first();
-        return $p ? $p->id_user : 1;
+        return null;
     }
 
     /**
@@ -30,6 +29,13 @@ class ChatController extends Controller
     public function getConversations()
     {
         $idPengunjung = $this->getPengunjungId();
+        if (!$idPengunjung) {
+            return response()->json([
+                'status' => 'unauthenticated',
+                'message' => 'Silakan masuk dengan akun Google terlebih dahulu.',
+                'data' => [],
+            ], 401);
+        }
 
         $umkms = Umkm::tampil()->get()->map(function ($u) use ($idPengunjung) {
             $lastPesanan = Pesanan::where('id_pengunjung', $idPengunjung)
@@ -63,6 +69,12 @@ class ChatController extends Controller
     public function getMessages(int $idUmkm)
     {
         $idPengunjung = $this->getPengunjungId();
+        if (!$idPengunjung) {
+            return response()->json([
+                'status' => 'unauthenticated',
+                'message' => 'Silakan masuk dengan akun Google terlebih dahulu.'
+            ], 401);
+        }
 
         $umkm = Umkm::findOrFail($idUmkm);
 
@@ -117,6 +129,13 @@ class ChatController extends Controller
         ]);
 
         $idPengunjung = $this->getPengunjungId();
+        if (!$idPengunjung) {
+            return response()->json([
+                'status' => 'unauthenticated',
+                'message' => 'Silakan masuk dengan akun Google terlebih dahulu untuk mengirim pesan ke penjual.'
+            ], 401);
+        }
+
         $idUmkm = (int) $request->input('id_umkm');
         $isiPesan = trim((string) $request->input('isi_pesan'));
 
@@ -172,9 +191,23 @@ class ChatController extends Controller
         ]);
 
         $idPengunjung = $this->getPengunjungId();
+        if (!$idPengunjung) {
+            return response()->json([
+                'status' => 'unauthenticated',
+                'message' => 'Silakan masuk dengan akun Google terlebih dahulu untuk memberikan ulasan.'
+            ], 401);
+        }
+
         $pesanan = Pesanan::where('id_pesanan', $request->input('id_pesanan'))
             ->where('id_pengunjung', $idPengunjung)
-            ->firstOrFail();
+            ->first();
+
+        if (!$pesanan) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Data pesanan tidak ditemukan.',
+            ], 404);
+        }
 
         if ($pesanan->status !== 'selesai') {
             return response()->json([
