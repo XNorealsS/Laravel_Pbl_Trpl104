@@ -8,8 +8,8 @@
 ## Project Identity
 
 - **App name:** JajanRia
-- **Type:** Laravel 11 web app -- etalase & direktori kuliner UMKM kampus
-- **Tagline:** Non-transaksional. Showcase & discovery only. No checkout, no payment.
+- **Type:** Laravel 11 web app -- E-Commerce Kuliner Kampus Semi-Otomatis (Direct-to-Seller Order with Manual Transfer Verification)
+- **Tagline:** Jajanan Enak, Dekat, Mudah. Pesan langsung, transfer mandiri, verifikasi bukti bayar admin, ambil di lapak, & ulasan bintang.
 - **PHP:** ^8.2 | **Laravel:** ^11.0 | **Frontend:** Vite + Vanilla JS + AdminLTE
 - **Database:** MySQL (session-based, no queues configured)
 
@@ -39,15 +39,15 @@ No Laravel Sanctum, no Breeze, no Jetstream -- custom `AuthController`.
 
 ## Core Models & Tables
 
-| Model | Table | Key relations |
-|-------|-------|---------------|
-| User | users | hasMany Pesanan, hasMany Ulasan |
-| Umkm | umkms | belongsTo User (seller), hasMany Produk, hasMany Pesanan |
-| Produk | produks | belongsTo Umkm |
-| Pesanan | pesanans | belongsTo User, belongsTo Umkm -- status: diproses / selesai |
-| Pesan | pesans | direct chat messages between User and Umkm |
-| Ulasan | ulasans | belongsTo User, belongsTo Umkm -- triggered only when Pesanan status = selesai |
-| Kategori | kategoris | many-to-many with Umkm |
+| Model | Table | Key relations & Schema Notes |
+|-------|-------|------------------------------|
+| [User](file:///e:/SMST1_POLIBATAM/Laravel_Pbl_Trpl104/app/Models/User.php) | `t_user` | hasOne Umkm (seller), hasMany Pesanan, hasMany Pesan, hasMany Ulasan |
+| [Umkm](file:///e:/SMST1_POLIBATAM/Laravel_Pbl_Trpl104/app/Models/Umkm.php) | `t_umkm` | belongsTo User (seller), hasMany Produk, hasMany Pesanan, hasMany Ulasan |
+| [Produk](file:///e:/SMST1_POLIBATAM/Laravel_Pbl_Trpl104/app/Models/Produk.php) | `t_produk` | belongsTo Umkm, belongsTo Kategori -- toggle stok: `tersedia` (UC-07) |
+| [Kategori](file:///e:/SMST1_POLIBATAM/Laravel_Pbl_Trpl104/app/Models/Kategori.php) | `t_kategori` | hasMany Produk |
+| [Pesanan](file:///e:/SMST1_POLIBATAM/Laravel_Pbl_Trpl104/app/Models/Pesanan.php) | `t_pesanan` | belongsTo User, belongsTo Umkm, hasOne Ulasan. **New Columns:** `items_detail` (JSON), `total_harga`, `bukti_pembayaran`, `status_pembayaran`, `catatan_admin`, `waktu_pembayaran` |
+| [Pesan](file:///e:/SMST1_POLIBATAM/Laravel_Pbl_Trpl104/app/Models/Pesan.php) | `t_pesan` | belongsTo User, belongsTo Umkm (`id_umkm` nullable for Admin CS). **New Columns:** `tipe_pesan`, `lampiran_url` |
+| [Ulasan](file:///e:/SMST1_POLIBATAM/Laravel_Pbl_Trpl104/app/Models/Ulasan.php) | `t_ulasan` | belongsTo User, belongsTo Umkm, belongsTo Produk (optional), belongsTo Pesanan (`id_pesanan` UNIQUE, Review Trigger) |
 
 ---
 
@@ -68,6 +68,10 @@ No Laravel Sanctum, no Breeze, no Jetstream -- custom `AuthController`.
 | `POST /seller/orders/{id}/status` | SellerController@updateOrderStatus | diproses / selesai |
 | `GET /admin` | AdminController@index | Admin panel |
 | `POST /admin/sellers/{id}/verify` | AdminController@verifySeller | Approve new sellers |
+| `POST /admin/payments/{id}/verify` | AdminController@verifyPayment | Setujui (Lunas) / Tolak bukti pembayaran |
+| `POST /api/chat/checkout` | ChatController@checkoutCart | Checkout keranjang belanja ke chat penjual |
+| `POST /api/chat/upload-bukti` | ChatController@uploadBuktiPembayaran | Upload bukti transfer oleh pengunjung |
+| `GET /api/chat/history` | ChatController@getOrderHistory | Riwayat seluruh pesanan & bukti pembayaran pelanggan |
 
 ---
 
@@ -82,17 +86,18 @@ No Laravel Sanctum, no Breeze, no Jetstream -- custom `AuthController`.
 | Status pesanan (diproses / selesai) | Done |
 | Review trigger (button after selesai) | Done |
 | Admin panel (verify seller, categories, reviews) | Done |
+| Keranjang Belanja (+ / -) & Chat Checkout | Done |
+| Upload Bukti Pembayaran (Pengunjung) | Done |
+| Verifikasi Bukti Pembayaran (Admin Panel) | Done |
 
 ---
 
 ## Absolute Restrictions (NEVER BUILD THESE)
 
-- No payment gateway, e-wallet, or bank transfer
-- No shopping cart, checkout form, or order quantity input
-- No total price calculation or invoice
-- No stock/quantity management
-- No live GPS tracking or WhatsApp redirect
-- No revenue/financial reports
+- No automatic payment gateway / 3rd party API (Midtrans, Stripe, Xendit, e-wallet auto deduction)
+- No complex courier / live GPS tracking / external WhatsApp redirect
+- No stock/inventory auto-reduction or tax calculations
+- No automated revenue/financial balance reports
 
 See `AGENTS.md` for full out-of-scope list.
 

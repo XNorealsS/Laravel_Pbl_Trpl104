@@ -54,6 +54,11 @@ function switchAdminTab(tabId) {
       subtitle: 'Periksa keabsahan dan data lapak UMKM sebelum dipublikasikan.',
       breadcrumb: 'Verifikasi Seller'
     },
+    'tab-payments': {
+      title: 'Verifikasi Pembayaran Pesanan',
+      subtitle: 'Audit bukti transfer atau struk pembayaran dari pelanggan sebelum pesanan diselesaikan.',
+      breadcrumb: 'Verifikasi Pembayaran'
+    },
     'tab-umkm': {
       title: 'Kelola Mitra UMKM & Pengguna (UC-10)',
       subtitle: 'Kelola akses operasional lapak pedagang dan integritas akun.',
@@ -68,6 +73,16 @@ function switchAdminTab(tabId) {
       title: 'Moderasi Ulasan & Testimoni (UC-11)',
       subtitle: 'Sembunyikan atau pulihkan komentar publik demi menjaga etika platform.',
       breadcrumb: 'Moderasi Ulasan'
+    },
+    'tab-support': {
+      title: 'Customer Support & Pusat Bantuan',
+      subtitle: 'Respon cepat keluhan, pertanyaan, dan konfirmasi bukti bayar pengguna.',
+      breadcrumb: 'Customer Support'
+    },
+    'tab-users': {
+      title: 'Manajemen User & Activity Log (UC-09, UC-11)',
+      subtitle: 'Kelola seluruh akun pengguna serta pantau ringkasan log aktivitas sistem.',
+      breadcrumb: 'Manajemen User'
     }
   };
 
@@ -154,6 +169,13 @@ function initAdminFilters() {
       if (e.key === 'Enter') filterUmkmTable();
     });
   }
+
+  const usersInput = document.getElementById('usersSearchInput');
+  if (usersInput) {
+    usersInput.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') filterUsersTable();
+    });
+  }
 }
 
 window.filterMonitoringTable = function() {
@@ -209,3 +231,53 @@ window.filterUmkmTable = function() {
     row.style.display = (matchesQuery && matchesArea) ? '' : 'none';
   });
 };
+
+window.filterUsersTable = function() {
+  const q = (document.getElementById('usersSearchInput')?.value || '').toLowerCase().trim();
+  const role = (document.getElementById('usersRoleSelect')?.value || 'all').toLowerCase();
+  const status = (document.getElementById('usersStatusSelect')?.value || 'all').toLowerCase();
+  const loginType = (document.getElementById('usersLoginSelect')?.value || 'all').toLowerCase();
+  const rows = document.querySelectorAll('#usersTable tbody tr');
+
+  rows.forEach(row => {
+    const text = row.textContent.toLowerCase();
+    const rowRole = row.getAttribute('data-role') || '';
+    const rowStatus = row.getAttribute('data-status') || '';
+    const rowLogin = row.getAttribute('data-login') || '';
+
+    const matchesQuery = !q || text.includes(q);
+    const matchesRole = role === 'all' || rowRole === role;
+    const matchesStatus = status === 'all' || rowStatus === status;
+    const matchesLogin = loginType === 'all' || rowLogin === loginType;
+
+    row.style.display = (matchesQuery && matchesRole && matchesStatus && matchesLogin) ? '' : 'none';
+  });
+};
+
+window.resetUsersFilter = function() {
+  const input = document.getElementById('usersSearchInput');
+  const roleSelect = document.getElementById('usersRoleSelect');
+  const statusSelect = document.getElementById('usersStatusSelect');
+  const loginSelect = document.getElementById('usersLoginSelect');
+
+  if (input) input.value = '';
+  if (roleSelect) roleSelect.value = 'all';
+  if (statusSelect) statusSelect.value = 'all';
+  if (loginSelect) loginSelect.value = 'all';
+
+  document.querySelectorAll('.filter-user-pill').forEach(p => p.classList.remove('active'));
+  document.getElementById('pillUserAll')?.classList.add('active');
+
+  filterUsersTable();
+};
+
+window.filterUserByPill = function(roleVal, pillEl) {
+  document.querySelectorAll('.filter-user-pill').forEach(p => p.classList.remove('active'));
+  if (pillEl) pillEl.classList.add('active');
+
+  const roleSelect = document.getElementById('usersRoleSelect');
+  if (roleSelect) roleSelect.value = roleVal;
+
+  filterUsersTable();
+};
+

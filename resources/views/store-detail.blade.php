@@ -88,22 +88,22 @@
 
       {{-- Action & Quick Info Bar --}}
       <div class="store-actions-row">
-        <button type="button" class="btn-chat-primary" onclick="window.bukaChatToko({{ $umkm->id_umkm }})">
+        <button type="button" class="btn-chat-primary" onclick="window.bukaCustomerSupport()">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-          <span>Chat Penjual</span>
+          <span>Customer Support</span>
         </button>
         @if($umkm->kontak)
           <a href="tel:{{ preg_replace('/[^0-9+]/', '', $umkm->kontak) }}" class="btn-contact-chip" title="Hubungi Penjual: {{ $umkm->kontak }}">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            <span>{{ $umkm->kontak }}</span>
+            <span>Hubungi: {{ $umkm->kontak }}</span>
           </a>
         @endif
       </div>
 
-      {{-- Note Info Tip (Non-transaksional) --}}
+      {{-- Note Info Tip --}}
       <div class="store-note-tip">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2E8B3D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        <span>Pesan atau tanya menu langsung via chat internal. Tombol penilaian muncul otomatis di ruang chat setelah pesanan selesai.</span>
+        <span>Pilih jajanan favorit, lalu selesaikan pembayaran dan unggah bukti transfer secara langsung. Pantau status pesanan kapan saja di menu History Pesanan.</span>
       </div>
     </div>
   </section>
@@ -164,10 +164,17 @@
               </div>
 
               @if($p->tersedia)
-                <button type="button" class="btn-item-chat-order" onclick="window.bukaChatToko({{ $umkm->id_umkm }})" title="Pesan {{ $p->nama_produk }} via Chat">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                  <span>Chat</span>
-                </button>
+                <div class="cart-item-ctrl" data-id="{{ $p->id_produk }}" data-nama="{{ $p->nama_produk }}" data-harga="{{ $p->harga }}" data-umkm="{{ $umkm->id_umkm }}">
+                  <button type="button" class="btn-cart-add" id="btnAdd-{{ $p->id_produk }}" onclick="window.tambahKeKeranjang({{ $p->id_produk }}, '{{ addslashes($p->nama_produk) }}', {{ $p->harga }}, {{ $umkm->id_umkm }})">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>Tambah</span>
+                  </button>
+                  <div class="qty-stepper" id="stepper-{{ $p->id_produk }}" style="display: none;">
+                    <button type="button" class="btn-step-minus" onclick="window.ubahQtyItem({{ $p->id_produk }}, -1, {{ $umkm->id_umkm }})" aria-label="Kurangi porsi">−</button>
+                    <span class="qty-number" id="qtyVal-{{ $p->id_produk }}">1</span>
+                    <button type="button" class="btn-step-plus" onclick="window.ubahQtyItem({{ $p->id_produk }}, 1, {{ $umkm->id_umkm }})" aria-label="Tambah porsi">+</button>
+                  </div>
+                </div>
               @endif
             </div>
           </article>
@@ -219,36 +226,447 @@
     @endforelse
   </section>
 
+  {{-- Floating Bottom Cart Bar --}}
+  <div class="floating-store-cart" id="floatingStoreCart" style="display: none;">
+    <div class="cart-bar-content">
+      <div class="cart-bar-left">
+        <div class="cart-bar-badge" id="cartTotalQty">0 Menu Terpilih</div>
+        <div class="cart-bar-total" id="cartTotalPrice">Rp 0</div>
+      </div>
+      <div class="cart-bar-right">
+        <button type="button" class="btn-cart-checkout" id="btnCartCheckout" onclick="window.bukaModalCheckout({{ $umkm->id_umkm }})">
+          <span>Checkout & Pembayaran</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {{-- Modal Dedicated: Checkout & Upload Bukti Pembayaran (Mandiri tanpa Chat) --}}
+  <div class="checkout-modal-backdrop" id="checkoutModalBackdrop" style="display: none;" onclick="window.tutupModalCheckout(event)">
+    <div class="checkout-modal-card" onclick="event.stopPropagation()">
+      <div class="checkout-modal-header">
+        <div class="modal-header-info">
+          <h2 class="modal-title">Checkout & Pembayaran</h2>
+          <span class="modal-subtitle">{{ $umkm->nama_usaha }} • {{ $umkm->area }}</span>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="window.tutupModalCheckout()" aria-label="Tutup modal">&times;</button>
+      </div>
+
+      <div class="checkout-modal-body">
+        {{-- 1. Ringkasan Pesanan --}}
+        <div class="checkout-section-box">
+          <div class="checkout-section-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span>Ringkasan Menu Dipesan</span>
+          </div>
+          <div class="checkout-items-summary" id="checkoutItemsList">
+            <!-- Diisi dinamis oleh JavaScript -->
+          </div>
+          <div class="checkout-total-row">
+            <span>Total Pembayaran</span>
+            <strong class="checkout-total-val" id="checkoutModalTotal">Rp 0</strong>
+          </div>
+        </div>
+
+        {{-- 2. Info Rekening / Pembayaran Toko --}}
+        <div class="checkout-payment-info-box">
+          <div class="pay-info-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2E8B3D" stroke-width="2.2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            <strong>Informasi Pembayaran Lapak</strong>
+          </div>
+          <div class="pay-info-content">
+            <div class="pay-detail-row">
+              <span class="pay-label">Nama Lapak:</span>
+              <span class="pay-value">{{ $umkm->nama_usaha }}</span>
+            </div>
+            @if($umkm->kontak)
+              <div class="pay-detail-row">
+                <span class="pay-label">Kontak / No. Bayar:</span>
+                <span class="pay-value font-mono">{{ $umkm->kontak }}</span>
+              </div>
+            @endif
+            <div class="pay-instruction-note">
+              Silakan selesaikan pembayaran sebesar total di atas, lalu lampirkan foto struk/screenshot bukti transfer di bawah ini.
+            </div>
+          </div>
+        </div>
+
+        {{-- 3. Upload Bukti Pembayaran --}}
+        <div class="checkout-upload-box">
+          <div class="checkout-section-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span>Upload Bukti Pembayaran</span>
+          </div>
+
+          <div class="dropzone-upload-area" id="checkoutDropzone" onclick="document.getElementById('checkoutBuktiFoto').click()">
+            <input type="file" id="checkoutBuktiFoto" accept="image/jpeg,image/png,image/jpg" style="display: none;" onchange="window.previewBuktiCheckout(event)">
+            <div id="dropzonePlaceholder">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2E8B3D" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <div class="dropzone-text">
+                <strong>Klik untuk memilih foto bukti transfer</strong> atau seret ke sini
+              </div>
+              <div class="dropzone-hint">Format JPG, PNG (Maksimal 3 MB)</div>
+            </div>
+            <div id="dropzonePreviewWrap" style="display: none;">
+              <img id="checkoutPreviewImg" src="" alt="Pratinjau Bukti Bayar" class="checkout-preview-thumb">
+              <button type="button" class="btn-remove-preview" onclick="window.hapusPreviewBukti(event)" title="Hapus foto">&times;</button>
+            </div>
+          </div>
+          <div class="dropzone-optional-note">
+            *Bukti transfer juga dapat diunggah nanti melalui menu <strong>History Pesanan</strong>.
+          </div>
+        </div>
+
+        {{-- 4. Catatan Pesanan (Opsional) --}}
+        <div class="checkout-notes-box">
+          <label for="checkoutCatatan" class="checkout-notes-label">
+            Catatan Pesanan (opsional):
+          </label>
+          <textarea id="checkoutCatatan" class="checkout-notes-input" rows="2" placeholder="Contoh: pedas sedang, kuah dipisah, no meja 4..."></textarea>
+        </div>
+      </div>
+
+      <div class="checkout-modal-footer">
+        <button type="button" class="btn-checkout-cancel" onclick="window.tutupModalCheckout()">Batal</button>
+        <button type="button" class="btn-checkout-submit" id="btnSubmitDedicatedCheckout" onclick="window.kirimDedicatedCheckout({{ $umkm->id_umkm }})">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg>
+          <span>Konfirmasi & Kirim Pesanan</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {{-- Modal Konfirmasi Sukses Pesanan --}}
+  <div class="checkout-modal-backdrop" id="checkoutSuccessBackdrop" style="display: none;">
+    <div class="checkout-modal-card success-card" onclick="event.stopPropagation()">
+      <div class="success-icon-wrap">
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#2E8B3D" stroke-width="2.6"><circle cx="12" cy="12" r="10"/><path d="M8 12l2.5 2.5L16 9"/></svg>
+      </div>
+      <h2 class="success-title">Pesanan Berhasil Dibuat!</h2>
+      <p class="success-desc">
+        Pesanan Anda telah dicatat ke sistem. Bukti pembayaran akan diverifikasi oleh Admin. Anda dapat memantau status pesanan kapan saja.
+      </p>
+      <div class="success-actions-row">
+        <button type="button" class="btn-success-history" onclick="window.tutupSuccessBukaHistory()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span>Buka History Pesanan</span>
+        </button>
+        <button type="button" class="btn-success-close" onclick="window.tutupModalSuccess()">
+          Selesai
+        </button>
+      </div>
+    </div>
+  </div>
+
 </main>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const navLinks = document.querySelectorAll('.cat-chip-btn');
-    const sections = document.querySelectorAll('.store-menu-group, #ulasan');
+  (function() {
+    const umkmId = {{ $umkm->id_umkm }};
+    const cartKey = 'jajanria_cart_' + umkmId;
 
-    if (!('IntersectionObserver' in window) || sections.length === 0) return;
+    function getCart() {
+      try {
+        const data = localStorage.getItem(cartKey);
+        return data ? JSON.parse(data) : { items: {} };
+      } catch (e) {
+        return { items: {} };
+      }
+    }
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const id = entry.target.id;
-          navLinks.forEach(link => {
-            if (link.getAttribute('data-target') === id) {
-              link.classList.add('active');
-              link.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-            } else {
-              link.classList.remove('active');
-            }
-          });
+    function saveCart(cart) {
+      try {
+        localStorage.setItem(cartKey, JSON.stringify(cart));
+      } catch (e) {}
+    }
+
+    function formatRupiah(num) {
+      return 'Rp ' + Number(num).toLocaleString('id-ID');
+    }
+
+    function updateCartUI() {
+      const cart = getCart();
+      const items = cart.items || {};
+      let totalQty = 0;
+      let totalPrice = 0;
+
+      // Update semua tombol / stepper di halaman
+      document.querySelectorAll('.cart-item-ctrl[data-umkm="' + umkmId + '"]').forEach(ctrl => {
+        const prodId = ctrl.getAttribute('data-id');
+        const btnAdd = document.getElementById('btnAdd-' + prodId);
+        const stepper = document.getElementById('stepper-' + prodId);
+        const qtyVal = document.getElementById('qtyVal-' + prodId);
+
+        const current = items[prodId];
+        if (current && current.qty > 0) {
+          if (btnAdd) btnAdd.style.display = 'none';
+          if (stepper) stepper.style.display = 'inline-flex';
+          if (qtyVal) qtyVal.textContent = current.qty;
+        } else {
+          if (btnAdd) btnAdd.style.display = 'inline-flex';
+          if (stepper) stepper.style.display = 'none';
+          if (qtyVal) qtyVal.textContent = '0';
         }
       });
-    }, {
-      rootMargin: '-80px 0px -60% 0px',
-      threshold: 0
-    });
 
-    sections.forEach(sec => observer.observe(sec));
-  });
+      // Hitung total akumulasi
+      Object.values(items).forEach(item => {
+        totalQty += item.qty;
+        totalPrice += (item.qty * item.harga);
+      });
+
+      const floatBar = document.getElementById('floatingStoreCart');
+      const badge = document.getElementById('cartTotalQty');
+      const totalDisplay = document.getElementById('cartTotalPrice');
+
+      if (floatBar) {
+        if (totalQty > 0) {
+          floatBar.style.display = 'block';
+          if (badge) badge.textContent = totalQty + ' Menu Terpilih';
+          if (totalDisplay) totalDisplay.textContent = formatRupiah(totalPrice);
+        } else {
+          floatBar.style.display = 'none';
+        }
+      }
+    }
+
+    window.tambahKeKeranjang = function(id, nama, harga, storeId) {
+      if (storeId !== umkmId) return;
+      const cart = getCart();
+      if (!cart.items) cart.items = {};
+
+      if (!cart.items[id]) {
+        cart.items[id] = { id_produk: id, nama_produk: nama, harga: harga, qty: 1 };
+      } else {
+        cart.items[id].qty += 1;
+      }
+      saveCart(cart);
+      updateCartUI();
+    };
+
+    window.ubahQtyItem = function(id, delta, storeId) {
+      if (storeId !== umkmId) return;
+      const cart = getCart();
+      if (!cart.items || !cart.items[id]) return;
+
+      cart.items[id].qty += delta;
+      if (cart.items[id].qty <= 0) {
+        delete cart.items[id];
+      }
+      saveCart(cart);
+      updateCartUI();
+    };
+
+    window.bukaModalCheckout = function(storeId) {
+      if (storeId !== umkmId) return;
+      const cart = getCart();
+      const itemsList = Object.values(cart.items || {});
+      if (itemsList.length === 0) return;
+
+      const isLoggedIn = {{ session('user') ? 'true' : 'false' }};
+      if (!isLoggedIn) {
+        if (typeof window.bukaCustomerSupport === 'function') {
+          window.bukaCustomerSupport();
+        } else if (typeof window.bukaChatToko === 'function') {
+          window.bukaChatToko(storeId);
+        }
+        return;
+      }
+
+      // Render item ringkasan
+      const itemsContainer = document.getElementById('checkoutItemsList');
+      const totalDisplay = document.getElementById('checkoutModal  Total');
+      let totalHarga = 0;
+
+      if (itemsContainer) {
+        itemsContainer.innerHTML = '';
+        itemsList.forEach(item => {
+          const subtotal = item.qty * item.harga;
+          totalHarga += subtotal;
+
+          const row = document.createElement('div');
+          row.className = 'checkout-item-line';
+          row.innerHTML = `
+            <div class="item-line-left">
+              <span class="item-line-name">${item.nama_produk}</span>
+              <span class="item-line-qty">x ${item.qty}</span>
+            </div>
+            <span class="item-line-price">${formatRupiah(subtotal)}</span>
+          `;
+          itemsContainer.appendChild(row);
+        });
+      }
+
+      if (totalDisplay) {
+        totalDisplay.textContent = formatRupiah(totalHarga);
+      }
+
+      // Reset file input & preview
+      window.hapusPreviewBukti();
+      const catatanEl = document.getElementById('checkoutCatatan');
+      if (catatanEl) catatanEl.value = '';
+
+      const modal = document.getElementById('checkoutModalBackdrop');
+      if (modal) modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    };
+
+    window.tutupModalCheckout = function(e) {
+      if (e && e.target && e.target.id !== 'checkoutModalBackdrop' && !e.target.classList.contains('btn-close-modal') && !e.target.classList.contains('btn-checkout-cancel')) {
+        return;
+      }
+      const modal = document.getElementById('checkoutModalBackdrop');
+      if (modal) modal.style.display = 'none';
+      document.body.style.overflow = '';
+    };
+
+    window.previewBuktiCheckout = function(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      if (file.size > 3 * 1024 * 1024) {
+        alert('Ukuran foto bukti transfer maksimal 3 MB.');
+        e.target.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const previewImg = document.getElementById('checkoutPreviewImg');
+        const previewWrap = document.getElementById('dropzonePreviewWrap');
+        const placeholder = document.getElementById('dropzonePlaceholder');
+        if (previewImg) previewImg.src = evt.target.result;
+        if (previewWrap) previewWrap.style.display = 'flex';
+        if (placeholder) placeholder.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    };
+
+    window.hapusPreviewBukti = function(e) {
+      if (e) e.stopPropagation();
+      const fileInput = document.getElementById('checkoutBuktiFoto');
+      const previewImg = document.getElementById('checkoutPreviewImg');
+      const previewWrap = document.getElementById('dropzonePreviewWrap');
+      const placeholder = document.getElementById('dropzonePlaceholder');
+
+      if (fileInput) fileInput.value = '';
+      if (previewImg) previewImg.src = '';
+      if (previewWrap) previewWrap.style.display = 'none';
+      if (placeholder) placeholder.style.display = 'flex';
+    };
+
+    window.kirimDedicatedCheckout = function(storeId) {
+      const cart = getCart();
+      const itemsList = Object.values(cart.items || {});
+      if (itemsList.length === 0) return;
+
+      const submitBtn = document.getElementById('btnSubmitDedicatedCheckout');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>Mengirim Pesanan...</span>';
+      }
+
+      const formData = new FormData();
+      formData.append('id_umkm', storeId);
+      formData.append('items', JSON.stringify(itemsList));
+
+      const catatan = document.getElementById('checkoutCatatan');
+      if (catatan && catatan.value.trim() !== '') {
+        formData.append('catatan', catatan.value.trim());
+      }
+
+      const fileInput = document.getElementById('checkoutBuktiFoto');
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        formData.append('bukti_foto', fileInput.files[0]);
+      }
+
+      fetch("{{ route('api.orders.checkout') }}", {
+        method: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': '{{ csrf_token() }}',
+          'Accept': 'application/json',
+        },
+        body: formData
+      })
+      .then(r => r.json())
+      .then(res => {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><span>Konfirmasi & Kirim Pesanan</span>';
+        }
+
+        if (res.status === 'success') {
+          // Bersihkan keranjang lokal untuk lapak ini
+          localStorage.removeItem(cartKey);
+          updateCartUI();
+
+          // Tutup modal checkout
+          const checkoutModal = document.getElementById('checkoutModalBackdrop');
+          if (checkoutModal) checkoutModal.style.display = 'none';
+
+          // Tampilkan modal sukses
+          const successModal = document.getElementById('checkoutSuccessBackdrop');
+          if (successModal) successModal.style.display = 'flex';
+        } else {
+          alert(res.message || 'Gagal memproses pesanan.');
+        }
+      })
+      .catch(() => {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="20 6 9 17 4 12"/></svg><span>Konfirmasi & Kirim Pesanan</span>';
+        }
+        alert('Terjadi kendala koneksi saat mengirim pesanan.');
+      });
+    };
+
+    window.tutupSuccessBukaHistory = function() {
+      const successModal = document.getElementById('checkoutSuccessBackdrop');
+      if (successModal) successModal.style.display = 'none';
+      document.body.style.overflow = '';
+      if (typeof window.bukaHistoryPesanan === 'function') {
+        window.bukaHistoryPesanan();
+      }
+    };
+
+    window.tutupModalSuccess = function() {
+      const successModal = document.getElementById('checkoutSuccessBackdrop');
+      if (successModal) successModal.style.display = 'none';
+      document.body.style.overflow = '';
+    };
+
+    // Inisialisasi tampilan keranjang saat halaman siap
+    document.addEventListener('DOMContentLoaded', function () {
+      updateCartUI();
+
+      const navLinks = document.querySelectorAll('.cat-chip-btn');
+      const sections = document.querySelectorAll('.store-menu-group, #ulasan');
+
+      if (!('IntersectionObserver' in window) || sections.length === 0) return;
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            navLinks.forEach(link => {
+              if (link.getAttribute('data-target') === id) {
+                link.classList.add('active');
+                link.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+              } else {
+                link.classList.remove('active');
+              }
+            });
+          }
+        });
+      }, {
+        rootMargin: '-80px 0px -60% 0px',
+        threshold: 0
+      });
+
+      sections.forEach(sec => observer.observe(sec));
+    });
+  })();
 </script>
 @endsection
 

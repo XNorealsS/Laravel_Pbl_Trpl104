@@ -1411,3 +1411,97 @@ body.panel-body {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================================
+   Manajemen User & Activity Log Summary (Bab 2.2.9, UC-09, UC-11)
+   ========================================================================== */
+.admin-user-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1150px) {
+  .admin-user-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.activity-log-card {
+  background: #FFFFFF;
+  border: 1px solid var(--admin-border);
+  border-radius: 4px;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.125), 0 1px 3px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 80px;
+}
+
+.activity-log-timeline {
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px;
+  gap: 12px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.activity-log-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  position: relative;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed #E9ECEF;
+}
+
+.activity-log-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.activity-log-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.05rem;
+  flex-shrink: 0;
+  background: #E8F5E9;
+  color: var(--admin-green);
+}
+
+.activity-log-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.activity-log-title {
+  font-size: 0.81rem;
+  font-weight: 700;
+  color: #212529;
+  margin: 0 0 2px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.activity-log-desc {
+  font-size: 0.75rem;
+  color: #495057;
+  margin: 0 0 3px;
+  word-break: break-word;
+  line-height: 1.35;
+}
+
+.activity-log-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.7rem;
+  color: #6C757D;
+}
+

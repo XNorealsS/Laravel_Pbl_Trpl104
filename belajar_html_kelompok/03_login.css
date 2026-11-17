@@ -1,0 +1,322 @@
+/**
+ * ============================================================================
+ * JAJANRIA - CSS HALAMAN 03: LOGIN PENGGUNA (SESUAI auth/login.blade.php)
+ * PBL TRPL-104 Politeknik Negeri Batam
+ * Desain: Split Screen, Sisi Kiri Visual Hijau #2E8B3D, Sisi Kanan Form Login
+ * ============================================================================
+ */
+
+:root {
+  --primary-green: #2E8B3D;
+  --primary-dark: #246F31;
+  --primary-light: #E8F5E9;
+  --text-dark: #1F2937;
+  --text-muted: #6B7280;
+  --border-color: #E5E7EB;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body.auth-body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: var(--text-dark);
+  background-color: #FFFFFF;
+  min-height: 100vh;
+}
+
+/* Split Screen Container */
+.auth-wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* 1. SISI KIRI: VISUAL BRANDING */
+.auth-visual-side {
+  flex: 1;
+  background: linear-gradient(135deg, rgba(30, 102, 41, 0.9) 0%, rgba(46, 139, 61, 0.95) 100%),
+              url('img/bg.png') center/cover no-repeat;
+  color: #FFFFFF;
+  padding: 56px 48px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.auth-logo-img {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
+.auth-visual-content {
+  max-width: 500px;
+  margin: 40px 0;
+}
+
+.auth-visual-heading {
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 16px;
+}
+
+.auth-visual-desc {
+  font-size: 1rem;
+  opacity: 0.92;
+  line-height: 1.6;
+}
+
+.auth-visual-footer {
+  font-size: 0.82rem;
+  opacity: 0.8;
+}
+
+/* 2. SISI KANAN: FORM LOGIN */
+.auth-form-side {
+  flex: 1.1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 24px;
+  position: relative;
+}
+
+.back-home-btn {
+  position: absolute;
+  top: 32px;
+  left: 36px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.back-home-btn:hover {
+  color: var(--primary-green);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px 0;
+}
+
+.form-header-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-dark);
+  margin-bottom: 18px;
+}
+
+.auth-alert-demo {
+  background: var(--primary-light);
+  border: 1px solid #C8E6C9;
+  color: var(--primary-green);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  font-size: 0.92rem;
+  font-family: inherit;
+  color: var(--text-dark);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  border-color: var(--primary-green);
+}
+
+.password-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+/* Tombol Masuk Hijau Solid #2E8B3D */
+.btn-submit-green {
+  width: 100%;
+  padding: 12px;
+  background-color: var(--primary-green);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: inherit;
+  margin-top: 8px;
+}
+
+.btn-submit-green:hover {
+  background-color: var(--primary-dark);
+}
+
+.auth-switch-note {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 18px;
+}
+
+.auth-switch-link {
+  color: var(--primary-green);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-switch-link:hover {
+  text-decoration: underline;
+}
+
+/* Divider Lainnya */
+.auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 22px 0 16px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.auth-divider-text {
+  padding: 0 12px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* Tombol Google Auth */
+.btn-google-auth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11px 16px;
+  border: 1px solid var(--border-color);
+  background: #FFFFFF;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.btn-google-auth:hover {
+  background: #F9FAFB;
+}
+
+.google-icon-svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Akses Cepat Demo Roles */
+.demo-roles-box {
+  margin-top: 20px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border-color);
+  text-align: center;
+}
+
+.demo-roles-title {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.demo-roles-btns {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.pill-role {
+  padding: 5px 12px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.role-pengunjung {
+  border: 1px solid #10B981;
+  background: #ECFDF5;
+  color: #047857;
+}
+
+.role-seller {
+  border: 1px solid #3B82F6;
+  background: #EFF6FF;
+  color: #1D4ED8;
+}
+
+.role-admin {
+  border: 1px solid #8B5CF6;
+  background: #F5F3FF;
+  color: #6D28D9;
+}
+
+@media (max-width: 900px) {
+  .auth-wrapper {
+    flex-direction: column;
+  }
+  .auth-visual-side {
+    padding: 36px 20px;
+  }
+  .back-home-btn {
+    position: static;
+    margin-bottom: 16px;
+  }
+}

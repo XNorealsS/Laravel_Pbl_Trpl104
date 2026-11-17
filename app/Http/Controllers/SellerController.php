@@ -189,15 +189,48 @@ class SellerController extends Controller
      */
     public function updateOrderStatus(Request $request, int $id)
     {
-        $pesanan = Pesanan::findOrFail($id);
+        $umkm = $this->getSellerUmkm();
+        $pesanan = Pesanan::where('id_pesanan', $id)->where('id_umkm', $umkm->id_umkm)->firstOrFail();
         $status = $request->input('status', 'selesai');
+        $statusPembayaran = $request->input('status_pembayaran');
 
-        $pesanan->update([
+        $updateData = [
             'status' => $status,
             'waktu_selesai' => $status === 'selesai' ? Carbon::now() : null,
-        ]);
+        ];
+
+        if ($statusPembayaran) {
+            $updateData['status_pembayaran'] = $statusPembayaran;
+        }
+
+        $pesanan->update($updateData);
 
         return back()->with('success', 'Status pesanan berhasil diubah menjadi: ' . strtoupper($status) . '! Tombol ulasan kini aktif untuk pembeli.');
+    }
+
+    /**
+     * Seller memverifikasi bukti struk transfer mandiri dari pembeli (Lunas / Ditolak).
+     * Memberikan otonomi transaksi langsung ke mitra UMKM tanpa bottleneck admin.
+     */
+    public function verifyPayment(Request $request, int $id)
+    {
+        $request->validate([
+            'status' => 'required|in:lunas,ditolak',
+            'catatan' => 'nullable|string|max:255',
+        ]);
+
+        $umkm = $this->getSellerUmkm();
+        $pesanan = Pesanan::where('id_pesanan', $id)
+            ->where('id_umkm', $umkm->id_umkm)
+            ->firstOrFail();
+
+        $pesanan->update([
+            'status_pembayaran' => $request->input('status'),
+            'catatan_admin' => $request->input('catatan') ?: null,
+        ]);
+
+        $label = $request->input('status') === 'lunas' ? 'LUNAS (Siap Dimasak)' : 'DITOLAK';
+        return back()->with('success', 'Status pembayaran pesanan #' . $id . ' berhasil dikonfirmasi: ' . $label);
     }
 
     /**

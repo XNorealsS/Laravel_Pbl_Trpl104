@@ -1,7 +1,7 @@
-# JajanRia - Aturan & Batasan Proyek (Project Scope & Constraints)
+# JajanRia - Aturan & Batasan Proyek (Vision, Scope & Constraints)
 
 > **Instruksi Pokok:**
-> Platform ini adalah etalase & direktori kuliner **JajanRia (NON-TRANSAKSIONAL)**. DILARANG KERAS membuat fitur keranjang belanja, checkout, input jumlah/porsi pesanan, kalkulasi harga total, payment gateway, maupun laporan keuangan. Aplikasi ini HANYA menangani komunikasi chat internal antara pembeli dan penjual, di mana penjual mengubah status pesanan di ruang chat menjadi "Selesai" untuk memicu tombol ulasan bagi pembeli.
+> Platform ini adalah **E-Commerce Kuliner Kampus JajanRia (Semi-Automated Direct Commerce)**. Platform memfasilitasi penemuan jajanan UMKM, pemesanan langsung melalui keranjang menu (checkout), pembayaran transfer manual dengan upload bukti struk, verifikasi pembayaran oleh Administrator, pemrosesan pesanan oleh Seller ("Diproses" -> "Selesai"), pencatatan riwayat transaksi (Order History), dan pemicu ulasan bintang bagi pembeli setelah pesanan selesai.
 
 ---
 
@@ -9,35 +9,35 @@
 
 1. **Etalase & Katalog Digital:**
    - Menampilkan daftar produk jajanan, detail kuliner, profil lapak UMKM.
-   - Pencarian kata kunci (*search bar*).
-   - Penyaringan (*filter*) lokasi area kampus dan kategori menu.
+   - Pencarian kata kunci (*search bar*), penyaringan area kampus, dan kategori menu.
 
 2. **Autentikasi Peran (Role-based):**
-   - **Customer / Pengunjung:** Login via Google Sign-In (Firebase).
+   - **Customer / Pengunjung:** Login cepat via Google Sign-In (Firebase).
    - **Seller & Admin:** Login via Email dan Password.
 
-3. **Chat Internal & Status Komunikasi:**
-   - Fitur *direct chat* internal antara Pengunjung dan Seller.
-   - Seller dapat memperbarui status pesanan/percakapan langsung di chat: `"Diproses"` $\rightarrow$ `"Selesai"`.
+3. **Pemesanan Mandiri & Bukti Transaksi (Direct Commerce):**
+   - Keranjang menu sederhana (+ / - porsi dan kalkulasi total harga).
+   - Checkout pesanan langsung ke sistem tercatat (`t_pesanan`).
+   - Unggah (*upload*) foto struk bukti pembayaran transfer mandiri/QRIS.
+   - Halaman **Riwayat Pesanan (Order History)** untuk memantau status pembayaran: `belum_bayar` $\rightarrow$ `menunggu_verifikasi` $\rightarrow$ `lunas` / `ditolak`.
 
-4. **Pemicu Ulasan (Review Trigger):**
-   - Tombol **"⭐ Beri Penilaian"** otomatis muncul di ruang chat Pengunjung **hanya setelah** Seller mengubah status menjadi `"Selesai"`.
-   - Ulasan yang ditulis masuk ke riwayat tabel **Ulasan Saya**.
+4. **Verifikasi Pembayaran & Layanan Bantuan (Admin):**
+   - Administrator memeriksa foto struk transfer dan mengubah status menjadi `"Lunas"` atau `"Ditolak"`.
+   - Layanan Customer Support terpusat untuk membantu kendala transaksi pengguna.
 
-5. **Manajemen Dashboard:**
-   - **Customer:** Beranda/Katalog, Pesan Saya (Chat), Ulasan Saya.
-   - **Seller:** Kelola profil lapak (foto, lokasi, kontak), kelola katalog produk (CRUD & toggle ketersediaan), kelola pesan masuk, serta menanggapi ulasan pembeli.
-   - **Admin:** Verifikasi pendaftaran Seller baru, kelola master data UMKM/kategori, dan moderasi konten/ulasan.
+5. **Pengelolaan Pesanan & Pemicu Ulasan (Seller & Review Trigger):**
+   - Seller menerima notifikasi pesanan masuk (`"Diproses"`), menyiapkan pesanan untuk diambil (*Self Pick-up*), dan mengubah status menjadi `"Selesai"`.
+   - Tombol **"⭐ Beri Penilaian"** otomatis muncul di akun Customer **hanya setelah** Seller mengubah status menjadi `"Selesai"` dan pembayaran diverifikasi `"Lunas"`.
+   - Riwayat ulasan masuk ke tabel **Ulasan Saya**.
 
 ---
 
-## 2. Di Luar Batasan (Out-of-Scope / DILARANG KERAS)
+## 2. Di Luar Batasan (Out-of-Scope / Batas Aman PBL)
 
-- ❌ **TIDAK ADA Transaksi & Pembayaran In-App:** Dilarang membuat Payment Gateway, e-wallet, atau transfer bank.
-- ❌ **TIDAK ADA Keranjang Belanja & Form Checkout:** Dilarang membuat shopping cart, perhitungan ongkir/kurir, kalkulasi total belanja, atau checkout form.
-- ❌ **TIDAK ADA Manajemen Stok / Quantity:** Dilarang membuat input field kuantitas/porsi pesanan, kupon diskon, kalkulasi pajak, atau pengurangan stok otomatis saat chat.
-- ❌ **TIDAK ADA Integrasi Eksternal Rumit:** Dilarang membuat live GPS tracking map, redirect otomatis ke WhatsApp eksternal, atau rekomendasi berbasis AI/ML.
-- ❌ **TIDAK ADA Sistem Laporan Keuangan:** Dilarang membuat halaman riwayat omzet, kalkulasi pendapatan mingguan/bulanan, atau invoice/resi cetak.
+- ❌ **TIDAK ADA Payment Gateway Pihak Ketiga Otomatis:** Dilarang mengintegrasikan Midtrans, Xendit, Stripe, atau auto-debet e-wallet yang membebankan biaya transaksi / izin legal rumit. Pembayaran diselesaikan melalui transfer bank/QRIS manual dengan verifikasi Admin.
+- ❌ **TIDAK ADA Live Kurir / GPS Tracking Eksternal:** Sistem pemesanan menggunakan metode *Self Pick-Up* (ambil langsung di kios/kantin kampus).
+- ❌ **TIDAK ADA Pengurangan Stok Otomatis:** Penjual mengontrol ketersediaan menu secara fleksibel via *toggle* (Tersedia / Habis) tanpa kalkulasi stok per unit.
+- ❌ **TIDAK ADA Sistem Akuntansi / Laporan Keuangan Rumit:** Dilarang membuat rekonsiliasi kas, jurnal akuntansi, atau kalkulasi pajak restoran.
 
 ---
 

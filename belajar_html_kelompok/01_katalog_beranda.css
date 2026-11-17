@@ -1,0 +1,536 @@
+/**
+ * ============================================================================
+ * JAJANRIA - CSS HALAMAN 01: BERANDA & KATALOG (ANGGOTA 1)
+ * PBL TRPL-104 Politeknik Negeri Batam
+ * Warna Identitas Utama: #2E8B3D (Hijau JajanRia)
+ * ============================================================================
+ */
+
+/* 1. VARIABEL CSS (Custom Properties) */
+:root {
+  --primary-green: #2E8B3D;        /* Warna hijau utama brand JajanRia */
+  --primary-dark: #1E6629;         /* Hijau tua untuk hover tombol */
+  --primary-light: #E8F5E9;        /* Hijau muda lembut untuk background badge */
+  --text-dark: #1F2937;            /* Warna teks hitam utama */
+  --text-muted: #6B7280;           /* Warna teks abu-abu sekunder */
+  --bg-light: #F9FAFB;             /* Background halaman abu-abu terang */
+  --card-white: #FFFFFF;           /* Warna putih kartu */
+  --border-color: #E5E7EB;         /* Warna garis pembatas */
+  --star-yellow: #F59E0B;          /* Warna kuning bintang rating */
+  --radius-md: 12px;               /* Radius sudut standar */
+  --radius-full: 9999px;           /* Radius bulat penuh (pill) */
+  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* 2. RESET DASAR */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: var(--text-dark);
+  background-color: var(--bg-light);
+  line-height: 1.6;
+}
+
+/* Container penyeimbang lebar konten di tengah */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* 3. HERO SECTION (BANNER UTAMA) */
+.hero-section {
+  position: relative;
+  min-height: 480px;
+  background-color: var(--primary-green);
+  background-image: url('img/bg.png');
+  background-size: cover;
+  background-position: center;
+  color: #FFFFFF;
+  padding-bottom: 60px;
+}
+
+/* Lapisan overlay agar teks di atas foto tetap kontras & terbaca */
+.hero-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(30, 102, 41, 0.88) 0%, rgba(46, 139, 61, 0.92) 100%);
+  z-index: 1;
+}
+
+.hero-container {
+  position: relative;
+  z-index: 2;
+}
+
+/* 4. NAVBAR HERO */
+.hero-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 0 36px 0;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.logo-image {
+  height: 44px;
+  width: auto;
+  object-fit: contain;
+}
+
+.location-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  font-size: 0.88rem;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+}
+
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Style tombol umum */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-outline {
+  background: transparent;
+  color: #FFFFFF;
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+}
+
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #FFFFFF;
+}
+
+.btn-solid {
+  background: #FFFFFF;
+  color: var(--primary-green);
+}
+
+.btn-solid:hover {
+  background: #F3F4F6;
+  transform: translateY(-1px);
+}
+
+/* 5. TEKS UTAMA HERO */
+.hero-text-content {
+  max-width: 680px;
+  padding: 24px 0 40px 0;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 16px;
+}
+
+.hero-subtitle {
+  font-size: 1.05rem;
+  opacity: 0.92;
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.btn-cta {
+  background: #FFC107;
+  color: #1F2937;
+  padding: 12px 24px;
+}
+
+.btn-cta:hover {
+  background: #E0A800;
+  transform: translateY(-2px);
+}
+
+.btn-seller-link {
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  padding: 12px 20px;
+}
+
+.btn-seller-link:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 6. FLOATING SEARCH BAR */
+.search-section {
+  margin-top: -36px;
+  position: relative;
+  z-index: 10;
+}
+
+.search-card {
+  background: var(--card-white);
+  padding: 14px 20px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-color);
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-icon {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.95rem;
+  font-family: inherit;
+  color: var(--text-dark);
+}
+
+.filter-dropdown {
+  padding: 10px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  font-size: 0.88rem;
+  font-family: inherit;
+  outline: none;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  cursor: pointer;
+}
+
+.btn-search {
+  background: var(--primary-green);
+  color: #FFFFFF;
+}
+
+.btn-search:hover {
+  background: var(--primary-dark);
+}
+
+/* 7. KATEGORI KULINER (PILLS) */
+.categories-section {
+  padding: 48px 20px 24px 20px;
+}
+
+.section-title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 16px;
+}
+
+.category-pills {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.pill {
+  border: 1px solid var(--border-color);
+  background: var(--card-white);
+  padding: 9px 18px;
+  border-radius: var(--radius-full);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  color: var(--text-dark);
+}
+
+.pill.active,
+.pill:hover {
+  background: var(--primary-green);
+  color: #FFFFFF;
+  border-color: var(--primary-green);
+}
+
+/* 8. GRID LAPAK KULINER */
+.store-section {
+  padding: 24px 20px 60px 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+}
+
+.section-desc {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.store-count-badge {
+  background: var(--primary-light);
+  color: var(--primary-green);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+}
+
+.store-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+/* KARTU LAPAK (CARD) */
+.store-card {
+  background: var(--card-white);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.store-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.store-card-image {
+  position: relative;
+  height: 190px;
+  background-color: #E5E7EB;
+}
+
+.store-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Badges di atas foto lapak */
+.badge-status {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge-status.open {
+  background: #10B981;
+  color: #FFFFFF;
+}
+
+.badge-status.closed {
+  background: #6B7280;
+  color: #FFFFFF;
+}
+
+.badge-area {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.65);
+  color: #FFFFFF;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 500;
+  backdrop-filter: blur(4px);
+}
+
+.store-card-body {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.store-rating {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+.store-rating .star {
+  color: var(--star-yellow);
+  font-size: 1rem;
+}
+
+.review-count {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.store-name a {
+  text-decoration: none;
+  color: var(--text-dark);
+  font-size: 1.15rem;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 6px;
+  transition: color 0.2s ease;
+}
+
+.store-name a:hover {
+  color: var(--primary-green);
+}
+
+.store-highlight {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  flex: 1;
+}
+
+.store-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border-color);
+  padding-top: 14px;
+}
+
+.store-price-range {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--primary-green);
+}
+
+.btn-detail {
+  background: var(--primary-light);
+  color: var(--primary-green);
+  font-size: 0.82rem;
+  padding: 8px 14px;
+}
+
+.btn-detail:hover {
+  background: var(--primary-green);
+  color: #FFFFFF;
+}
+
+/* 9. FOOTER HALAMAN */
+.site-footer {
+  background: #111827;
+  color: #9CA3AF;
+  padding-top: 50px;
+  margin-top: 40px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.5fr;
+  gap: 36px;
+  padding-bottom: 40px;
+}
+
+.footer-logo {
+  height: 40px;
+  width: auto;
+  margin-bottom: 14px;
+}
+
+.footer-desc {
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.footer-heading {
+  color: #FFFFFF;
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.footer-links {
+  list-style: none;
+}
+
+.footer-links li {
+  margin-bottom: 8px;
+}
+
+.footer-links a {
+  color: #9CA3AF;
+  text-decoration: none;
+  font-size: 0.85rem;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: #FFFFFF;
+}
+
+.footer-bottom {
+  border-top: 1px solid #1F2937;
+  padding: 20px 0;
+  text-align: center;
+  font-size: 0.82rem;
+}
+
+/* 10. MEDIA QUERIES (RESPONSIF MOBILE & TABLET) */
+@media (max-width: 768px) {
+  .hero-navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .hero-title {
+    font-size: 1.9rem;
+  }
+
+  .search-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-card {
+    border-radius: var(--radius-md);
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+}

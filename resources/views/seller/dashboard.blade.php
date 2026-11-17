@@ -452,11 +452,11 @@
                 <thead>
                   <tr>
                     <th style="width: 45px; text-align: center;">#</th>
-                    <th>ID / Nama Pengunjung</th>
-                    <th>Pesanan / Menu</th>
-                    <th>Komunikasi Terakhir</th>
-                    <th style="width: 130px; text-align: center;">Status Pesanan</th>
-                    <th style="width: 160px; text-align: center;">Tindakan Seller</th>
+                    <th>ID / Pelanggan</th>
+                    <th>Menu Dipesan</th>
+                    <th>Bukti Transfer & Status Bayar</th>
+                    <th style="width: 120px; text-align: center;">Status Pesanan</th>
+                    <th style="width: 180px; text-align: center;">Tindakan UMKM</th>
                   </tr>
                 </thead>
                 <tbody id="sellerOrdersFullTableBody">
@@ -470,11 +470,27 @@
                       </td>
                       <td>
                         <strong>{{ $order->produk ? $order->produk->nama_produk : 'Menu JajanRia' }}</strong>
+                        @if($order->total_harga > 0)
+                          <div style="font-size: 0.8rem; font-weight: 700; color: #2E8B3D;">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</div>
+                        @endif
                       </td>
                       <td>
-                        <span style="font-size: 0.82rem; color: #4B5563;">
-                          {{ $lastMsg ? Str::limit($lastMsg->pesan, 45) : 'Komunikasi langsung via obrolan website' }}
-                        </span>
+                        @if($order->bukti_pembayaran)
+                          <a href="{{ asset($order->bukti_pembayaran) }}" target="_blank" class="badge-adminlte badge-info" style="text-decoration:none; display:inline-flex; align-items:center; gap:3px;">
+                            <i class='bx bx-receipt'></i> Lihat Struk
+                          </a>
+                        @endif
+                        <div style="margin-top: 4px;">
+                          @if($order->status_pembayaran === 'lunas')
+                            <span class="badge-adminlte badge-success">✓ Lunas</span>
+                          @elseif($order->status_pembayaran === 'menunggu_verifikasi')
+                            <span class="badge-adminlte badge-warning">⏳ Cek Transfer</span>
+                          @elseif($order->status_pembayaran === 'ditolak')
+                            <span class="badge-adminlte badge-danger">✗ Ditolak</span>
+                          @else
+                            <span class="badge-adminlte" style="background:#e5e7eb; color:#4b5563;">Belum Bayar</span>
+                          @endif
+                        </div>
                       </td>
                       <td style="text-align: center;">
                         @if($order->status === 'diproses')
@@ -484,12 +500,31 @@
                         @endif
                       </td>
                       <td style="text-align: center;">
+                        @if($order->status_pembayaran === 'menunggu_verifikasi')
+                          <div style="display: flex; gap: 4px; justify-content: center; margin-bottom: 4px;">
+                            <form action="{{ route('seller.orders.verify_payment', $order->id_pesanan) }}" method="POST" style="display:inline;">
+                              @csrf
+                              <input type="hidden" name="status" value="lunas">
+                              <button type="submit" class="btn-action-sm btn-action-success" title="Konfirmasi dana sudah masuk ke rekening/QRIS toko">
+                                <i class='bx bx-check'></i> Lunas
+                              </button>
+                            </form>
+                            <form action="{{ route('seller.orders.verify_payment', $order->id_pesanan) }}" method="POST" style="display:inline;">
+                              @csrf
+                              <input type="hidden" name="status" value="ditolak">
+                              <button type="submit" class="btn-action-sm btn-action-danger" title="Tolak bukti transfer palsu">
+                                <i class='bx bx-x'></i>
+                              </button>
+                            </form>
+                          </div>
+                        @endif
+
                         @if($order->status === 'diproses')
                           <form action="{{ route('seller.orders.status', $order->id_pesanan) }}" method="POST" style="display:inline;">
                             @csrf
                             <input type="hidden" name="status" value="selesai">
-                            <button type="submit" class="btn-action-sm btn-action-success">
-                              <i class='bx bx-check'></i> Tandai Selesai
+                            <button type="submit" class="btn-action-sm btn-action-outline-primary" title="Tandai pesanan telah diambil pembeli di lapak">
+                              <i class='bx bx-check-double'></i> Selesai
                             </button>
                           </form>
                         @else

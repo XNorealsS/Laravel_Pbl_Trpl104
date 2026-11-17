@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>04 - Dashboard Seller UMKM | JajanRia PBL TRPL-104</title>
+  
+  <!-- Font Google: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- File CSS Khusus Dashboard Seller (AdminLTE Standard) -->
+  <link rel="stylesheet" href="04_dashboard_seller.css">
+</head>
+<body class="panel-body">
+
+  <div class="panel-layout">
+    
+    <!-- ======================================================================
+         BAGIAN 1: SIDEBAR NAVIGASI SELLER (STANDAR ADMINLTE HIJAU #2E8B3D)
+         Tujuan: Navigasi utama bagi mitra UMKM untuk mengelola lapak kulinernya.
+         ====================================================================== -->
+    <aside class="panel-sidebar">
+      <div>
+        <!-- Logo Brand di Atas Sidebar -->
+        <div class="sidebar-brand">
+          <a href="01_katalog_beranda.html" class="brand-link" title="Ke Beranda JajanRia">
+            <img src="img/logo.png" alt="Logo JajanRia" class="brand-icon">
+            <div class="brand-text">
+              <span class="brand-title">JajanRia</span>
+              <span class="brand-sub">SELLER UMKM</span>
+            </div>
+          </a>
+          <span class="role-pill pill-seller">Mitra Penjual</span>
+        </div>
+
+        <!-- Menu Navigasi Sidebar -->
+        <nav class="sidebar-nav">
+          <span class="nav-heading">Menu Utama Lapak</span>
+          
+          <a href="#overview" class="nav-item active">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">Ringkasan Toko</span>
+          </a>
+
+          <a href="#kelola-menu" class="nav-item">
+            <span class="nav-icon">🍗</span>
+            <span class="nav-label">Kelola Menu & Katalog</span>
+            <span class="nav-badge badge-green">3</span>
+          </a>
+
+          <a href="#daftar-pesanan" class="nav-item">
+            <span class="nav-icon">💬</span>
+            <span class="nav-label">Pesan & Pesanan Masuk</span>
+            <span class="nav-badge badge-yellow">1 Baru</span>
+          </a>
+
+          <a href="#profil-toko" class="nav-item">
+            <span class="nav-icon">🏪</span>
+            <span class="nav-label">Profil Lapak UMKM</span>
+          </a>
+
+          <a href="#ulasan-toko" class="nav-item">
+            <span class="nav-icon">⭐</span>
+            <span class="nav-label">Rating & Ulasan</span>
+            <span class="nav-badge badge-red">2</span>
+          </a>
+        </nav>
+      </div>
+
+      <!-- Info Profil Seller di Bagian Bawah Sidebar -->
+      <div class="sidebar-footer">
+        <div class="seller-profile-card">
+          <img src="img/nasi-goreng.jpg" alt="Ayam Geprek Sambal Korek" class="seller-avatar">
+          <div class="seller-info">
+            <strong class="seller-name">Ayam Geprek Korek</strong>
+            <span class="seller-status"><span class="dot-online"></span> Lapak Buka</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+
+    <!-- ======================================================================
+         BAGIAN 2: AREA KONTEN UTAMA DASHBOARD
+         ====================================================================== -->
+    <main class="panel-main">
+      
+      <!-- Topbar Header Dashboard -->
+      <header class="panel-topbar">
+        <div class="topbar-left">
+          <h1 class="page-title">Dashboard Pengelola UMKM</h1>
+          <span class="page-subtitle">Selamat datang kembali di panel lapak Ayam Geprek Sambal Korek Kampus</span>
+        </div>
+        <div class="topbar-right">
+          <a href="02_detail_toko.html" class="btn btn-preview" title="Lihat tampilan toko publik">
+            👁️ Pratinjau Toko
+          </a>
+          <a href="03_login_register.html" class="btn btn-logout">
+            🚪 Keluar
+          </a>
+        </div>
+      </header>
+
+
+      <div class="panel-content">
+        
+        <!-- ==================================================================
+             BAGIAN 3: SMALL-BOXES METRIK STATISTIK TOKO
+             ================================================================== -->
+        <section class="metrics-grid" id="overview">
+          
+          <div class="metric-card card-green">
+            <div class="metric-data">
+              <span class="metric-number">3</span>
+              <span class="metric-label">Total Menu Aktif</span>
+            </div>
+            <div class="metric-icon">🍗</div>
+          </div>
+
+          <div class="metric-card card-yellow">
+            <div class="metric-data">
+              <span class="metric-number">1</span>
+              <span class="metric-label">Pesanan Diproses</span>
+            </div>
+            <div class="metric-icon">⏳</div>
+          </div>
+
+          <div class="metric-card card-blue">
+            <div class="metric-data">
+              <span class="metric-number">14</span>
+              <span class="metric-label">Pesanan Selesai</span>
+            </div>
+            <div class="metric-icon">✅</div>
+          </div>
+
+          <div class="metric-card card-purple">
+            <div class="metric-data">
+              <span class="metric-number">4.8</span>
+              <span class="metric-label">Rating Rata-rata</span>
+            </div>
+            <div class="metric-icon">⭐</div>
+          </div>
+
+        </section>
+
+
+        <!-- ==================================================================
+             BAGIAN 4: TABEL MANAJEMEN MENU & KATALOG (CRUD & TOGGLE STOK)
+             Tujuan: Sesuai UC-07, penjual bisa menambah, edit, hapus, dan
+             mengosongkan / mengaktifkan ketersediaan menu.
+             ================================================================== -->
+        <section class="content-box" id="kelola-menu">
+          <div class="box-header">
+            <div>
+              <h2 class="box-title">Daftar Menu & Katalog Makanan</h2>
+              <p class="box-sub">Kelola harga, foto, dan status ketersediaan jajanan di lapak Anda</p>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="alert('Demo: Form Modal Tambah Menu Baru.');">
+              + Tambah Menu Baru
+            </button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="panel-table">
+              <thead>
+                <tr>
+                  <th style="width: 60px;">No</th>
+                  <th style="width: 80px;">Foto</th>
+                  <th>Nama Menu Kuliner</th>
+                  <th>Kategori</th>
+                  <th>Harga Satuan</th>
+                  <th>Status Ketersediaan</th>
+                  <th style="width: 180px;">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- BARIS PRODUK 1 -->
+                <tr>
+                  <td class="text-center">1</td>
+                  <td>
+                    <img src="img/nasi-goreng.jpg" alt="Ayam Geprek" class="table-thumb">
+                  </td>
+                  <td>
+                    <strong>Paket Ayam Geprek Sambal Korek</strong>
+                    <div class="text-muted text-xs">Nasi + Ayam Dada/Paha + Sambal + Lalapan</div>
+                  </td>
+                  <td><span class="badge badge-cat">Makanan Berat</span></td>
+                  <td><strong class="text-green">Rp 15.000</strong></td>
+                  <td>
+                    <span class="badge badge-success">● Tersedia</span>
+                  </td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="btn-action btn-toggle" title="Ubah status ketersediaan">Kosongkan</button>
+                      <button class="btn-action btn-edit" title="Edit menu">Edit</button>
+                      <button class="btn-action btn-delete" title="Hapus menu">&times;</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- BARIS PRODUK 2 -->
+                <tr>
+                  <td class="text-center">2</td>
+                  <td>
+                    <img src="img/mie-aceh.jpg" alt="Ayam Mozarella" class="table-thumb">
+                  </td>
+                  <td>
+                    <strong>Ayam Geprek Keju Mozarella</strong>
+                    <div class="text-muted text-xs">Ayam renyah lelehan keju mozarella tebal</div>
+                  </td>
+                  <td><span class="badge badge-cat">Makanan Berat</span></td>
+                  <td><strong class="text-green">Rp 18.000</strong></td>
+                  <td>
+                    <span class="badge badge-success">● Tersedia</span>
+                  </td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="btn-action btn-toggle" title="Ubah status ketersediaan">Kosongkan</button>
+                      <button class="btn-action btn-edit" title="Edit menu">Edit</button>
+                      <button class="btn-action btn-delete" title="Hapus menu">&times;</button>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- BARIS PRODUK 3 -->
+                <tr>
+                  <td class="text-center">3</td>
+                  <td>
+                    <img src="img/kopi.jpg" alt="Es Teh Manis" class="table-thumb">
+                  </td>
+                  <td>
+                    <strong>Es Teh Manis Jumbo</strong>
+                    <div class="text-muted text-xs">Teh melati manis cup 22 oz segar</div>
+                  </td>
+                  <td><span class="badge badge-cat">Minuman</span></td>
+                  <td><strong class="text-green">Rp 4.000</strong></td>
+                  <td>
+                    <span class="badge badge-success">● Tersedia</span>
+                  </td>
+                  <td>
+                    <div class="table-actions">
+                      <button class="btn-action btn-toggle" title="Ubah status ketersediaan">Kosongkan</button>
+                      <button class="btn-action btn-edit" title="Edit menu">Edit</button>
+                      <button class="btn-action btn-delete" title="Hapus menu">&times;</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+
+        <!-- ==================================================================
+             BAGIAN 5: TABEL PESANAN MASUK (STATUS: DIPROSES -> SELESAI)
+             Tujuan: Menunjukkan alur JajanRia, saat status diubah menjadi SELESAI,
+             sistem otomatis memicu tombol beri ulasan bagi pembeli.
+             ================================================================== -->
+        <section class="content-box" id="daftar-pesanan">
+          <div class="box-header">
+            <div>
+              <h2 class="box-title">Riwayat Pesanan & Komunikasi Pelanggan</h2>
+              <p class="box-sub">Tandai pesanan menjadi "Selesai" untuk mengaktifkan formulir penilaian ulasan pembeli</p>
+            </div>
+            <a href="06_chat_dan_ulasan.html" class="btn btn-outline-green">
+              💬 Buka Ruang Chat Customer
+            </a>
+          </div>
+
+          <div class="table-responsive">
+            <table class="panel-table">
+              <thead>
+                <tr>
+                  <th>No. Pesanan</th>
+                  <th>Nama Pembeli</th>
+                  <th>Menu Dipesan</th>
+                  <th>Bukti Transfer & Status Bayar</th>
+                  <th>Status Pesanan</th>
+                  <th style="width: 220px; text-align: center;">Aksi Penjual UMKM</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- PESANAN AKTIF: TRANSFER MENUNGGU VERIFIKASI SELLER -->
+                <tr>
+                  <td><strong>#JR-104</strong></td>
+                  <td>
+                    <strong>Dimas Prayoga</strong>
+                    <div class="text-muted text-xs">Mahasiswa TRPL Polibatam</div>
+                  </td>
+                  <td>
+                    <strong>1x Paket Geprek Korek (Level 5)</strong>
+                    <div class="text-green text-xs">Total: Rp 15.000</div>
+                  </td>
+                  <td>
+                    <button class="badge badge-cat" onclick="alert('Membuka foto struk transfer Mandiri Rp 15.000 dari Dimas Prayoga');" style="cursor: pointer; border: none;">
+                      📄 Lihat Struk (Mandiri)
+                    </button>
+                    <div style="margin-top: 4px;">
+                      <span class="badge badge-warning">⏳ Cek Transfer</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge badge-warning">Diproses</span>
+                  </td>
+                  <td style="text-align: center;">
+                    <!-- Aksi Verifikasi Pembayaran Langsung oleh UMKM -->
+                    <div style="display: flex; gap: 6px; justify-content: center; margin-bottom: 6px;">
+                      <button class="btn btn-sm btn-done" onclick="alert('Pembayaran LUNAS! Uang sudah masuk ke rekening/QRIS UMKM. Makanan siap dimasak.');">
+                        ✓ Konfirmasi Lunas
+                      </button>
+                      <button class="btn btn-sm" style="background:#EF4444; color:#FFF;" onclick="alert('Bukti transfer ditolak.');">
+                        ✗ Tolak
+                      </button>
+                    </div>
+                    <!-- Aksi Selesai Saat Makanan Diambil di Kios -->
+                    <button class="btn btn-sm" style="background:#3B82F6; color:#FFF; width: 100%;" onclick="alert('Pesanan #JR-104 selesai diambil! Tombol ulasan bintang kini aktif di layar pembeli.');">
+                      ✓ Makanan Diambil (Selesai)
+                    </button>
+                  </td>
+                </tr>
+
+                <!-- PESANAN SELESAI & LUNAS -->
+                <tr>
+                  <td><strong>#JR-103</strong></td>
+                  <td>
+                    <strong>Siti Aisyah</strong>
+                    <div class="text-muted text-xs">Mahasiswa Akuntansi</div>
+                  </td>
+                  <td>
+                    <strong>1x Ayam Mozarella + Es Teh</strong>
+                    <div class="text-green text-xs">Total: Rp 22.000</div>
+                  </td>
+                  <td>
+                    <span class="badge badge-success">✓ Lunas Terverifikasi</span>
+                  </td>
+                  <td>
+                    <span class="badge badge-done">✓ Selesai</span>
+                  </td>
+                  <td style="text-align: center;">
+                    <span class="text-muted text-sm">Sudah dinilai (⭐ 5.0)</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+    </main>
+
+  </div>
+
+</body>
+</html>

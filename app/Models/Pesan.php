@@ -16,6 +16,8 @@ class Pesan extends Model
         'id_umkm',
         'pengirim',
         'isi_pesan',
+        'tipe_pesan',
+        'lampiran_url',
         'waktu',
     ];
 

@@ -56,6 +56,13 @@
               <span class="panel-nav-badge badge-amber" id="pendingVerifyBadge">{{ $stats['pending_verifikasi'] }}</span>
             @endif
           </button>
+          <button type="button" class="panel-nav-btn" data-tab="tab-payments">
+            <i class='bx bx-receipt'></i>
+            <span>Verifikasi Pembayaran</span>
+            @if(($stats['pending_pembayaran'] ?? 0) > 0)
+              <span class="panel-nav-badge badge-amber" id="pendingPaymentsBadge">{{ $stats['pending_pembayaran'] }}</span>
+            @endif
+          </button>
           <button type="button" class="panel-nav-btn" data-tab="tab-umkm">
             <i class='bx bx-store-alt'></i>
             <span>Kelola Mitra UMKM</span>
@@ -70,6 +77,18 @@
             <i class='bx bx-shield-quarter'></i>
             <span>Moderasi Ulasan</span>
             <span class="panel-nav-badge badge-danger">{{ $ulasanList->count() }}</span>
+          </button>
+          <button type="button" class="panel-nav-btn" data-tab="tab-support">
+            <i class='bx bx-support'></i>
+            <span>Customer Support</span>
+            @if(($stats['total_support'] ?? 0) > 0)
+              <span class="panel-nav-badge badge-primary">{{ $stats['total_support'] }}</span>
+            @endif
+          </button>
+          <button type="button" class="panel-nav-btn" data-tab="tab-users">
+            <i class='bx bx-user-pin'></i>
+            <span>Manajemen User</span>
+            <span class="panel-nav-badge badge-primary">{{ $allUsers->count() }}</span>
           </button>
         </nav>
       </div>
@@ -214,7 +233,7 @@
               <div class="icon">
                 <i class='bx bx-user'></i>
               </div>
-              <button type="button" class="small-box-footer" onclick="switchAdminTab('tab-umkm')">
+              <button type="button" class="small-box-footer" onclick="switchAdminTab('tab-users')">
                 Lihat daftar <i class='bx bx-right-arrow-circle'></i>
               </button>
             </div>
@@ -482,6 +501,132 @@
         </section>
 
         <!-- ====================================================================
+             TAB: VERIFIKASI BUKTI PEMBAYARAN PESANAN
+             ==================================================================== -->
+        <section class="tab-view" id="tab-payments">
+          <!-- Filter Tabs -->
+          <div class="filter-tab-pills">
+            <button type="button" class="filter-tab-pill active">
+              <span>Semua Bukti Pembayaran</span>
+              <span class="pill-counter">{{ $paymentOrders->count() }}</span>
+            </button>
+            <button type="button" class="filter-tab-pill">
+              <span>Menunggu Konfirmasi</span>
+              <span class="pill-counter" style="background: #FFF3CD; color: #856404;">{{ $stats['pending_pembayaran'] ?? 0 }}</span>
+            </button>
+          </div>
+
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <h3 class="panel-card-title">
+                <i class='bx bx-receipt' style="color: #2E8B3D;"></i>
+                <span>Verifikasi Bukti Pembayaran Pesanan Pelanggan</span>
+              </h3>
+              <span style="font-size: 0.8rem; color: #6C757D;">Pemeriksaan keabsahan transfer/struk pembayaran sebelum pesanan diserahkan</span>
+            </div>
+
+            <div class="table-responsive">
+              <table class="panel-table" id="paymentsTable">
+                <thead>
+                  <tr>
+                    <th style="width: 45px; text-align: center;">#</th>
+                    <th>ID & Waktu Pesanan</th>
+                    <th>Pelanggan</th>
+                    <th>Lapak UMKM</th>
+                    <th>Detail Item Pesanan</th>
+                    <th style="text-align: right; width: 120px;">Total Bayar</th>
+                    <th style="text-align: center; width: 130px;">Bukti Transfer</th>
+                    <th style="text-align: center; width: 130px;">Status Bayar</th>
+                    <th style="text-align: center; width: 180px;">Aksi Verifikasi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @forelse($paymentOrders as $pIdx => $ord)
+                    <tr>
+                      <td style="text-align: center; font-weight: 600; color: #6C757D;">{{ $pIdx + 1 }}</td>
+                      <td>
+                        <strong>#ORD-{{ str_pad($ord->id_pesanan, 4, '0', STR_PAD_LEFT) }}</strong>
+                        <div style="font-size: 0.74rem; color: #6C757D;">{{ $ord->created_at ? $ord->created_at->format('d/m/Y H:i') : '-' }}</div>
+                      </td>
+                      <td>
+                        <strong>{{ $ord->pengunjung ? $ord->pengunjung->nama : 'Customer' }}</strong>
+                        <div style="font-size: 0.74rem; color: #6C757D;">{{ $ord->pengunjung ? $ord->pengunjung->email : '-' }}</div>
+                      </td>
+                      <td>
+                        <strong>{{ $ord->umkm ? $ord->umkm->nama_usaha : 'Lapak' }}</strong>
+                        <div style="font-size: 0.74rem; color: #2E8B3D;">{{ $ord->umkm ? $ord->umkm->area : '' }}</div>
+                      </td>
+                      <td>
+                        @if(!empty($ord->items_detail) && is_array($ord->items_detail))
+                          <ul style="margin: 0; padding-left: 14px; font-size: 0.78rem; color: #374151;">
+                            @foreach($ord->items_detail as $item)
+                              <li>{{ $item['nama_produk'] ?? 'Item' }} x {{ $item['qty'] ?? 1 }} (Rp {{ number_format(($item['subtotal'] ?? (($item['qty'] ?? 1) * ($item['harga'] ?? 0))), 0, ',', '.') }})</li>
+                            @endforeach
+                          </ul>
+                        @else
+                          <span style="font-size: 0.78rem; color: #6C757D;">Pesanan via percakapan</span>
+                        @endif
+                      </td>
+                      <td style="text-align: right; font-weight: 800; color: #2E8B3D; font-size: 0.92rem;">
+                        Rp {{ number_format($ord->total_harga, 0, ',', '.') }}
+                      </td>
+                      <td style="text-align: center;">
+                        @if($ord->bukti_pembayaran)
+                          <a href="{{ asset($ord->bukti_pembayaran) }}" target="_blank" rel="noopener" title="Lihat Foto Bukti Penuh">
+                            <img src="{{ asset($ord->bukti_pembayaran) }}" alt="Bukti #{{ $ord->id_pesanan }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #DEE2E6; display: inline-block;">
+                          </a>
+                        @else
+                          <span style="font-size: 0.75rem; color: #ADB5BD;">Belum diunggah</span>
+                        @endif
+                      </td>
+                      <td style="text-align: center;">
+                        @if($ord->status_pembayaran === 'lunas')
+                          <span class="badge-adminlte badge-success">Lunas</span>
+                        @elseif($ord->status_pembayaran === 'menunggu_verifikasi')
+                          <span class="badge-adminlte badge-warning">Menunggu Konfir</span>
+                        @elseif($ord->status_pembayaran === 'ditolak')
+                          <span class="badge-adminlte badge-danger">Ditolak</span>
+                          @if($ord->catatan_admin)
+                            <div style="font-size: 0.7rem; color: #DC3545; margin-top: 2px;">{{ Str::limit($ord->catatan_admin, 25) }}</div>
+                          @endif
+                        @else
+                          <span class="badge-adminlte badge-secondary">Belum Bayar</span>
+                        @endif
+                      </td>
+                      <td style="text-align: center;">
+                        <div style="display: flex; gap: 6px; justify-content: center; align-items: center;">
+                          @if($ord->status_pembayaran !== 'lunas')
+                            <form action="{{ route('admin.payments.verify', $ord->id_pesanan) }}" method="POST" style="display:inline;">
+                              @csrf
+                              <input type="hidden" name="status" value="lunas">
+                              <button type="submit" class="btn-action-sm btn-action-success" title="Setujui Pembayaran">
+                                <i class='bx bx-check'></i> Setujui
+                              </button>
+                            </form>
+                          @endif
+
+                          @if($ord->status_pembayaran !== 'ditolak')
+                            <button type="button" class="btn-action-sm btn-action-danger" onclick="openRejectPaymentModal({{ $ord->id_pesanan }})" title="Tolak Pembayaran">
+                              <i class='bx bx-x'></i> Tolak
+                            </button>
+                          @endif
+                        </div>
+                      </td>
+                    </tr>
+                  @empty
+                    <tr>
+                      <td colspan="9" style="text-align: center; color: #6C757D; padding: 28px;">
+                        Belum ada riwayat pesanan dengan bukti pembayaran.
+                      </td>
+                    </tr>
+                  @endforelse
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
              3. TAB: KELOLA MITRA UMKM & PENGGUNA (UC-10 / F016)
              ==================================================================== -->
         <section class="tab-view" id="tab-umkm">
@@ -720,6 +865,285 @@
           </div>
         </section>
 
+        <!-- ====================================================================
+             TAB: CUSTOMER SUPPORT & PUSAT BANTUAN PENGGUNA
+             ==================================================================== -->
+        <section class="tab-view" id="tab-support">
+          <div class="panel-card">
+            <div class="panel-card-header">
+              <h3 class="panel-card-title">
+                <i class='bx bx-support' style="color: #2E8B3D;"></i>
+                <span>Layanan Customer Support & Tiket Bantuan Pengguna</span>
+              </h3>
+              <span style="font-size: 0.8rem; color: #6C757D;">Pusat bantuan pelanggan untuk verifikasi bukti pembayaran, kendala pesanan, & akun</span>
+            </div>
+
+            <div class="table-responsive">
+              <table class="panel-table" id="supportTable">
+                <thead>
+                  <tr>
+                    <th style="width: 45px; text-align: center;">#</th>
+                    <th>Waktu Pesan</th>
+                    <th>Pengguna / Pelanggan</th>
+                    <th style="text-align: center; width: 130px;">Pengirim</th>
+                    <th>Isi Pesan Bantuan</th>
+                    <th style="text-align: center; width: 130px;">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @forelse($supportTickets as $sIdx => $st)
+                    <tr>
+                      <td style="text-align: center; font-weight: 600; color: #6C757D;">{{ $sIdx + 1 }}</td>
+                      <td style="white-space: nowrap; font-size: 0.78rem; color: #6C757D;">
+                        {{ $st->waktu ? $st->waktu->format('d/m/Y H:i') : ($st->created_at ? $st->created_at->format('d/m/Y H:i') : '-') }}
+                      </td>
+                      <td>
+                        <strong>{{ $st->pengunjung ? $st->pengunjung->nama : 'Customer' }}</strong>
+                        <div style="font-size: 0.74rem; color: #6C757D;">{{ $st->pengunjung ? $st->pengunjung->email : '-' }}</div>
+                      </td>
+                      <td style="text-align: center;">
+                        @if($st->pengirim === 'pengunjung')
+                          <span class="badge-adminlte badge-info">Pelanggan</span>
+                        @else
+                          <span class="badge-adminlte badge-success">Tim Support</span>
+                        @endif
+                      </td>
+                      <td style="font-size: 0.82rem; color: #1e293b; max-width: 380px;">
+                        <div style="white-space: pre-wrap; line-height: 1.45;">{{ $st->isi_pesan }}</div>
+                      </td>
+                      <td style="text-align: center;">
+                        <button type="button" class="btn-action-sm btn-action-primary" onclick="openSupportReplyModal({{ $st->id_pengunjung }}, '{{ addslashes($st->pengunjung ? $st->pengunjung->nama : 'Customer') }}')">
+                          <i class='bx bx-reply'></i> Balas
+                        </button>
+                      </td>
+                    </tr>
+                  @empty
+                    <tr>
+                      <td colspan="6" style="text-align: center; color: #6C757D; padding: 28px;">
+                        <i class='bx bx-message-check' style="font-size: 2rem; color: #2E8B3D; display: block; margin-bottom: 6px;"></i>
+                        Belum ada pesan customer support masuk.
+                      </td>
+                    </tr>
+                  @endforelse
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             6. TAB: MANAJEMEN USER & ACTIVITY LOG SUMMARY (UC-09, UC-11 / F015, F018, F019)
+             ==================================================================== -->
+        <section class="tab-view" id="tab-users">
+          <!-- Quick Filter Pills -->
+          <div class="filter-tab-pills">
+            <button type="button" class="filter-tab-pill filter-user-pill active" id="pillUserAll" onclick="filterUserByPill('all', this)">
+              <span>Semua Pengguna</span>
+              <span class="pill-counter">{{ $allUsers->count() }}</span>
+            </button>
+            <button type="button" class="filter-tab-pill filter-user-pill" onclick="filterUserByPill('pengunjung', this)">
+              <span>Pengunjung (Customer)</span>
+              <span class="pill-counter">{{ $allUsers->where('role', 'pengunjung')->count() }}</span>
+            </button>
+            <button type="button" class="filter-tab-pill filter-user-pill" onclick="filterUserByPill('seller', this)">
+              <span>Seller (Mitra UMKM)</span>
+              <span class="pill-counter">{{ $allUsers->where('role', 'seller')->count() }}</span>
+            </button>
+            <button type="button" class="filter-tab-pill filter-user-pill" onclick="filterUserByPill('admin', this)">
+              <span>Administrator</span>
+              <span class="pill-counter">{{ $allUsers->where('role', 'admin')->count() }}</span>
+            </button>
+            <button type="button" class="filter-tab-pill filter-user-pill" onclick="filterUserByPill('inactive', this)">
+              <span>Akun Nonaktif</span>
+              <span class="pill-counter">{{ $allUsers->where('is_active', false)->count() }}</span>
+            </button>
+          </div>
+
+          <!-- Toolbar Pencarian & Filter Sesuai Bab 2.2.9 -->
+          <div class="filter-bar-card">
+            <div class="filter-search-wrap">
+              <i class='bx bx-search'></i>
+              <input type="text" id="usersSearchInput" class="filter-search-input" placeholder="Cari nama pengguna, username, atau email...">
+            </div>
+            <select class="filter-select" id="usersRoleSelect" onchange="filterUsersTable()">
+              <option value="all">Semua Peran</option>
+              <option value="pengunjung">Pengunjung</option>
+              <option value="seller">Seller</option>
+              <option value="admin">Administrator</option>
+            </select>
+            <select class="filter-select" id="usersStatusSelect" onchange="filterUsersTable()">
+              <option value="all">Semua Status</option>
+              <option value="active">Aktif</option>
+              <option value="inactive">Nonaktif</option>
+              <option value="pending">Menunggu Verifikasi</option>
+            </select>
+            <select class="filter-select" id="usersLoginSelect" onchange="filterUsersTable()">
+              <option value="all">Semua Metode Login</option>
+              <option value="google">Google Sign-In (Firebase)</option>
+              <option value="email">Email & Password</option>
+            </select>
+            <div class="filter-actions-group">
+              <button type="button" class="btn-adminlte-green" onclick="filterUsersTable()">
+                <i class='bx bx-check'></i>
+                <span>Terapkan</span>
+              </button>
+              <button type="button" class="btn-adminlte-reset" onclick="resetUsersFilter()" title="Reset Filter">
+                <i class='bx bx-rotate-left'></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Two-Column Layout: Tabel Manajemen User + Activity Log Summary (Sesuai Bab 2.2.9) -->
+          <div class="admin-user-layout">
+            <!-- Left Column: Data Table -->
+            <div class="panel-card" style="margin-bottom: 0;">
+              <div class="panel-card-header">
+                <h3 class="panel-card-title">
+                  <i class='bx bx-group'></i>
+                  <span>Daftar Akun Pengguna Terdaftar (UC-09, F015)</span>
+                </h3>
+                <span style="font-size: 0.8rem; color: #6C757D;">Total {{ $allUsers->count() }} pengguna sistem</span>
+              </div>
+
+              <div class="table-responsive">
+                <table class="panel-table" id="usersTable">
+                  <thead>
+                    <tr>
+                      <th style="width: 45px; text-align: center;">#</th>
+                      <th>Identitas Pengguna</th>
+                      <th style="text-align: center; width: 110px;">Peran (Role)</th>
+                      <th style="text-align: center; width: 130px;">Metode Login</th>
+                      <th style="text-align: center; width: 110px;">Status Akun</th>
+                      <th style="text-align: center; width: 120px;">Tgl Registrasi</th>
+                      <th style="text-align: center; width: 120px;">Aksi Admin</th>
+                    </tr>
+                  </thead>
+                  <tbody id="usersTableBody">
+                    @forelse($allUsers as $uIdx => $userItem)
+                      @php
+                        $isGoogle = !empty($userItem->firebase_uid);
+                        $loginTypeStr = $isGoogle ? 'google' : 'email';
+                        $statusStr = !$userItem->is_active ? 'inactive' : ($userItem->status_verifikasi === 'menunggu' ? 'pending' : 'active');
+                      @endphp
+                      <tr data-role="{{ strtolower($userItem->role) }}" data-status="{{ $statusStr }}" data-login="{{ $loginTypeStr }}">
+                        <td style="text-align: center; font-weight: 600; color: #6C757D;">{{ $uIdx + 1 }}</td>
+                        <td>
+                          <div style="display: flex; align-items: center; gap: 10px;">
+                            <div style="width: 34px; height: 34px; border-radius: 50%; background: #DEF7EC; color: #2E8B3D; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0;">
+                              {{ strtoupper(substr($userItem->nama, 0, 1)) }}
+                            </div>
+                            <div style="min-width: 0;">
+                              <strong style="color: #212529; font-size: 0.88rem;">{{ $userItem->nama }}</strong>
+                              <div style="font-size: 0.74rem; color: #6C757D;">{{ $userItem->email }}</div>
+                              @if($userItem->role === 'seller' && $userItem->lapak)
+                                <div style="font-size: 0.72rem; color: #2E8B3D; font-weight: 600;">
+                                  <i class='bx bx-store'></i> {{ $userItem->lapak->nama_usaha }}
+                                </div>
+                              @endif
+                            </div>
+                          </div>
+                        </td>
+                        <td style="text-align: center;">
+                          @if($userItem->role === 'admin')
+                            <span class="badge-adminlte badge-danger">Admin</span>
+                          @elseif($userItem->role === 'seller')
+                            <span class="badge-adminlte badge-warning">Seller</span>
+                          @else
+                            <span class="badge-adminlte badge-info">Pengunjung</span>
+                          @endif
+                        </td>
+                        <td style="text-align: center;">
+                          @if($isGoogle)
+                            <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.76rem; font-weight: 600; color: #4285F4; background: #E8F0FE; padding: 2px 8px; border-radius: 4px;">
+                              <i class='bx bxl-google'></i> Google
+                            </span>
+                          @else
+                            <span style="display: inline-flex; align-items: center; gap: 4px; font-size: 0.76rem; font-weight: 600; color: #495057; background: #F1F3F5; padding: 2px 8px; border-radius: 4px;">
+                              <i class='bx bx-envelope'></i> Email/Pass
+                            </span>
+                          @endif
+                        </td>
+                        <td style="text-align: center;">
+                          @if(!$userItem->is_active)
+                            <span class="badge-adminlte badge-secondary">Nonaktif</span>
+                          @elseif($userItem->role === 'seller' && $userItem->status_verifikasi === 'menunggu')
+                            <span class="badge-adminlte badge-warning">Menunggu</span>
+                          @else
+                            <span class="badge-adminlte badge-success">Aktif</span>
+                          @endif
+                        </td>
+                        <td style="text-align: center; font-size: 0.78rem; color: #6C757D;">
+                          {{ $userItem->created_at ? $userItem->created_at->format('d/m/Y') : '-' }}
+                        </td>
+                        <td style="text-align: center;">
+                          @if($userItem->role !== 'admin' || $userItem->id_user !== session('user.id_user'))
+                            <form action="{{ route('admin.users.toggle', $userItem->id_user) }}" method="POST" style="display:inline;" onsubmit="return confirm('Ubah status aktif akun {{ $userItem->nama }}?')">
+                              @csrf
+                              <button type="submit" class="btn-action-sm {{ $userItem->is_active ? 'btn-action-danger' : 'btn-action-success' }}" title="{{ $userItem->is_active ? 'Nonaktifkan akun pengguna' : 'Aktifkan kembali akun' }}">
+                                <i class='bx bx-power-off'></i>
+                                <span>{{ $userItem->is_active ? 'Nonaktifkan' : 'Aktifkan' }}</span>
+                              </button>
+                            </form>
+                          @else
+                            <span style="font-size: 0.74rem; color: #ADB5BD;">Akun Anda</span>
+                          @endif
+                        </td>
+                      </tr>
+                    @empty
+                      <tr>
+                        <td colspan="7" style="text-align: center; color: #6C757D; padding: 28px;">
+                          Belum ada akun pengguna yang terdaftar dalam sistem.
+                        </td>
+                      </tr>
+                    @endforelse
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Right Column: Activity Log Summary (Bab 2.2.9 & UC-11) -->
+            <div class="activity-log-card">
+              <div class="panel-card-header" style="background: #F8F9FA;">
+                <div>
+                  <h3 class="panel-card-title" style="font-size: 0.92rem;">
+                    <i class='bx bx-pulse' style="color: #2E8B3D;"></i>
+                    <span>Activity Log Summary</span>
+                  </h3>
+                  <div style="font-size: 0.72rem; color: #6C757D;">Monitoring aktivitas pengguna & sistem (UC-11)</div>
+                </div>
+                <span class="badge-adminlte badge-success" style="font-size: 0.68rem;">Live Log</span>
+              </div>
+
+              <div class="activity-log-timeline">
+                @forelse($activityLogs as $log)
+                  <div class="activity-log-item">
+                    <div class="activity-log-icon">
+                      <i class='bx {{ $log['icon'] }}'></i>
+                    </div>
+                    <div class="activity-log-content">
+                      <div class="activity-log-title">
+                        <span>{{ $log['title'] }}</span>
+                        <span class="badge-adminlte {{ $log['badge_class'] }}" style="font-size: 0.65rem; padding: 1px 5px;">{{ $log['badge_label'] }}</span>
+                      </div>
+                      <div class="activity-log-desc">{{ $log['desc'] }}</div>
+                      <div class="activity-log-meta">
+                        <i class='bx bx-time'></i>
+                        <span>{{ $log['time'] ? $log['time']->diffForHumans() : '-' }}</span>
+                        <span>•</span>
+                        <span style="font-weight: 600;">{{ $log['status'] }}</span>
+                      </div>
+                    </div>
+                  </div>
+                @empty
+                  <div style="text-align: center; color: #6C757D; font-size: 0.8rem; padding: 24px;">
+                    Belum ada log aktivitas terekam.
+                  </div>
+                @endforelse
+              </div>
+            </div>
+          </div>
+        </section>
+
       </div>
     </main>
   </div>
@@ -754,6 +1178,105 @@
           <button type="submit" class="btn-adminlte-green">
             <i class='bx bx-save'></i>
             <span>Simpan Kategori</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  <!-- ==========================================================================
+       MODAL: TOLAK BUKTI PEMBAYARAN
+       ========================================================================== -->
+  <div class="review-modal-backdrop" id="rejectPaymentModalBackdrop" style="display:none;">
+    <div class="review-modal-dialog">
+      <div class="review-modal-header">
+        <div class="review-header-title-box">
+          <i class='bx bx-x-circle' style="font-size: 1.4rem; color: #DC3545;"></i>
+          <div>
+            <h3 class="review-modal-title">Tolak Bukti Pembayaran</h3>
+            <p class="review-modal-sub">Berikan catatan alasan mengapa bukti transfer ditolak</p>
+          </div>
+        </div>
+        <button type="button" class="btn-review-close" onclick="closeRejectPaymentModal()">
+          <i class='bx bx-x'></i>
+        </button>
+      </div>
+
+      <form id="rejectPaymentForm" action="" method="POST" class="review-modal-body">
+        @csrf
+        <input type="hidden" name="status" value="ditolak">
+        <div>
+          <label class="form-label" for="rejectPaymentReason">Alasan Penolakan</label>
+          <input type="text" name="catatan" id="rejectPaymentReason" class="panel-input" placeholder="contoh: Foto struk buram / nominal tidak sesuai" required>
+        </div>
+
+        <div class="review-modal-actions">
+          <button type="button" class="btn-review-skip" onclick="closeRejectPaymentModal()">Batal</button>
+          <button type="submit" class="btn-action-sm btn-action-danger" style="padding: 9px 18px; font-size: 0.88rem;">
+            <i class='bx bx-x'></i>
+            <span>Tolak Pembayaran</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function openRejectPaymentModal(idPesanan) {
+      const backdrop = document.getElementById('rejectPaymentModalBackdrop');
+      const form = document.getElementById('rejectPaymentForm');
+      if (form) form.action = '/admin/payments/' + idPesanan + '/verify';
+      if (backdrop) backdrop.style.display = 'flex';
+    }
+    function closeRejectPaymentModal() {
+      const backdrop = document.getElementById('rejectPaymentModalBackdrop');
+      if (backdrop) backdrop.style.display = 'none';
+    }
+    window.openRejectPaymentModal = openRejectPaymentModal;
+    window.closeRejectPaymentModal = closeRejectPaymentModal;
+
+    function openSupportReplyModal(idUser, userName) {
+      const backdrop = document.getElementById('supportReplyModalBackdrop');
+      const form = document.getElementById('supportReplyForm');
+      const nameEl = document.getElementById('supportReplyUserName');
+      if (form) form.action = '/admin/support/' + idUser + '/reply';
+      if (nameEl) nameEl.textContent = 'Membalas pesan untuk: ' + userName;
+      if (backdrop) backdrop.style.display = 'flex';
+    }
+    function closeSupportReplyModal() {
+      const backdrop = document.getElementById('supportReplyModalBackdrop');
+      if (backdrop) backdrop.style.display = 'none';
+    }
+    window.openSupportReplyModal = openSupportReplyModal;
+    window.closeSupportReplyModal = closeSupportReplyModal;
+  </script>
+
+  <!-- Modal Balas Customer Support -->
+  <div class="review-modal-backdrop" id="supportReplyModalBackdrop" style="display:none;">
+    <div class="review-modal-dialog">
+      <div class="review-modal-header">
+        <div class="review-header-title-box">
+          <i class='bx bx-support' style="font-size: 1.4rem; color: #2E8B3D;"></i>
+          <div>
+            <h3 class="review-modal-title">Balas Customer Support</h3>
+            <p class="review-modal-sub" id="supportReplyUserName">Balas pesan pelanggan</p>
+          </div>
+        </div>
+        <button type="button" class="btn-review-close" onclick="closeSupportReplyModal()">
+          <i class='bx bx-x'></i>
+        </button>
+      </div>
+
+      <form id="supportReplyForm" action="" method="POST" class="review-modal-body">
+        @csrf
+        <div>
+          <label class="form-label" for="supportReplyInput">Pesan Balasan</label>
+          <textarea name="isi_pesan" id="supportReplyInput" class="panel-input" rows="4" placeholder="Tuliskan jawaban bantuan atau konfirmasi untuk pelanggan..." required style="resize: vertical; width: 100%; border: 1px solid #ced4da; border-radius: 8px; padding: 10px;"></textarea>
+        </div>
+
+        <div class="review-modal-actions" style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px;">
+          <button type="button" class="btn-review-skip" onclick="closeSupportReplyModal()">Batal</button>
+          <button type="submit" class="btn-action-sm btn-action-success" style="padding: 9px 18px; font-size: 0.88rem;">
+            <i class='bx bx-send'></i>
+            <span>Kirim Balasan</span>
           </button>
         </div>
       </form>

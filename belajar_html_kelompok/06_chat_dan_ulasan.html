@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>06 - Chat Internal, Bukti Bayar & Ulasan | JajanRia PBL TRPL-104</title>
+  
+  <!-- Font Google: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- File CSS Khusus Chat & Ulasan -->
+  <link rel="stylesheet" href="06_chat_dan_ulasan.css">
+</head>
+<body class="chat-page-body">
+
+  <div class="chat-app-container">
+    
+    <!-- ======================================================================
+         BAGIAN 1: HEADER CHAT (INFO TOKO & STATUS ONLINE)
+         Tujuan: Menampilkan lawan bicara (Penjual UMKM) dan navigasi kembali.
+         ====================================================================== -->
+    <header class="chat-header">
+      <div class="chat-header-left">
+        <a href="02_detail_toko.html" class="btn-back-chat" title="Kembali ke profil lapak">
+          &larr;
+        </a>
+        <div class="chat-partner-avatar">
+          <img src="img/nasi-goreng.jpg" alt="Ayam Geprek Sambal Korek">
+          <span class="avatar-online-dot"></span>
+        </div>
+        <div class="chat-partner-meta">
+          <h2 class="chat-partner-name">Ayam Geprek Sambal Korek</h2>
+          <span class="chat-partner-sub">Mitra UMKM Kampus • Balas dalam beberapa menit</span>
+        </div>
+      </div>
+
+      <div class="chat-header-right">
+        <a href="01_katalog_beranda.html" class="btn btn-home-link">
+          🏠 Beranda
+        </a>
+      </div>
+    </header>
+
+
+    <!-- ======================================================================
+         BAGIAN 2: RINGKASAN PESANAN DI ATAS CHAT (ORDER BANNER)
+         Tujuan: Memperlihatkan ringkasan pesanan & status (Diproses / Selesai).
+         ====================================================================== -->
+    <div class="order-summary-banner">
+      <div class="order-badge-row">
+        <span class="order-id">Pesanan #JR-104</span>
+        <span class="order-status-badge status-completed">✓ Status: Selesai</span>
+      </div>
+      <div class="order-details-text">
+        <strong>1x Paket Ayam Geprek Sambal Korek (Level 5)</strong> &bull; Total: Rp 15.000 (Mandiri Transfer)
+      </div>
+    </div>
+
+
+    <!-- ======================================================================
+         BAGIAN 3: AREA PESAN CHAT (INTERNAL SCROLL AREA)
+         Tujuan: Tempat dialog antara pembeli (Dimas) dan penjual (Ayam Geprek).
+         Catatan: Desain mengunci scroll window dan hanya area ini yang bergulir.
+         ====================================================================== -->
+    <main class="chat-messages-scroll" id="chatScrollArea">
+      
+      <!-- Timestamp Percakapan -->
+      <div class="chat-date-divider">
+        <span>Hari ini, 27 Oktober 2026</span>
+      </div>
+
+      <!-- BUBBLE 1: PESAN DARI PENJUAL (INCOMING / KIRI) -->
+      <div class="message-row incoming">
+        <div class="message-bubble">
+          <p class="message-text">
+            Halo kak Dimas! Terima kasih sudah menghubungi Ayam Geprek Sambal Korek Kampus. Mau pesan menu apa hari ini kak? 😊
+          </p>
+          <span class="message-time">11:45 WIB</span>
+        </div>
+      </div>
+
+      <!-- BUBBLE 2: PESAN DARI PEMBELI (OUTGOING / KANAN) -->
+      <div class="message-row outgoing">
+        <div class="message-bubble">
+          <p class="message-text">
+            Halo min! Mau pesan 1 Paket Geprek Sambal Korek ya, level pedas 5. Ini saya sudah transfer mandiri Rp 15.000 ke rekening lapak.
+          </p>
+          <span class="message-time">11:47 WIB</span>
+        </div>
+      </div>
+
+      <!-- BUBBLE 3: BUKTI PEMBAYARAN TRANSFER (OUTGOING / KANAN) -->
+      <div class="message-row outgoing">
+        <div class="message-bubble proof-bubble">
+          <div class="proof-header">
+            <span class="icon">🧾</span>
+            <strong>Bukti Transfer Pembayaran</strong>
+          </div>
+          <div class="proof-img-box">
+            <img src="img/bg.png" alt="Struk Transfer Rp 15.000" class="proof-img">
+            <span class="proof-verified-badge">✓ Terkirim ke Penjual & Admin</span>
+          </div>
+          <div class="proof-meta">
+            <span>Mandiri Transfer: Rp 15.000</span>
+          </div>
+          <span class="message-time">11:48 WIB</span>
+        </div>
+      </div>
+
+      <!-- BUBBLE 4: RESPON PENJUAL (INCOMING / KIRI) -->
+      <div class="message-row incoming">
+        <div class="message-bubble">
+          <p class="message-text">
+            Bukti bayar sudah kami terima kak! Ayamnya sedang digoreng garing, sekitar 7 menit lagi siap diambil di Kios No. 04 Kantin Polibatam ya kak. 👍
+          </p>
+          <span class="message-time">11:49 WIB</span>
+        </div>
+      </div>
+
+      <!-- BUBBLE 5: NOTIFIKASI SISTEM (CENTER) -->
+      <div class="system-notification-bubble">
+        <span class="system-icon">🔔</span>
+        <span>Penjual telah menandai pesanan ini <strong>SELESAI</strong>. Terima kasih sudah jajan!</span>
+      </div>
+
+      <!-- ====================================================================
+           BAGIAN 4: PEMICU ULASAN (REVIEW TRIGGER BUTTON)
+           Aturan Inti PBL JajanRia:
+           Tombol ini muncul HANYA saat pesanan sudah berstatus "Selesai".
+           ==================================================================== -->
+      <div class="review-trigger-card">
+        <div class="trigger-icon">⭐</div>
+        <div class="trigger-text">
+          <strong>Bagaimana Rasa Jajanan Anda?</strong>
+          <p>Beri ulasan dan rating bintang untuk membantu UMKM ini berkembang!</p>
+        </div>
+        <button type="button" class="btn btn-trigger-review" onclick="openReviewModal()">
+          ⭐ Beri Penilaian Sekarang
+        </button>
+      </div>
+
+    </main>
+
+
+    <!-- ======================================================================
+         BAGIAN 5: INPUT BAR CHAT BAWAH
+         Tujuan: Mengirim pesan teks baru atau mengunggah bukti foto struk transfer.
+         ====================================================================== -->
+    <footer class="chat-input-bar">
+      <!-- Tombol Upload Bukti Pembayaran -->
+      <button type="button" class="btn-attach" title="Upload Bukti Struk Bayar" onclick="alert('Demo: Pilih file foto struk transfer dari perangkat Anda.');">
+        📎 Bukti Bayar
+      </button>
+
+      <input 
+        type="text" 
+        class="chat-text-input" 
+        placeholder="Ketik pesan untuk penjual di sini..." 
+        id="inputChatMessage"
+        aria-label="Input pesan chat"
+      >
+
+      <button type="button" class="btn-send-chat" onclick="sendDemoMessage()">
+        ➤
+      </button>
+    </footer>
+
+  </div>
+
+
+  <!-- ========================================================================
+       BAGIAN 6: MODAL POPUP FORM ULASAN & RATING BINTANG
+       Tujuan: Formulir pop-up untuk memilih bintang 1-5 dan menulis testimoni.
+       ======================================================================== -->
+  <div class="modal-overlay" id="reviewModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="modal-title">⭐ Beri Penilaian & Ulasan</h3>
+        <button type="button" class="modal-close" onclick="closeReviewModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <p class="modal-desc">
+          Pesanan #JR-104 &bull; <strong>Ayam Geprek Sambal Korek Kampus</strong>
+        </p>
+
+        <!-- Pilihan Rating Bintang 1 s.d 5 -->
+        <div class="star-rating-selector">
+          <span class="rating-star active" onclick="setRating(1)">★</span>
+          <span class="rating-star active" onclick="setRating(2)">★</span>
+          <span class="rating-star active" onclick="setRating(3)">★</span>
+          <span class="rating-star active" onclick="setRating(4)">★</span>
+          <span class="rating-star active" onclick="setRating(5)">★</span>
+        </div>
+        <div class="rating-text-feedback" id="ratingLabel">Sangat Enak & Puas! (5 / 5)</div>
+
+        <!-- Input Ulasan / Testimoni -->
+        <div class="form-group-review">
+          <label for="reviewComment" class="review-label">Ceritakan Kepuasan Jajanan Anda:</label>
+          <textarea 
+            id="reviewComment" 
+            class="review-textarea" 
+            rows="3" 
+            placeholder="Contoh: Ayamnya renyah, sambal koreknya pedas gurih pas di lidah..."
+          >Sambal koreknya nampol banget, porsi ayam kenyang dan harga mahasiswa!</textarea>
+        </div>
+
+        <button type="button" class="btn btn-submit-review" onclick="submitReview()">
+          Kirim Ulasan Bintang &rarr;
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Script Interaktif Sederhana (Untuk Kemudahan Belajar & Demo Dosen) -->
+  <script>
+    // Membuka modal ulasan
+    function openReviewModal() {
+      document.getElementById('reviewModal').style.display = 'flex';
+    }
+
+    // Menutup modal ulasan
+    function closeReviewModal() {
+      document.getElementById('reviewModal').style.display = 'none';
+    }
+
+    // Mengubah pilihan rating bintang
+    function setRating(stars) {
+      const starElements = document.querySelectorAll('.rating-star');
+      const label = document.getElementById('ratingLabel');
+      
+      starElements.forEach((el, index) => {
+        if (index < stars) {
+          el.classList.add('active');
+        } else {
+          el.classList.remove('active');
+        }
+      });
+
+      const feedback = [
+        "Kecewa (1/5)",
+        "Kurang Puas (2/5)",
+        "Cukup Baik (3/5)",
+        "Enak & Puas (4/5)",
+        "Sangat Enak & Puas! (5/5)"
+      ];
+      label.textContent = feedback[stars - 1];
+    }
+
+    // Simulasi kirim ulasan
+    function submitReview() {
+      alert('Terima kasih! Ulasan bintang berhasil dikirim dan tersimpan di database.');
+      closeReviewModal();
+    }
+
+    // Simulasi kirim pesan chat
+    function sendDemoMessage() {
+      const input = document.getElementById('inputChatMessage');
+      if (input.value.trim() !== '') {
+        alert('Pesan terkirim ke penjual: "' + input.value + '"');
+        input.value = '';
+      }
+    }
+  </script>
+
+</body>
+</html>

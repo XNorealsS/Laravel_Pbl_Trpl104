@@ -34,16 +34,93 @@ class AdminController extends Controller
         // 4. Moderasi ulasan (UC-11)
         $ulasanList = Ulasan::with(['pengunjung', 'umkm'])->latest()->get();
 
-        // 5. Pemantauan log pesan/obrolan untuk keperluan moderasi (UC-11, F018)
+        // 5. Daftar Pesanan dengan Bukti Pembayaran untuk Verifikasi Admin
+        $paymentOrders = Pesanan::whereNotNull('bukti_pembayaran')
+            ->orWhereIn('status_pembayaran', ['menunggu_verifikasi', 'lunas', 'ditolak'])
+            ->with(['pengunjung', 'umkm'])
+            ->latest()
+            ->get();
+
+        // 6. Daftar Pesan Customer Support (Pusat Bantuan Pengguna)
+        $supportTickets = Pesan::where(function ($q) {
+            $q->whereNull('id_umkm')->orWhere('tipe_pesan', 'support');
+        })->with('pengunjung')->latest('waktu')->get();
+
+        // 7. Pemantauan log pesan/obrolan untuk keperluan moderasi (UC-11, F018)
         $pesanList = Pesan::with(['pengunjung', 'umkm'])->latest('waktu')->take(12)->get();
 
-        // 6. Statistik lengkap monitoring platform (UC-11, F019)
+        // 7. Daftar seluruh akun pengguna untuk Manajemen User (UC-09, F015)
+        $allUsers = Pengguna::with('umkm')->latest('id_user')->get();
+
+        // 8. Activity Log Summary - Pengawasan aktivitas gabungan real-time (UC-11, F018, F019)
+        $userEvents = Pengguna::latest('created_at')->take(6)->get()->map(function ($u) {
+            $isGoogle = !empty($u->firebase_uid);
+            return [
+                'type' => 'user',
+                'icon' => 'bx-user-plus',
+                'badge_class' => 'badge-info',
+                'badge_label' => 'Akun',
+                'title' => 'Akun ' . ucfirst($u->role) . ' Terdaftar',
+                'desc' => $u->nama . ' (' . ($isGoogle ? 'Google Auth' : 'Email/Pass') . ')',
+                'time' => $u->created_at,
+                'status' => $u->is_active ? 'Aktif' : 'Nonaktif',
+            ];
+        });
+
+        $orderEvents = Pesanan::with(['pengunjung', 'umkm'])->latest('created_at')->take(6)->get()->map(function ($o) {
+            $isSelesai = $o->status === 'selesai';
+            return [
+                'type' => 'order',
+                'icon' => $isSelesai ? 'bx-check-circle' : 'bx-time-five',
+                'badge_class' => $isSelesai ? 'badge-success' : 'badge-warning',
+                'badge_label' => 'Pesanan',
+                'title' => $isSelesai ? 'Pesanan Selesai' : 'Pesanan Diproses',
+                'desc' => ($o->pengunjung ? $o->pengunjung->nama : 'Customer') . ' ➔ ' . ($o->umkm ? $o->umkm->nama_usaha : 'Lapak UMKM'),
+                'time' => $o->waktu_selesai ?? $o->created_at,
+                'status' => ucfirst($o->status),
+            ];
+        });
+
+        $reviewEvents = Ulasan::with(['pengunjung', 'umkm'])->latest('created_at')->take(6)->get()->map(function ($r) {
+            return [
+                'type' => 'review',
+                'icon' => 'bx-star',
+                'badge_class' => $r->disembunyikan ? 'badge-danger' : 'badge-warning',
+                'badge_label' => 'Ulasan',
+                'title' => $r->disembunyikan ? 'Ulasan Disembunyikan (Moderasi)' : 'Ulasan Masuk (' . $r->rating . '★)',
+                'desc' => ($r->pengunjung ? $r->pengunjung->nama : 'Customer') . ': "' . \Illuminate\Support\Str::limit($r->komentar, 40) . '"',
+                'time' => $r->created_at,
+                'status' => $r->disembunyikan ? 'Dimoderasi' : 'Tampil',
+            ];
+        });
+
+        $chatEvents = Pesan::with(['pengunjung', 'umkm'])->latest('waktu')->take(6)->get()->map(function ($p) {
+            return [
+                'type' => 'chat',
+                'icon' => 'bx-message-square-detail',
+                'badge_class' => 'badge-primary',
+                'badge_label' => 'Chat',
+                'title' => 'Obrolan Chat Internal',
+                'desc' => ($p->pengirim === 'pengunjung' ? ($p->pengunjung ? $p->pengunjung->nama : 'Customer') : 'Seller') . ' ➔ "' . \Illuminate\Support\Str::limit($p->isi_pesan, 38) . '"',
+                'time' => $p->waktu,
+                'status' => 'Terkirim',
+            ];
+        });
+
+        $activityLogs = $userEvents->concat($orderEvents)->concat($reviewEvents)->concat($chatEvents)
+            ->sortByDesc(fn ($item) => $item['time'] ? $item['time']->timestamp : 0)
+            ->values()
+            ->take(12);
+
+        // 9. Statistik lengkap monitoring platform (UC-11, F019)
         $stats = [
             'total_umkm' => Umkm::count(),
             'umkm_aktif' => Umkm::tampil()->count(),
             'total_produk' => Produk::count(),
             'total_ulasan' => Ulasan::count(),
             'pending_verifikasi' => $pendingSellers->count(),
+            'pending_pembayaran' => Pesanan::where('status_pembayaran', 'menunggu_verifikasi')->count(),
+            'total_support' => $supportTickets->count(),
             'total_pengguna' => Pengguna::count(),
             'total_pesan' => Pesan::count(),
             'total_pesanan' => Pesanan::count(),
@@ -54,7 +131,11 @@ class AdminController extends Controller
             'allUmkms',
             'kategoriList',
             'ulasanList',
+            'paymentOrders',
+            'supportTickets',
             'pesanList',
+            'allUsers',
+            'activityLogs',
             'stats'
         ));
     }
@@ -125,5 +206,53 @@ class AdminController extends Controller
 
         $statusText = $ulasan->disembunyikan ? 'disembunyikan dari publik' : 'ditampilkan kembali';
         return back()->with('success', 'Ulasan pembeli berhasil ' . $statusText);
+    }
+
+    /**
+     * Verifikasi Bukti Pembayaran: Setujui (Lunas) / Tolak.
+     */
+    public function verifyPayment(Request $request, int $idPesanan)
+    {
+        $request->validate([
+            'status' => 'required|in:lunas,ditolak',
+            'catatan' => 'nullable|string|max:255',
+        ]);
+
+        $status = $request->input('status');
+        $catatan = trim((string) $request->input('catatan'));
+
+        $pesanan = Pesanan::findOrFail($idPesanan);
+        $pesanan->update([
+            'status_pembayaran' => $status,
+            'catatan_admin' => $catatan ?: null,
+        ]);
+
+        return back()->with('success', 'Status pembayaran pesanan #' . $idPesanan . ' berhasil diubah menjadi: ' . strtoupper($status));
+    }
+
+    /**
+     * Balas pesan Customer Support kepada Pengguna.
+     */
+    public function replySupportMessage(Request $request, int $idUser)
+    {
+        $request->validate([
+            'isi_pesan' => 'required|string|max:1000',
+        ]);
+
+        $isiPesan = trim((string) $request->input('isi_pesan'));
+        if ($isiPesan === '') {
+            return back()->with('error', 'Pesan balasan tidak boleh kosong.');
+        }
+
+        Pesan::create([
+            'id_pengunjung' => $idUser,
+            'id_umkm' => null,
+            'pengirim' => 'seller',
+            'isi_pesan' => $isiPesan,
+            'tipe_pesan' => 'support',
+            'waktu' => now(),
+        ]);
+
+        return back()->with('success', 'Balasan Customer Support berhasil dikirim ke pelanggan.');
     }
 }

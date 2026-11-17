@@ -1,0 +1,498 @@
+/**
+ * ============================================================================
+ * JAJANRIA - CSS HALAMAN 05: PANEL ADMINISTRATOR (ANGGOTA 5)
+ * PBL TRPL-104 Politeknik Negeri Batam
+ * Standar: Layout AdminLTE, Solid Hijau #2E8B3D Sidebar & Thead Tabel
+ * ============================================================================
+ */
+
+/* 1. VARIABEL CSS PANEL */
+:root {
+  --admin-green: #2E8B3D;         /* Hijau solid JajanRia */
+  --admin-green-dark: #246F31;    /* Hijau gelap hover */
+  --admin-green-light: #E8F5E9;   /* Hijau lembut aksen */
+  --admin-bg: #F4F6F9;            /* Background standar AdminLTE */
+  --admin-card: #FFFFFF;          /* Putih kartu */
+  --admin-border: #DEE2E6;        /* Border abu-abu */
+  --admin-text: #212529;          /* Teks gelap */
+  --admin-muted: #6C757D;         /* Teks muted */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+/* 2. RESET DASAR */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body.panel-body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  color: var(--admin-text);
+  background-color: var(--admin-bg);
+  min-height: 100vh;
+}
+
+.panel-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* 3. SIDEBAR ADMIN (SOLID HIJAU #2E8B3D) */
+.panel-sidebar {
+  width: 260px;
+  background-color: var(--admin-green);
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+}
+
+.sidebar-brand {
+  padding: 22px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #FFFFFF;
+}
+
+.brand-icon {
+  width: 38px;
+  height: 38px;
+  object-fit: contain;
+}
+
+.brand-title {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.brand-sub {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  opacity: 0.85;
+  letter-spacing: 0.5px;
+}
+
+.role-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+}
+
+.pill-admin {
+  background: #3B82F6;
+  color: #FFFFFF;
+}
+
+/* Navigasi Sidebar */
+.sidebar-nav {
+  padding: 18px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nav-heading {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.65);
+  padding: 8px 12px;
+  font-weight: 700;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  background-color: rgba(255, 255, 255, 0.18);
+  color: #FFFFFF;
+}
+
+.nav-item.active {
+  background-color: var(--admin-green-dark);
+}
+
+.nav-label {
+  flex: 1;
+}
+
+.nav-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+}
+
+.badge-green { background: #FFFFFF; color: var(--admin-green); }
+.badge-yellow { background: #FFC107; color: #212529; }
+.badge-red { background: #EF4444; color: #FFFFFF; }
+
+/* Profil Admin Footer Sidebar */
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.admin-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: #3B82F6;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.82rem;
+}
+
+.admin-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-name {
+  font-size: 0.84rem;
+  color: #FFFFFF;
+}
+
+.admin-email {
+  font-size: 0.72rem;
+  opacity: 0.75;
+}
+
+/* 4. MAIN PANEL AREA */
+.panel-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.panel-topbar {
+  background: var(--admin-card);
+  border-bottom: 1px solid var(--admin-border);
+  padding: 16px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.page-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--admin-text);
+}
+
+.page-subtitle {
+  font-size: 0.85rem;
+  color: var(--admin-muted);
+}
+
+.topbar-right {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.btn-preview {
+  background: var(--admin-green-light);
+  color: var(--admin-green);
+}
+
+.btn-preview:hover {
+  background: #C8E6C9;
+}
+
+.btn-logout {
+  background: #FEE2E2;
+  color: #DC2626;
+}
+
+.btn-logout:hover {
+  background: #FCA5A5;
+}
+
+.panel-content {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* 5. SMALL-BOXES METRIK STATISTIK */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+}
+
+.metric-card {
+  background: var(--admin-card);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--radius-sm);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--admin-green);
+}
+
+.card-green { border-left-color: var(--admin-green); }
+.card-yellow { border-left-color: #F59E0B; }
+.card-blue { border-left-color: #3B82F6; }
+.card-purple { border-left-color: #8B5CF6; }
+
+.metric-number {
+  display: block;
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--admin-text);
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.metric-label {
+  font-size: 0.82rem;
+  color: var(--admin-muted);
+  font-weight: 600;
+}
+
+.metric-icon {
+  font-size: 2.2rem;
+  opacity: 0.75;
+}
+
+/* 6. CONTENT BOX & TABEL STANDAR ADMINLTE */
+.content-box {
+  background: var(--admin-card);
+  border: 1px solid var(--admin-border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.box-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--admin-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.box-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--admin-text);
+}
+
+.box-sub {
+  font-size: 0.82rem;
+  color: var(--admin-muted);
+}
+
+.badge-counter {
+  background: #FEF3C7;
+  color: #92400E;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+}
+
+.table-responsive {
+  overflow-x: auto;
+}
+
+/* TABEL THEAD HIJAU #2E8B3D KHAS ADMINLTE */
+.panel-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.panel-table thead th {
+  background-color: var(--admin-green);
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 0.84rem;
+  padding: 12px 16px;
+  border: 1px solid var(--admin-green-dark);
+  white-space: nowrap;
+}
+
+.panel-table tbody td {
+  padding: 12px 16px;
+  font-size: 0.86rem;
+  border-bottom: 1px solid var(--admin-border);
+  vertical-align: middle;
+}
+
+.panel-table tbody tr:hover {
+  background-color: #F8F9FA;
+}
+
+.text-center { text-align: center; }
+.text-green { color: var(--admin-green); }
+.text-yellow { color: #D97706; }
+.text-muted { color: var(--admin-muted); }
+.text-xs { font-size: 0.75rem; }
+.text-sm { font-size: 0.82rem; }
+
+/* Status Badges */
+.badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badge-area {
+  background: #F3F4F6;
+  color: #374151;
+}
+
+.badge-warning {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.badge-success {
+  background: #ECFDF5;
+  color: #059669;
+}
+
+/* Action Buttons */
+.table-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-action {
+  padding: 5px 10px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.btn-approve {
+  background: #10B981;
+  color: #FFFFFF;
+}
+
+.btn-approve:hover {
+  background: #059669;
+}
+
+.btn-reject {
+  background: #EF4444;
+  color: #FFFFFF;
+}
+
+.btn-reject:hover {
+  background: #DC2626;
+}
+
+.btn-secondary {
+  background: #E5E7EB;
+  color: #374151;
+}
+
+.btn-secondary:hover {
+  background: #D1D5DB;
+}
+
+.btn-link-preview {
+  background: none;
+  border: none;
+  color: #2563EB;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.84rem;
+  font-family: inherit;
+  padding: 0;
+}
+
+/* 7. MEDIA QUERIES MOBILE */
+@media (max-width: 900px) {
+  .panel-layout {
+    flex-direction: column;
+  }
+
+  .panel-sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+  }
+
+  .panel-content {
+    padding: 16px;
+  }
+}

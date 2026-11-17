@@ -11,9 +11,25 @@ class Pesanan extends Model
     protected $table = 't_pesanan';
     protected $primaryKey = 'id_pesanan';
 
-    protected $fillable = ['id_pengunjung', 'id_umkm', 'status', 'waktu_selesai'];
+    protected $fillable = [
+        'id_pengunjung',
+        'id_umkm',
+        'items_detail',
+        'total_harga',
+        'bukti_pembayaran',
+        'status_pembayaran',
+        'catatan_admin',
+        'waktu_pembayaran',
+        'status',
+        'waktu_selesai',
+    ];
 
-    protected $casts = ['waktu_selesai' => 'datetime'];
+    protected $casts = [
+        'items_detail' => 'array',
+        'total_harga' => 'integer',
+        'waktu_pembayaran' => 'datetime',
+        'waktu_selesai' => 'datetime',
+    ];
 
     public function umkm(): BelongsTo
     {
