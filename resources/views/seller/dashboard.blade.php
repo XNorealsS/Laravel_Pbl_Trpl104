@@ -392,7 +392,7 @@
                           @csrf
                           <button type="submit" class="btn-action-sm {{ $p->tersedia ? 'btn-action-success' : 'btn-action-danger' }}" title="Klik untuk {{ $p->tersedia ? 'Kosongkan ketersediaan (Stok Habis)' : 'Aktifkan ketersediaan (Stok Ada)' }}" style="padding: 4px 10px; font-size: 0.78rem;">
                             <i class='bx {{ $p->tersedia ? "bx-check-circle" : "bx-x-circle" }}'></i>
-                            <span>{{ $p->tersedia ? 'Tersedia (Klik Kosongkan)' : 'Habis (Klik Aktifkan)' }}</span>
+                            <span>{{ $p->tersedia ? 'Tersedia' : 'Habis' }}</span>
                           </button>
                         </form>
                       </td>

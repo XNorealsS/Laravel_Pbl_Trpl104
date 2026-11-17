@@ -13,7 +13,7 @@ class DashboardController extends Controller
     {
         // Data pengguna aktif
         $user = [
-            'name' => "Muhammad Rifa'a",
+            'name' => "Muhammad Rifaa",
             'role' => 'Pengguna',
             'avatar' => 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
             'unread_notifications' => 1,
