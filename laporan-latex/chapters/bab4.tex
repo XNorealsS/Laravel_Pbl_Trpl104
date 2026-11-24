@@ -1,0 +1,231 @@
+\clearpage
+\section{Perencanaan, Deskripsi dan Hasil Uji Perangkat Lunak}
+
+\subsection{Rencana Pengujian}
+
+Pengujian fungsional dilakukan dengan pendekatan \textit{black-box} terhadap seluruh skenario \textit{use case} yang diimplementasikan (\texttt{UC-01} s.d.\ \texttt{UC-13}). Pengujian turut mencakup verifikasi persistensi tab pasca-aksi pada dasbor Penjual serta Admin, audit protokol transfer hiperteks (\textit{Hypertext Transfer Protocol}) untuk metode permintaan \texttt{GET} dan \texttt{POST}, serta pengujian unit/fitur bawaan Laravel. Eksekusi pengujian otomatis dijalankan pada tanggal 19 November 2026 memakai \textit{Playwright} pada peramban \textit{Chromium} terhadap klon basis data terisolasi (\texttt{jajanria\_test}) agar data usaha mikro, kecil, dan menengah (UMKM) pada basis data utama tetap aman. Daftar kasus uji dirangkum pada Tabel~\ref{tab:rencana-pengujian}.
+
+\renewcommand{\arraystretch}{1.22}
+\begin{longtable}{|C{1.55cm}|L{\dimexpr\textwidth-1.55cm-2.0cm-1.7cm-2.1cm-2.3cm-12\tabcolsep-7\arrayrulewidth\relax}|C{2.0cm}|C{1.7cm}|C{2.1cm}|L{2.3cm}|}
+\caption{Rencana Pengujian Fungsional Sistem JajanRia}
+\label{tab:rencana-pengujian} \\
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Nomor Uji} & \textbf{Nama Kasus Uji} & \textbf{Kebutuhan} & \textbf{Jenis Uji} & \textbf{Tanggal Uji} & \textbf{Nama Penguji} \\
+\hline
+\endfirsthead
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Nomor Uji} & \textbf{Nama Kasus Uji} & \textbf{Kebutuhan} & \textbf{Jenis Uji} & \textbf{Tanggal Uji} & \textbf{Nama Penguji} \\
+\hline
+\endhead
+\hline
+\endfoot
+KU-001 & Autentikasi Admin dan Penjual valid serta penolakan akun nonaktif atau sandi salah & F001 & \textit{Black-box} & 19/11/2026 & Tim Penguji TRPL-104 \\
+\hline
+KU-002 & Registrasi mandiri mitra Penjual baru melalui formulir pendaftaran mitra & F001 & \textit{Black-box} & 19/11/2026 & Tim Penguji TRPL-104 \\
+\hline
+KU-003 & Pencarian kata kunci, penyaring katalog, dan halaman detail lapak UMKM & F002--F005 & \textit{Black-box} & 19/11/2026 & Tim Penguji TRPL-104 \\
+\hline
+KU-004 & \textit{Checkout} keranjang, kalkulasi harga di server, dan penolakan menu habis & F006 & \textit{Black-box} & 19/11/2026 & Tim Penguji TRPL-104 \\
+\hline
+KU-005 & Unggah foto bukti pembayaran transfer saat \textit{checkout} dan via \textit{History Pesanan} & F007 & \textit{Black-box} & 19/11/2026 & Tim Penguji TRPL-104 \\
+\hline
+KU-006 & Verifikasi bukti pembayaran terpusat oleh Admin (Setujui \textit{Lunas} \& Tolak via modal alasan) & F008 & \textit{Black-box} & 19/11/2026 & Tim Penguji TRPL-104 \\
+\hline
+KU-007 & Penjual menyelesaikan pesanan \textit{Self Pick-up} dan larangan sebelum status \textit{lunas} & F009 & \textit{Black-box} & 19/11/2026 & Tim Penguji TRPL-104 \\
+\hline
+KU-008 & Pemicu tombol ``Beri Penilaian'' (\textit{selesai} dan \textit{lunas}), pengiriman ulasan, serta balasan Penjual & F010--F012 & \textit{Black-box} & 19/11/2026 & Tim Penguji TRPL-104 \\
+\hline
+KU-009 & Pengelolaan menu, profil lapak UMKM, dan status ketersediaan menu Penjual & F013--F014 & \textit{Black-box} & 19/11/2026 & Tim Penguji TRPL-104 \\
+\hline
+KU-010 & Verifikasi calon Penjual, proteksi hapus kategori berproduk aktif, dan moderasi ulasan Admin & F015--F017, F019 & \textit{Black-box} & 19/11/2026 & Tim Penguji TRPL-104 \\
+\hline
+KU-011 & Komunikasi layanan \textit{Customer Support} dua arah antara Pengunjung dan Admin Support & F018 & \textit{Black-box} & 19/11/2026 & Tim Penguji TRPL-104 \\
+\hline
+KU-012 & Otorisasi akses Panel Administrator, Dasbor Penjual, dan isolasi kepemilikan ulasan & F020 & \textit{Black-box} & 19/11/2026 & Tim Penguji TRPL-104 \\
+\hline
+\end{longtable}
+
+\subsection{Deskripsi dan Hasil Uji}
+
+% Macro kotak hasil uji standar Halaman 41 Format laporan Polibatam
+\newcommand{\printtestcase}[9]{%
+\needspace{9cm}
+\noindent
+\renewcommand{\arraystretch}{1.20}
+\begin{tabularx}{\textwidth}{|L{3.2cm}|Y|Y|}
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Identifikasi} & \multicolumn{2}{l|}{\textbf{#1}} \\
+\hline
+\textbf{Nama Kasus Uji} & \multicolumn{2}{>{\raggedright\arraybackslash}p{\dimexpr\textwidth-3.2cm-4\tabcolsep-3\arrayrulewidth\relax}|}{#2} \\
+\hline
+\textbf{Deskripsi} & \multicolumn{2}{>{\raggedright\arraybackslash}p{\dimexpr\textwidth-3.2cm-4\tabcolsep-3\arrayrulewidth\relax}|}{#3} \\
+\hline
+\textbf{Kondisi Awal} & \multicolumn{2}{>{\raggedright\arraybackslash}p{\dimexpr\textwidth-3.2cm-4\tabcolsep-3\arrayrulewidth\relax}|}{#4} \\
+\hline
+\textbf{Tanggal Pengujian} & \multicolumn{2}{l|}{#5} \\
+\hline
+\textbf{Penguji} & \multicolumn{2}{l|}{#6} \\
+\hline
+\rowcolor{RowShade}
+\multicolumn{3}{|c|}{\textbf{Skenario Pengujian}} \\
+\hline
+\multicolumn{3}{|>{\raggedright\arraybackslash}p{\dimexpr\textwidth-2\tabcolsep-2\arrayrulewidth\relax}|}{#7} \\
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Hasil yang Diharapkan} & \textbf{Hasil Pengamatan} & \textbf{Kesimpulan} \\
+\hline
+#8 & #9 & \textbf{\color{JajanGreen}Sesuai (PASS)} \\
+\hline
+\end{tabularx}
+\vspace{0.35cm}
+}
+
+Rincian skenario, hasil yang diharapkan, hasil pengamatan aktual, dan kesimpulan untuk seluruh 12 kasus uji fungsional disajikan pada tabel identifikasi di bawah ini.
+
+\printtestcase{KU-001}{Autentikasi Admin dan Penjual Valid serta Penolakan Sandi Salah / Akun Nonaktif}
+{Menguji proses masuk memakai surel dan kata sandi valid maupun penolakan kata sandi literal yang bukan milik akun, serta pemilih akun cepat aktif.}
+{Akun Admin, Penjual aktif, dan Pengunjung tersedia di basis data uji.}
+{19 November 2026}{Tim Penguji TRPL-104 (Playwright \& Audit HTTP)}
+{\begin{uclist}
+  \item Kirim permintaan masuk memakai surel aktif dengan kata sandi tidak valid (\texttt{wrongpass} dan literal \texttt{'password'}).
+  \item Klik tombol akses cepat peran Penjual pada halaman masuk.
+  \item Masuk menggunakan kredensial Administrator valid.
+\end{uclist}}
+{Percobaan sandi salah ditolak ke halaman masuk; tombol cepat Penjual memilih lapak aktif; Admin masuk ke Panel Administrator.}
+{Percobaan sandi literal \texttt{'password'} dialihkan kembali ke halaman masuk (\texttt{HTTP 302}); akses cepat Penjual masuk ke lapak aktif Mie Aceh Bang Din; Admin masuk ke Panel Administrator.}
+
+\printtestcase{KU-002}{Registrasi Mandiri Mitra Penjual Baru melalui Formulir Pendaftaran}
+{Menguji pengiriman formulir pendaftaran mitra UMKM dengan seluruh bidang selaras beserta validasinya.}
+{Pengguna belum masuk akun dan membuka halaman pendaftaran mitra.}
+{19 November 2026}{Tim Penguji TRPL-104 (Playwright E2E)}
+{\begin{uclist}
+  \item Isi nama pemilik, nama usaha (\texttt{Bakso Budi Kampus}), surel baru, nomor kontak, area (\texttt{Tower A}), alamat lokasi, dan kata sandi.
+  \item Tekan tombol daftar mitra (\texttt{DAFTAR MITRA}).
+  \item Periksa halaman tujuan dan status verifikasi pengguna pada Panel Administrator.
+\end{uclist}}
+{Pengguna dialihkan ke halaman masuk dengan spanduk sukses, serta calon mitra tercatat pada antrean verifikasi Admin.}
+{Pengalihan ke halaman masuk berhasil dengan spanduk ``Pendaftaran Mitra UMKM berhasil!'', dan data \texttt{Bakso Budi Kampus} muncul di tab verifikasi Admin.}
+
+\printtestcase{KU-003}{Pencarian Kata Kunci, Penyaring Katalog, dan Halaman Detail Lapak}
+{Menguji tampilan katalog beranda, penyaringan, serta pemunculan lapak terverifikasi baru di halaman publik.}
+{Mitra baru (\texttt{Bakso Budi Kampus}) telah disetujui Admin pada basis data uji.}
+{19 November 2026}{Tim Penguji TRPL-104 (Playwright E2E)}
+{\begin{uclist}
+  \item Buka halaman beranda katalog sebagai Pengunjung dan cari lapak terverifikasi baru.
+  \item Buka halaman detail lapak dan periksa kelompok menu serta status ketersediaan produk.
+\end{uclist}}
+{Lapak terverifikasi baru tampil di katalog publik beranda dan rincian menu tampil pada halaman detail lapak.}
+{Lapak \texttt{Bakso Budi Kampus} tampil di katalog utama; halaman detail lapak memuat daftar menu per kategori dan penanda menu habis.}
+
+\printtestcase{KU-004}{Checkout Keranjang, Kalkulasi Harga Server, dan Blokir Menu Habis}
+{Menguji konsistensi nominal pada modal \textit{checkout}, validasi harga asli server, penyimpanan catatan pembeli, dan penolakan menu berstatus habis.}
+{Pengunjung masuk akun dan membuka halaman detail lapak dengan salah satu menu tersedia dan satu menu berstatus habis.}
+{19 November 2026}{Tim Penguji TRPL-104 (Playwright \& Audit HTTP)}
+{\begin{uclist}
+  \item Tambahkan 1 porsi menu (Rp22.000) ke keranjang lalu buka modal \textit{checkout} dan periksa total tagihan pada ringkasan modal.
+  \item Kirim permintaan \textit{checkout} dengan nominal harga manipulatif (Rp1) untuk 2 porsi menu Rp22.000.
+  \item Kirim permintaan \textit{checkout} untuk menu berstatus habis.
+\end{uclist}}
+{Modal menampilkan \texttt{Rp 22.000}; server mengabaikan harga manipulatif dan menghitung total Rp44.000; menu habis ditolak (\texttt{HTTP 422}).}
+{Terbaca \texttt{'Rp 22.000'} di modal; permintaan \textit{checkout} mengembalikan \texttt{HTTP 200} dengan total tercatat \texttt{44000}; menu habis ditolak \texttt{HTTP 422}.}
+
+\printtestcase{KU-005}{Unggah Foto Bukti Pembayaran Saat Checkout dan melalui History Pesanan}
+{Menguji dua skenario pembayaran: melampirkan bukti langsung saat \textit{checkout}, serta \textit{checkout} tanpa bukti lalu mengunggah dari \textit{History Pesanan}.}
+{Pengunjung telah masuk akun pada sesi aktif.}
+{19 November 2026}{Tim Penguji TRPL-104 (Playwright E2E)}
+{\begin{uclist}
+  \item Lakukan \textit{checkout} pada lapak pertama disertai berkas gambar bukti bayar (\texttt{WF-01}).
+  \item Lakukan \textit{checkout} tanpa foto pada lapak kedua, lalu buka laci \textit{History Pesanan} dan unggah foto bukti transfer (\texttt{WF-02}).
+\end{uclist}}
+{Pesanan langsung berstatus pembayaran \textit{Menunggu Verifikasi} dan status pesanan \textit{Diproses}; unggah susulan dari History berhasil.}
+{Pesanan tercatat di \textit{History Pesanan} dengan status \textit{Menunggu Verifikasi} dan \textit{Diproses}, serta unggah susulan berhasil.}
+
+\printtestcase{KU-006}{Verifikasi Bukti Pembayaran Terpusat oleh Admin (Setujui dan Tolak via Modal)}
+{Menguji pengubahan status pembayaran oleh Admin dari tab pembayaran, termasuk pembukaan modal alasan penolakan serta persistensi tab.}
+{Terdapat pesanan berstatus menunggu verifikasi pada basis data uji.}
+{19 November 2026}{Tim Penguji TRPL-104 (Playwright E2E)}
+{\begin{uclist}
+  \item Masuk sebagai Admin lalu buka tab Verifikasi Pembayaran pada Panel Administrator.
+  \item Tekan tombol Tolak untuk membuka modal penolakan pembayaran, isi alasan penolakan, lalu simpan.
+  \item Tekan tombol Setujui (\textit{Lunas}) pada pesanan uji berikutnya.
+\end{uclist}}
+{Modal penolakan terbuka normal, status pembayaran diperbarui menjadi \textit{ditolak}/\textit{lunas}, dan tampilan tetap bertahan pada tab Verifikasi Pembayaran.}
+{Modal tolak terbuka mulus, kedua aksi berhasil mengubah status pembayaran dan posisi halaman tetap berada di tab Verifikasi Pembayaran.}
+
+\printtestcase{KU-007}{Penjual Menyelesaikan Pesanan Self Pick-up setelah Pembayaran Lunas}
+{Menguji penampilan rincian item dan catatan pembeli di tabel Penjual, penguncian tombol Selesai sebelum lunas, dan penyelesaian setelah lunas.}
+{Terdapat pesanan belum lunas dan pesanan lunas milik lapak Mie Aceh Bang Din.}
+{19 November 2026}{Tim Penguji TRPL-104 (Playwright \& Audit HTTP)}
+{\begin{uclist}
+  \item Buka tab Pesan \& Pesanan pada Dasbor Penjual dan periksa kolom rincian menu, catatan pembeli, serta tombol status.
+  \item Lakukan upaya mengubah status pesanan menjadi \textit{selesai} pada pesanan yang belum \textit{lunas}.
+  \item Klik tombol Selesai pada pesanan yang telah diverifikasi \textit{lunas} oleh Admin.
+\end{uclist}}
+{Nama menu dan catatan tampil; pesanan belum lunas terkunci dan ditolak server; pesanan lunas berubah \textit{selesai} dan tetap berada di tab Pesan \& Pesanan.}
+{Nama menu serta catatan pembeli tampil; penolakan sebelum lunas tampil; pesanan lunas berubah menjadi \textit{selesai} dan tampilan tetap di tab Pesan \& Pesanan.}
+
+\printtestcase{KU-008}{Pemicu Tombol ``Beri Penilaian'' (Selesai + Lunas), Kirim Ulasan, dan Balasan Penjual}
+{Menguji pemicu penilaian dan penolakan ulasan belum lunas. Diuji pula penyimpanan ulasan di History serta blokir balasan ulasan tersembunyi (\texttt{UC-08}).}
+{Terdapat pesanan belum lunas, pesanan \textit{selesai} dan \textit{lunas}, serta satu ulasan disembunyikan Admin.}
+{19 November 2026}{Tim Penguji TRPL-104 (Playwright \& Audit HTTP)}
+{\begin{uclist}
+  \item Kirim permintaan pengiriman ulasan untuk pesanan yang pembayarannya belum \textit{lunas}.
+  \item Buka \textit{History Pesanan} untuk pesanan \textit{selesai} dan \textit{lunas}, klik ``Beri Penilaian'', lalu kirim bintang 5 dan komentar.
+  \item Masuk sebagai Penjual pada tab Rating \& Ulasan, balas ulasan tampil, lalu coba balas ulasan yang disembunyikan Admin (\texttt{UC-08}).
+\end{uclist}}
+{Permintaan menolak ulasan belum lunas (\texttt{HTTP 400}); tombol penilaian muncul saat \textit{selesai} serta \textit{lunas}; balasan ulasan tersembunyi ditolak.}
+{Ulasan belum lunas ditolak \texttt{HTTP 400}; tombol ``Beri Penilaian'' muncul dan tetap di laci History; balasan pada ulasan disembunyikan ditolak pesan galat.}
+
+\printtestcase{KU-009}{Pengelolaan Menu, Profil Lapak UMKM, dan Ketersediaan Menu Penjual}
+{Menguji tambah/ubah/hapus/toggle produk dan pembaruan profil termasuk area luar sekitar kampus, serta persistensi tab Penjual.}
+{Penjual aktif masuk ke Dasbor Penjual.}
+{19 November 2026}{Tim Penguji TRPL-104 (Playwright E2E)}
+{\begin{uclist}
+  \item Pada tab Kelola Menu \& Katalog, tambah menu baru, klik ubah ketersediaan (\textit{Tersedia}/\textit{Habis}), sunting menu, lalu hapus menu.
+  \item Pada tab Profil Lapak UMKM, perbarui profil lapak lalu tekan simpan.
+\end{uclist}}
+{Seluruh operasi dan simpan profil berhasil tersimpan di basis data serta mempertahankan posisi tab aksi masing-masing.}
+{Seluruh 9 skenario persistensi tab Penjual (termasuk 4 aksi produk, profil, pesanan, dan ulasan + muat ulang F5) berstatus \textbf{PASS}.}
+
+\printtestcase{KU-010}{Verifikasi Calon Penjual, Proteksi Hapus Kategori (\texttt{UC-10}), dan Moderasi Ulasan Admin}
+{Menguji persetujuan calon Penjual baru, pencegahan penghapusan kategori berproduk aktif, serta moderasi ulasan oleh Admin.}
+{Admin masuk ke Panel Administrator; terdapat calon mitra baru \texttt{Bakso Budi Kampus} dan kategori berproduk aktif.}
+{19 November 2026}{Tim Penguji TRPL-104 (Playwright E2E)}
+{\begin{uclist}
+  \item Pada tab Verifikasi Seller Baru, tekan Setujui pada pengajuan calon Penjual baru.
+  \item Pada tab Kelola Kategori Menu, tambah kategori uji baru, coba hapus kategori yang memiliki produk aktif (\texttt{UC-10}), lalu hapus kategori uji kosong.
+  \item Pada tab Moderasi Ulasan, tekan Sembunyikan/Pulihkan pada ulasan.
+\end{uclist}}
+{Calon Penjual disetujui; hapus kategori berproduk aktif ditolak dengan peringatan; moderasi ulasan berhasil dan semua tetap di tab aksi.}
+{Seluruh 10 skenario persistensi tab Admin (kategori, pembayaran, UMKM, moderasi, support, pengguna, verifikasi) berstatus \textbf{PASS}.}
+
+\printtestcase{KU-011}{Komunikasi Layanan Customer Support Dua Arah}
+{Menguji pengiriman tiket keluhan oleh Pengunjung, tampilan label \texttt{Admin Support} di log monitoring, serta balasan Admin kembali ke laci Pengunjung.}
+{Pengunjung dan Admin dapat masuk pada konteks peramban masing-masing.}
+{19 November 2026}{Tim Penguji TRPL-104 (Playwright E2E)}
+{\begin{uclist}
+  \item Pengunjung membuka laci \textit{Customer Support} lalu mengirim pesan pertanyaan bantuan.
+  \item Admin membuka tab Customer Support pada Panel Administrator, membaca tiket masuk, lalu mengirim balasan via modal.
+  \item Cek tampilan balasan pada laci Pengunjung dan label pengirim pada log \textit{Monitoring \& Statistik}.
+\end{uclist}}
+{Pesan tampil pada tab Support Admin, balasan Admin terbaca langsung di laci Pengunjung, dan log menampilkan label \texttt{Admin Support}.}
+{Tiket terkirim, balasan Admin tampil di laci Pengunjung, dan label \texttt{'Admin Support'} tampil di monitoring.}
+
+\printtestcase{KU-012}{Otorisasi Hak Akses Peran dan Isolasi Kepemilikan Ulasan}
+{Menguji penolakan tamu maupun akses lintas peran ke Panel Administrator dan Dasbor Penjual, serta isolasi balasan ulasan antar-UMKM.}
+{Pengguna berstatus tamu dan akun Pengunjung masuk tersedia untuk pengujian hak akses.}
+{19 November 2026}{Tim Penguji TRPL-104 (Audit HTTP Backend)}
+{\begin{uclist}
+  \item Lakukan akses langsung ke Panel Administrator dan Dasbor Penjual tanpa sesi login.
+  \item Lakukan akses ke Panel Administrator dan Dasbor Penjual menggunakan sesi berperan \texttt{pengunjung}.
+  \item Kirim permintaan balasan ulasan sebagai Penjual lapak A terhadap ulasan milik lapak B.
+\end{uclist}}
+{Tamu dialihkan ke halaman masuk (\texttt{HTTP 302}); peran salah ditolak (\texttt{HTTP 403}); balasan ulasan lintas UMKM ditolak (\texttt{HTTP 404}).}
+{Tamu dialihkan \texttt{HTTP 302} ke halaman masuk; Pengunjung mendapat \texttt{HTTP 403} pada Panel Admin dan Dasbor Penjual; balasan ulasan UMKM lain ditolak \texttt{HTTP 404}.}
+
+\subsection{Rekapitulasi Pengujian Otomatis}
+
+Selain 12 kasus uji fungsional di atas, pengujian unit dan fitur Laravel (\texttt{php artisan test}) dijalankan setelah seluruh perubahan kode selesai dan menghasilkan \textbf{2 lulus (\textit{2 passed, 2 assertions})} untuk \texttt{Tests\textbackslash{}Unit\textbackslash{}ExampleTest} dan \texttt{Tests\textbackslash{}Feature\textbackslash{}ExampleTest}. Pada seluruh pengujian peramban \textit{Playwright} atas alur kerja \texttt{WF-01..06}, pemeriksaan penyelarasan \texttt{EC-01..03}, serta 19 skenario persistensi tab (10 Admin + 9 Penjual), tercatat \textbf{0 galat konsol} dan \textbf{0 galat halaman}.

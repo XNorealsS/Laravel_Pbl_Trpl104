@@ -44,17 +44,18 @@
         <!-- Sidebar Navigation Menu -->
         <nav class="panel-nav">
           <span class="panel-nav-header">Menu Utama Lapak</span>
-          <button type="button" class="panel-nav-btn active" data-tab="tab-overview">
+          @php $activeTab = $activeTab ?? 'overview'; @endphp
+          <button type="button" class="panel-nav-btn {{ $activeTab === 'overview' ? 'active' : '' }}" data-tab="tab-overview">
             <i class='bx bx-grid-alt'></i>
             <span>Ringkasan Toko</span>
             <i class='bx bx-chevron-right panel-nav-chevron'></i>
           </button>
-          <button type="button" class="panel-nav-btn" data-tab="tab-products">
+          <button type="button" class="panel-nav-btn {{ $activeTab === 'products' ? 'active' : '' }}" data-tab="tab-products">
             <i class='bx bx-dish'></i>
             <span>Kelola Menu & Katalog</span>
             <span class="panel-nav-badge badge-emerald" id="sidebarProdCount">{{ $produk->count() }}</span>
           </button>
-          <button type="button" class="panel-nav-btn" data-tab="tab-orders">
+          <button type="button" class="panel-nav-btn {{ $activeTab === 'orders' ? 'active' : '' }}" data-tab="tab-orders">
             <i class='bx bx-chat'></i>
             <span>Pesan & Pesanan</span>
             @php $pendingOrders = $pesananList->where('status', 'diproses')->count(); @endphp
@@ -62,11 +63,11 @@
               <span class="panel-nav-badge badge-amber" id="sidebarOrderCount">{{ $pendingOrders }}</span>
             @endif
           </button>
-          <button type="button" class="panel-nav-btn" data-tab="tab-profile">
+          <button type="button" class="panel-nav-btn {{ $activeTab === 'profile' ? 'active' : '' }}" data-tab="tab-profile">
             <i class='bx bx-store-alt'></i>
             <span>Profil Lapak UMKM</span>
           </button>
-          <button type="button" class="panel-nav-btn" data-tab="tab-reviews">
+          <button type="button" class="panel-nav-btn {{ $activeTab === 'reviews' ? 'active' : '' }}" data-tab="tab-reviews">
             <i class='bx bx-star'></i>
             <span>Rating & Ulasan</span>
             <span class="panel-nav-badge badge-danger">{{ $ulasanList->count() }}</span>
@@ -165,11 +166,17 @@
             <span>{{ session('error') }}</span>
           </div>
         @endif
+        @if($errors->any())
+          <div style="background: #F8D7DA; border: 1px solid #F5C6CB; color: #721C24; padding: 10px 16px; border-radius: 4px; margin-bottom: 20px; font-weight: 600; font-size: 0.88rem; display: flex; align-items: center; gap: 8px;">
+            <i class='bx bx-error-circle' style="font-size: 1.25rem;"></i>
+            <span>{{ $errors->first() }}</span>
+          </div>
+        @endif
 
         <!-- ====================================================================
              1. TAB: OVERVIEW / RINGKASAN TOKO
              ==================================================================== -->
-        <section class="tab-view active" id="tab-overview">
+        <section class="tab-view {{ $activeTab === 'overview' ? 'active' : '' }}" id="tab-overview">
           <!-- AdminLTE Iconic Small-Boxes Grid (Persis Seperti Contoh STIKesMu) -->
           <div class="stats-cards-grid">
             <!-- Box 1: Blue (Menu Terdaftar) -->
@@ -265,7 +272,17 @@
                       <td>
                         <strong>{{ $order->pengunjung ? $order->pengunjung->nama : 'Pengunjung' }}</strong>
                       </td>
-                      <td>{{ $order->produk ? $order->produk->nama_produk : 'Menu JajanRia' }}</td>
+                      <td>
+                        @if(!empty($order->items_detail) && is_array($order->items_detail))
+                          <ul style="margin: 0; padding-left: 14px; font-size: 0.78rem; color: #374151;">
+                            @foreach($order->items_detail as $item)
+                              <li>{{ $item['nama_produk'] ?? 'Item' }} x {{ $item['qty'] ?? 1 }}</li>
+                            @endforeach
+                          </ul>
+                        @else
+                          <span style="color: #6C757D; font-size: 0.8rem;">Pesanan via percakapan</span>
+                        @endif
+                      </td>
                       <td>{{ $order->created_at ? $order->created_at->diffForHumans() : '-' }}</td>
                       <td style="text-align: center;">
                         @if($order->status === 'diproses')
@@ -276,13 +293,17 @@
                       </td>
                       <td style="text-align: center;">
                         @if($order->status === 'diproses')
-                          <form action="{{ route('seller.orders.status', $order->id_pesanan) }}" method="POST" style="display:inline;">
-                            @csrf
-                            <input type="hidden" name="status" value="selesai">
-                            <button type="submit" class="btn-action-sm btn-action-success" title="Tandai pesanan selesai untuk mengaktifkan ulasan">
-                              <i class='bx bx-check'></i> Tandai Selesai
-                            </button>
-                          </form>
+                          @if($order->status_pembayaran === 'lunas')
+                            <form action="{{ route('seller.orders.status', $order->id_pesanan) }}" method="POST" style="display:inline;">
+                              @csrf
+                              <input type="hidden" name="status" value="selesai">
+                              <button type="submit" class="btn-action-sm btn-action-success" title="Tandai pesanan selesai untuk mengaktifkan ulasan">
+                                <i class='bx bx-check'></i> Tandai Selesai
+                              </button>
+                            </form>
+                          @else
+                            <span style="font-size: 0.76rem; color: #6C757D;">Menunggu Lunas Admin</span>
+                          @endif
                         @else
                           <span style="color: #28A745; font-weight: 700; font-size: 0.8rem;">
                             <i class='bx bx-check-circle'></i> Siap Diulas
@@ -306,7 +327,7 @@
         <!-- ====================================================================
              2. TAB: KELOLA PRODUK (CRUD) - UC-06
              ==================================================================== -->
-        <section class="tab-view" id="tab-products">
+        <section class="tab-view {{ $activeTab === 'products' ? 'active' : '' }}" id="tab-products">
           <div class="filter-tab-pills">
             <button type="button" class="filter-tab-pill active">
               <span>Semua Menu</span>
@@ -426,7 +447,7 @@
         <!-- ====================================================================
              3. TAB: KELOLA PESAN & PESANAN - UC-07
              ==================================================================== -->
-        <section class="tab-view" id="tab-orders">
+        <section class="tab-view {{ $activeTab === 'orders' ? 'active' : '' }}" id="tab-orders">
           <div class="filter-tab-pills">
             <button type="button" class="filter-tab-pill active">
               <span>Semua Percakapan</span>
@@ -469,9 +490,20 @@
                         <div style="font-size: 0.74rem; color: #6C757D;">{{ $order->pengunjung ? $order->pengunjung->nama : 'Pengunjung' }}</div>
                       </td>
                       <td>
-                        <strong>{{ $order->produk ? $order->produk->nama_produk : 'Menu JajanRia' }}</strong>
+                        @if(!empty($order->items_detail) && is_array($order->items_detail))
+                          <ul style="margin: 0; padding-left: 14px; font-size: 0.78rem; color: #374151;">
+                            @foreach($order->items_detail as $item)
+                              <li><strong>{{ $item['nama_produk'] ?? 'Item' }}</strong> x {{ $item['qty'] ?? 1 }}</li>
+                            @endforeach
+                          </ul>
+                        @else
+                          <span style="color: #6C757D; font-size: 0.8rem;">Pesanan via percakapan</span>
+                        @endif
+                        @if(!empty($order->catatan_pembeli))
+                          <div style="font-size: 0.73rem; color: #4B5563; margin-top: 3px;">Catatan: {{ $order->catatan_pembeli }}</div>
+                        @endif
                         @if($order->total_harga > 0)
-                          <div style="font-size: 0.8rem; font-weight: 700; color: #2E8B3D;">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</div>
+                          <div style="font-size: 0.8rem; font-weight: 700; color: #2E8B3D; margin-top: 2px;">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</div>
                         @endif
                       </td>
                       <td>
@@ -482,11 +514,11 @@
                         @endif
                         <div style="margin-top: 4px;">
                           @if($order->status_pembayaran === 'lunas')
-                            <span class="badge-adminlte badge-success">✓ Lunas</span>
+                            <span class="badge-adminlte badge-success">✓ Lunas (Admin)</span>
                           @elseif($order->status_pembayaran === 'menunggu_verifikasi')
-                            <span class="badge-adminlte badge-warning">⏳ Cek Transfer</span>
+                            <span class="badge-adminlte badge-warning">⏳ Cek Admin</span>
                           @elseif($order->status_pembayaran === 'ditolak')
-                            <span class="badge-adminlte badge-danger">✗ Ditolak</span>
+                            <span class="badge-adminlte badge-danger">✗ Ditolak Admin</span>
                           @else
                             <span class="badge-adminlte" style="background:#e5e7eb; color:#4b5563;">Belum Bayar</span>
                           @endif
@@ -500,33 +532,18 @@
                         @endif
                       </td>
                       <td style="text-align: center;">
-                        @if($order->status_pembayaran === 'menunggu_verifikasi')
-                          <div style="display: flex; gap: 4px; justify-content: center; margin-bottom: 4px;">
-                            <form action="{{ route('seller.orders.verify_payment', $order->id_pesanan) }}" method="POST" style="display:inline;">
-                              @csrf
-                              <input type="hidden" name="status" value="lunas">
-                              <button type="submit" class="btn-action-sm btn-action-success" title="Konfirmasi dana sudah masuk ke rekening/QRIS toko">
-                                <i class='bx bx-check'></i> Lunas
-                              </button>
-                            </form>
-                            <form action="{{ route('seller.orders.verify_payment', $order->id_pesanan) }}" method="POST" style="display:inline;">
-                              @csrf
-                              <input type="hidden" name="status" value="ditolak">
-                              <button type="submit" class="btn-action-sm btn-action-danger" title="Tolak bukti transfer palsu">
-                                <i class='bx bx-x'></i>
-                              </button>
-                            </form>
-                          </div>
-                        @endif
-
                         @if($order->status === 'diproses')
-                          <form action="{{ route('seller.orders.status', $order->id_pesanan) }}" method="POST" style="display:inline;">
-                            @csrf
-                            <input type="hidden" name="status" value="selesai">
-                            <button type="submit" class="btn-action-sm btn-action-outline-primary" title="Tandai pesanan telah diambil pembeli di lapak">
-                              <i class='bx bx-check-double'></i> Selesai
-                            </button>
-                          </form>
+                          @if($order->status_pembayaran === 'lunas')
+                            <form action="{{ route('seller.orders.status', $order->id_pesanan) }}" method="POST" style="display:inline;">
+                              @csrf
+                              <input type="hidden" name="status" value="selesai">
+                              <button type="submit" class="btn-action-sm btn-action-outline-primary" title="Tandai pesanan telah diambil pembeli di lapak">
+                                <i class='bx bx-check-double'></i> Selesai
+                              </button>
+                            </form>
+                          @else
+                            <span style="font-size: 0.76rem; color: #6C757D;">Menunggu Verif Lunas</span>
+                          @endif
                         @else
                           <span style="color: #28A745; font-weight: 700; font-size: 0.82rem;">
                             <i class='bx bx-check-circle'></i> Penilaian Aktif
@@ -550,7 +567,7 @@
         <!-- ====================================================================
              4. TAB: KELOLA PROFIL UMKM - UC-05
              ==================================================================== -->
-        <section class="tab-view" id="tab-profile">
+        <section class="tab-view {{ $activeTab === 'profile' ? 'active' : '' }}" id="tab-profile">
           <div class="panel-card">
             <div class="panel-card-header">
               <h3 class="panel-card-title">
@@ -579,7 +596,9 @@
                     @foreach(config('jajanria.area_sekitar', ['Depan Gerbang Utama', 'Samping Asrama', 'Kantin Polibatam', 'Kawasan Ruko Imperium', 'Simpang Dam', 'Centre Point']) as $ar)
                       <option value="{{ $ar }}" {{ $umkm->area == $ar ? 'selected' : '' }}>{{ $ar }}</option>
                     @endforeach
-                    <option value="Lainnya" {{ !in_array($umkm->area, config('jajanria.area_sekitar', [])) ? 'selected' : '' }}>{{ $umkm->area }}</option>
+                    @if(!in_array($umkm->area, config('jajanria.area_sekitar', [])))
+                      <option value="{{ $umkm->area }}" selected>{{ $umkm->area }}</option>
+                    @endif
                   </select>
                 </div>
 
@@ -612,7 +631,7 @@
         <!-- ====================================================================
              5. TAB: RATING & TANGGAPAN ULASAN - UC-08 / F011
              ==================================================================== -->
-        <section class="tab-view" id="tab-reviews">
+        <section class="tab-view {{ $activeTab === 'reviews' ? 'active' : '' }}" id="tab-reviews">
           <div class="panel-card">
             <div class="panel-card-header">
               <h3 class="panel-card-title">

@@ -1,0 +1,523 @@
+\section{Spesifikasi Kebutuhan Perangkat Lunak}
+
+\subsection{Deskripsi Umum Perangkat Lunak}
+
+JajanRia adalah aplikasi web e-niaga kuliner kampus semi-otomatis (\textit{Semi-Automated Direct Commerce}) yang menghubungkan pelaku usaha mikro, kecil, dan menengah (UMKM) sektor kuliner jalanan (\textit{street food}) dengan konsumen di sekitar Politeknik Negeri Batam. Selama ini, promosi UMKM di kawasan kampus bergantung pada informasi dari mulut ke mulut dan media sosial yang tidak terstruktur. Kondisi tersebut menyulitkan mahasiswa maupun pengunjung saat mencari lokasi lapak, daftar menu, ketersediaan makanan, dan kisaran harga.
+
+Sistem JajanRia memfasilitasi penemuan lapak, pemesanan langsung dari keranjang menu, dan pengambilan pesanan di tempat (\textit{Self Pick-up}). Pembayaran memakai transfer bank atau \textit{Quick Response Code Indonesian Standard} (QRIS) secara manual dengan unggah foto bukti transaksi oleh pembeli. Selanjutnya, Administrator memverifikasi bukti tersebut secara terpusat agar Penjual (\textit{Seller}) dapat menyiapkan pesanan hingga selesai dan memicu ulasan bintang dari pembeli.
+
+Berdasarkan batasan proyek pembelajaran berbasis masalah (PBL), aplikasi ini memiliki empat ruang lingkup utama:
+\begin{enumerate}[leftmargin=1.5em, itemsep=2pt, topsep=2pt]
+  \item \textbf{Pembayaran manual terverifikasi:} sistem tidak menggunakan gerbang pembayaran pihak ketiga otomatis (\textit{Midtrans}, \textit{Xendit}, \textit{Stripe}, atau autodebet dompet digital), melainkan mengandalkan unggah bukti transfer dan verifikasi Administrator.
+  \item \textbf{Pengambilan mandiri (\textit{Self Pick-up}):} sistem tidak menyediakan layanan kurir eksternal maupun pelacakan GPS secara langsung.
+  \item \textbf{Kontrol ketersediaan fleksibel:} pengurangan stok otomatis per transaksi tidak diterapkan; Penjual mengubah status menu menjadi \textit{Tersedia} atau \textit{Kosong/Habis}.
+  \item \textbf{Fokus operasional transaksi:} sistem tidak mencakup jurnal akuntansi, rekonsiliasi kas, maupun perhitungan pajak restoran.
+\end{enumerate}
+
+Mekanisme autentikasi dibedakan menurut tanggung jawab peran. Pengunjung atau pembeli masuk dengan satu klik melalui \textit{Google Sign-In} pada \textit{Firebase Authentication} sehingga akun tercatat otomatis tanpa formulir registrasi manual. Sementara itu, Penjual mendaftar secara mandiri untuk menunggu persetujuan Administrator, lalu masuk bersama Administrator memakai surel (\textit{email}) dan kata sandi terenkripsi. Gambar~\ref{fig:gambaran-umum} memperlihatkan interaksi ketiga aktor utama pada ekosistem JajanRia.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw=PolibatamBlue, thick, rounded corners=4pt, fill=ActorFill, align=center, font=\sffamily\footnotesize, inner sep=5pt},
+  hub/.style={draw=JajanGreen, very thick, rounded corners=6pt, fill=green!5, align=center, font=\sffamily\small, inner sep=7pt},
+  arr/.style={->, >=Stealth, thick, PolibatamBlue},
+  lbl/.style={font=\sffamily\scriptsize, align=center, fill=white, inner sep=1.5pt}
+]
+  % Hub Sistem
+  \node[hub, minimum width=5.6cm, minimum height=2.6cm] (sys) at (0,0) {
+    \textbf{\color{JajanGreen}Platform Web JajanRia}\\[2pt]
+    \scriptsize (Laravel 11 + basis data MySQL)\\[4pt]
+    \scriptsize $\bullet$ Etalase Katalog \& Pencarian Menu\\
+    \scriptsize $\bullet$ Keranjang \& \textit{Checkout} Mandiri (\texttt{t\_pesanan})\\
+    \scriptsize $\bullet$ Verifikasi Bukti Bayar \& \textit{Customer Support}\\
+    \scriptsize $\bullet$ Pemrosesan Pesanan \& Pemicu Ulasan
+  };
+
+  % Aktor Admin (Atas)
+  \node[box, minimum width=5.2cm] (admin) at (0, 3.35) {
+    \textbf{\color{PolibatamBlue}Administrator}\\
+    \scriptsize Pengelola Ekosistem \& Verifikator Tunggal
+  };
+
+  % Aktor Seller (Kiri Bawah)
+  \node[box, minimum width=4.3cm] (seller) at (-3.55, -3.9) {
+    \textbf{\color{PolibatamBlue}Penjual (\textit{Seller})}\\
+    \scriptsize Pemilik Lapak UMKM Terverifikasi
+  };
+
+  % Aktor Pembeli (Kanan Bawah)
+  \node[box, minimum width=4.3cm] (buyer) at (3.55, -3.9) {
+    \textbf{\color{PolibatamBlue}Pengunjung / Pembeli}\\
+    \scriptsize Mahasiswa, Staf, \& Masyarakat Umum
+  };
+
+  % Panah Admin <-> Sistem
+  \draw[arr] ([xshift=-1.1cm]admin.south) -- node[lbl, left=2pt] {Verifikasi \textit{Seller} \& bukti bayar\\Kelola kategori, moderasi, \textit{Support}} ([xshift=-1.1cm]sys.north);
+  \draw[arr] ([xshift=1.1cm]sys.north) -- node[lbl, right=2pt] {Statistik, log aktivitas,\\daftar struk \& tiket bantuan} ([xshift=1.1cm]admin.south);
+
+  % Panah Seller <-> Sistem (ditempatkan jelas di ruang kosong luar kotak)
+  \draw[arr] ([xshift=-1.0cm]seller.north) .. controls (-4.8,-1.8) and (-4.3,-0.4) .. node[lbl, left=2pt, pos=0.52] {Kelola profil, menu,\\status \& balas ulasan} ([yshift=0.35cm]sys.west);
+  \draw[arr] ([xshift=-1.5cm]sys.south) -- node[lbl, left=1pt, pos=0.52] {Pesanan \textit{lunas}\\dan ulasan} ([xshift=0.8cm]seller.north);
+
+  % Panah Buyer <-> Sistem
+  \draw[arr] ([xshift=1.0cm]buyer.north) .. controls (4.8,-1.8) and (4.3,-0.4) .. node[lbl, right=2pt, pos=0.52] {Cari menu, \textit{checkout},\\unggah bukti, \textit{Support}} ([yshift=0.35cm]sys.east);
+  \draw[arr] ([xshift=1.5cm]sys.south) -- node[lbl, right=1pt, pos=0.52] {Katalog, status bayar\\\& tombol ulasan} ([xshift=-0.8cm]buyer.north);
+\end{tikzpicture}
+\caption{Gambaran Umum Sistem JajanRia}
+\label{fig:gambaran-umum}
+\end{figure}
+
+Diagram pada Gambar~\ref{fig:gambaran-umum} menunjukkan bahwa seluruh aktivitas berpusat pada sistem manajemen basis data relasional \textit{Structured Query Language} (MySQL) JajanRia. Penjual mengelola etalase menu dan memproses pesanan yang telah dibayar, sedangkan pembeli memesan langsung dan mengunggah bukti pembayaran. Administrator berperan sebagai verifikator pembayaran tunggal, penjamin mutu konten, dan pengelola layanan bantuan terpusat.
+
+\subsection{Karakteristik Pengguna}
+
+Pengguna JajanRia terbagi menjadi tiga peran utama dengan kebutuhan, hak akses, dan alur otorisasi yang berbeda:
+
+\begin{enumerate}[leftmargin=1.5em, itemsep=4pt, topsep=2pt]
+  \item \textbf{Administrator (Admin):} pengelola utama yang menjaga ketertiban operasional, keabsahan transaksi manual, dan mutu konten platform. Admin masuk memakai surel dan kata sandi ke Panel Administrator. Wewenang Admin mencakup verifikasi pendaftaran Penjual baru, pengelolaan pengguna selain akun Admin aktif, serta pengelolaan daftar UMKM dan kategori menu. Selain itu, Admin memverifikasi bukti transfer (\textit{lunas} atau \textit{ditolak}), membalas tiket \textit{Customer Support}, memoderasi ulasan publik, dan memantau log aktivitas sistem.
+
+  \item \textbf{Pengunjung / Pembeli:} mahasiswa, staf kampus, dan masyarakat sekitar yang membutuhkan informasi jajanan lokal serta pemesanan praktis. Pengunjung dapat menjelajahi katalog, mencari kata kunci, serta menyaring menu berdasarkan kategori, rentang harga, dan area lapak tanpa harus masuk ke akun. Untuk memesan menu (\textit{checkout}), mengunggah foto bukti pembayaran, memantau riwayat pesanan, menghubungi \textit{Customer Support}, serta mengirim peringkat dan ulasan, Pengunjung wajib masuk memakai akun Google melalui \textit{Firebase Authentication}.
+
+  \item \textbf{Penjual (\textit{Seller}):} pelaku UMKM kuliner di sekitar Politeknik Negeri Batam yang memakai JajanRia sebagai etalase digital dan penerima pesanan terstruktur. Penjual mendaftar melalui formulir pendaftaran mitra dan dapat mengakses Dasbor Penjual setelah status akunnya disetujui Admin. Pada dasbor tersebut, Penjual memperbarui profil lapak serta mengelola katalog menu berikut ketersediaannya (\textit{Tersedia} atau \textit{Habis}). Penjual juga memantau rincian pesanan beserta catatan pembeli, menandai pesanan \textit{lunas} menjadi \textit{selesai} saat diambil, dan membalas ulasan publik yang tidak disembunyikan Admin.
+\end{enumerate}
+
+\subsection{Deskripsi Rinci Kebutuhan}
+
+Aplikasi web JajanRia dirancang sebagai platform e-niaga kuliner kampus semi-otomatis yang menggabungkan katalog digital interaktif, keranjang pemesanan langsung, verifikasi pembayaran manual terpusat, layanan bantuan pelanggan, dan sistem ulasan pascatransaksi. Rincian kebutuhan fungsional, nonfungsional, serta spesifikasi skenario \textit{use case} dijelaskan pada subbab berikut.
+
+\subsubsection{Kebutuhan Fungsional}
+
+Daftar kebutuhan fungsional sistem beserta pemetaannya ke skenario \textit{use case} tercantum pada Tabel~\ref{tab:kebutuhan-fungsional}.
+
+\renewcommand{\arraystretch}{1.24}
+\begin{longtable}{|C{1.4cm}|L{\dimexpr\textwidth-1.4cm-2.2cm-6\tabcolsep-4\arrayrulewidth\relax}|C{2.2cm}|}
+\caption{Daftar Kebutuhan Fungsional Sistem JajanRia}
+\label{tab:kebutuhan-fungsional} \\
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Kode} & \textbf{Kebutuhan Fungsional} & \textbf{Use Case} \\
+\hline
+\endfirsthead
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Kode} & \textbf{Kebutuhan Fungsional} & \textbf{Use Case} \\
+\hline
+\endhead
+\hline
+\endfoot
+F001 & Sistem mengautentikasi tiga peran: Pengunjung via \textit{Google Sign-In} (\textit{Firebase}) tanpa daftar manual, Penjual via pendaftaran mandiri berpersetujuan Admin serta surel dan kata sandi, dan Admin via surel serta kata sandi. & UC-01 \\
+\hline
+F002 & Sistem menampilkan katalog lapak UMKM aktif dan terverifikasi beserta nama usaha, foto, deskripsi, area, harga menu, dan rata-rata peringkat pada halaman beranda. & UC-02 \\
+\hline
+F003 & Sistem mencari lapak maupun produk kuliner berdasarkan kata kunci dan menampilkan seluruh lapak terverifikasi yang relevan, termasuk lapak di luar area sekitar kampus. & UC-02 \\
+\hline
+F004 & Sistem menyaring katalog produk berdasarkan kategori menu, rentang harga ($\le$ Rp15.000,00; Rp15.000,00--Rp25.000,00; dan $>$ Rp25.000,00), serta area lokasi UMKM. & UC-02 \\
+\hline
+F005 & Sistem menampilkan halaman detail lapak berisi profil usaha, kontak, kelompok menu per kategori, status ketersediaan menu, dan daftar ulasan publik. & UC-02 \\
+\hline
+F006 & Sistem menyediakan keranjang per lapak serta proses \textit{checkout} langsung ke \texttt{t\_pesanan}. Total harga dihitung dari basis data server, catatan pembeli disimpan, dan menu habis ditolak. & UC-03 \\
+\hline
+F007 & Sistem memfasilitasi unggah foto bukti pembayaran transfer atau QRIS saat \textit{checkout} atau via \textit{History Pesanan}, serta menolak unggah ulang bila status sudah \textit{lunas}. & UC-03 \\
+\hline
+F008 & Sistem menyediakan panel Admin untuk memeriksa foto bukti pembayaran pembeli dan mengubah status pembayaran menjadi \textit{lunas} atau \textit{ditolak} disertai catatan alasan penolakan. & UC-12 \\
+\hline
+F009 & Sistem menampilkan rincian item pesanan, catatan pembeli, dan status pembayaran pada dasbor Penjual, serta mengizinkan perubahan status \textit{diproses} menjadi \textit{selesai} khusus pesanan \textit{lunas}. & UC-07 \\
+\hline
+F010 & Sistem memunculkan tombol ``Beri Penilaian'' secara otomatis pada \textit{History Pesanan} pelanggan hanya apabila pesanan berstatus \textit{selesai}, pembayarannya \textit{lunas}, dan belum pernah diulas. & UC-04 \\
+\hline
+F011 & Sistem menyimpan peringkat bintang (1--5) dan komentar ulasan pelanggan (satu ulasan per pesanan) serta menampilkannya pada beranda katalog dan halaman detail lapak. & UC-04 \\
+\hline
+F012 & Sistem memberi akses kepada Penjual untuk menanggapi ulasan pada lapaknya sendiri, sekaligus menolak tanggapan apabila ulasan disembunyikan oleh Admin. & UC-08 \\
+\hline
+F013 & Sistem menyediakan menu profil pada dasbor Penjual untuk memperbarui nama usaha, area, lokasi rinci, kontak, deskripsi, dan foto usaha. & UC-05 \\
+\hline
+F014 & Sistem menyediakan menu pengelolaan katalog pada dasbor Penjual (tambah, lihat, ubah, hapus produk, serta ubah ketersediaan \textit{Tersedia}/\textit{Habis}). & UC-06, UC-07 \\
+\hline
+F015 & Sistem menyediakan panel Admin untuk meninjau, menyetujui, atau menolak pendaftaran Penjual baru, serta mengaktifkan atau menonaktifkan akun pengguna. & UC-09 \\
+\hline
+F016 & Sistem menyediakan panel Admin untuk memantau daftar UMKM dan mengelola kategori menu (tambah dan hapus kategori dengan validasi agar kategori berproduk aktif tidak dapat dihapus). & UC-10 \\
+\hline
+F017 & Sistem menyediakan panel Admin untuk memoderasi ulasan publik dengan menyembunyikan atau menampilkan kembali ulasan yang melanggar ketentuan. & UC-11 \\
+\hline
+F018 & Sistem menyediakan saluran \textit{Customer Support} terpusat agar Pengunjung mengirim tiket kendala melalui tombol Bantuan atau menu Navigasi, lalu Admin membalas tiket tersebut dari panel Admin. & UC-13 \\
+\hline
+F019 & Sistem menampilkan dasbor statistik dan log aktivitas gabungan bagi Admin (jumlah UMKM, produk, ulasan, antrean verifikasi akun serta pembayaran, tiket bantuan, pengguna, dan pesanan). & UC-11 \\
+\hline
+F020 & Sistem membatasi akses seluruh halaman terproteksi dan fitur interaktif berdasarkan status sesi masuk, keaktifan akun, serta peran pengguna untuk area Penjual dan Administrator. & UC-03 s.d. UC-13 \\
+\hline
+\end{longtable}
+
+\subsubsection{Deskripsi Kebutuhan Nonfungsional}
+
+Kebutuhan nonfungsional menentukan mutu layanan, keamanan, serta batasan teknis arsitektur aplikasi JajanRia sebagaimana dirangkum pada Tabel~\ref{tab:kebutuhan-nonfungsional}.
+
+\renewcommand{\arraystretch}{1.24}
+\begin{longtable}{|L{3.5cm}|L{\dimexpr\textwidth-3.5cm-4\tabcolsep-3\arrayrulewidth\relax}|}
+\caption{Daftar Kebutuhan Nonfungsional Sistem JajanRia}
+\label{tab:kebutuhan-nonfungsional} \\
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Kriteria} & \textbf{Parameter} \\
+\hline
+\endfirsthead
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Kriteria} & \textbf{Parameter} \\
+\hline
+\endhead
+\hline
+\endfoot
+Ketersediaan (\textit{Availability}) & Aplikasi web beroperasi nonstop selama 24 jam, kecuali saat pemeliharaan atau pembaruan sistem terjadwal. \\
+\hline
+Ergonomi dan Responsivitas & Antarmuka mudah digunakan (\textit{user-friendly}) dan responsif penuh pada layar desktop, tablet, maupun ponsel; panel pesan mengunci gulir halaman luar sehingga hanya area obrolan yang bergulir. \\
+\hline
+Bahasa & Seluruh teks antarmuka pengguna, pesan validasi, dan status sistem memakai bahasa Indonesia baku. \\
+\hline
+Keamanan (\textit{Safety}) & Lalu lintas produksi dilindungi HTTPS; autentikasi Pengunjung melalui \textit{Firebase Authentication}; kata sandi Penjual dan Admin disimpan terenkripsi memakai \textit{hashing} \texttt{bcrypt}; serta isolasi peran ditegakkan pada \textit{middleware} dan kontroler server. \\
+\hline
+Kinerja (\textit{Performance}) & Hasil pencarian dan penyaringan katalog tampil dalam waktu wajar ($<$ 3 detik) pada beban data produk standar kampus. \\
+\hline
+Kompatibilitas & Dapat diakses melalui peramban desktop dan ponsel versi mutakhir (\textit{Google Chrome}, \textit{Mozilla Firefox}, \textit{Safari}, dan \textit{Microsoft Edge}). \\
+\hline
+Keterpeliharaan (\textit{Maintainability}) & Kode program mengikuti pola \textit{Model-View-Controller} (MVC) pada kerangka kerja Laravel~11 dengan standar panel templat baku dan warna identitas utama hijau \texttt{\#2E8B3D}. \\
+\hline
+Skalabilitas & Skema basis data relasional MySQL mendukung penambahan kategori, mitra UMKM, produk, transaksi, dan ulasan tanpa mengubah struktur tabel inti. \\
+\hline
+\end{longtable}
+
+\subsubsection{Diagram Use Case}
+
+Interaksi antara ketiga aktor dan 13 fungsionalitas utama dalam sistem JajanRia dimodelkan pada Diagram \textit{Use Case} pada Gambar~\ref{fig:use-case}. Rincian skenario untuk setiap \textit{use case} diuraikan setelah diagram.
+
+\begin{figure}[p]
+\centering
+\begin{tikzpicture}[
+  uc/.style={ellipse, draw=PolibatamBlue, thick, fill=ActorFill, minimum width=5.3cm, minimum height=0.92cm, text width=3.75cm, align=center, font=\sffamily\scriptsize, inner sep=1pt},
+  assoc/.style={draw=black!75, semithick},
+  ext/.style={->, >=Stealth, dashed, thick, JajanGreen}
+]
+  % Batas Sistem (lebar 7.7 cm: -3.85 s.d. +3.85 sehingga semua elips berada utuh di dalam kotak)
+  \draw[draw=black!85, thick, fill=white] (-3.85, 1.05) rectangle (3.85, -16.25);
+  \node[font=\sffamily\small\bfseries, below] at (0, 0.92) {Sistem UMKM JajanRia};
+
+  % Daftar Use Case (13 elips seragam di dalam batas kotak)
+  \node[uc] (uc1)  at (0, -0.35) {\textbf{UC-01} Login /\\Registrasi Akun};
+  \node[uc] (uc2)  at (0, -1.55) {\textbf{UC-02} Cari \& Saring\\Produk};
+  \node[uc] (uc3)  at (0, -2.75) {\textbf{UC-03} \textit{Checkout} \&\\Unggah Bukti Bayar};
+  \node[uc] (uc4)  at (0, -4.00) {\textbf{UC-04} Beri Peringkat\\\& Ulasan};
+  \node[uc] (uc5)  at (0, -5.30) {\textbf{UC-05} Kelola Profil\\UMKM};
+  \node[uc] (uc6)  at (0, -6.50) {\textbf{UC-06} Kelola\\Produk};
+  \node[uc] (uc7)  at (0, -7.70) {\textbf{UC-07} Kelola Pesanan\\\& Ketersediaan};
+  \node[uc] (uc8)  at (0, -8.90) {\textbf{UC-08} Tanggapi\\Ulasan};
+  \node[uc] (uc9)  at (0, -10.25) {\textbf{UC-09} Verifikasi\\Pengguna \& \textit{Seller}};
+  \node[uc] (uc10) at (0, -11.45) {\textbf{UC-10} Kelola UMKM\\\& Kategori};
+  \node[uc] (uc11) at (0, -12.65) {\textbf{UC-11} Moderasi Ulasan\\\& Pemantauan};
+  \node[uc] (uc12) at (0, -13.85) {\textbf{UC-12} Verifikasi Bayar\\Manual};
+  \node[uc] (uc13) at (0, -15.10) {\textbf{UC-13} Layanan\\\textit{Customer Support}};
+
+  % Aktor
+  \umlactor{-5.65, -2.55}{pengunjung}{Pengunjung\\/ Pembeli}
+  \umlactor{5.55, -7.10}{seller}{Penjual\\(\textit{Seller})}
+  \umlactor{-5.65, -12.50}{admin}{Administrator\\(Admin)}
+
+  % Asosiasi Pengunjung
+  \draw[assoc] (-5.05, -2.15) -- (uc1.west);
+  \draw[assoc] (-5.05, -2.35) -- (uc2.west);
+  \draw[assoc] (-5.05, -2.55) -- (uc3.west);
+  \draw[assoc] (-5.05, -2.75) -- (uc4.west);
+  \draw[assoc] (-5.05, -2.95) .. controls (-4.20,-4.4) and (-4.20,-13.6) .. (uc13.west);
+
+  % Asosiasi Seller
+  \draw[assoc] (4.95, -6.50) .. controls (4.35,-2.5) .. (uc1.east);
+  \draw[assoc] (4.95, -6.80) -- (uc5.east);
+  \draw[assoc] (4.95, -7.00) -- (uc6.east);
+  \draw[assoc] (4.95, -7.20) -- (uc7.east);
+  \draw[assoc] (4.95, -7.45) -- (uc8.east);
+
+  % Asosiasi Admin
+  \draw[assoc] (-5.05, -11.80) .. controls (-4.45,-6.2) and (-4.45,-1.2) .. ([yshift=-0.12cm]uc1.west);
+  \draw[assoc] (-5.05, -12.10) -- (uc9.west);
+  \draw[assoc] (-5.05, -12.30) -- (uc10.west);
+  \draw[assoc] (-5.05, -12.50) -- (uc11.west);
+  \draw[assoc] (-5.05, -12.70) -- (uc12.west);
+  \draw[assoc] (-5.05, -13.00) -- ([yshift=0.12cm]uc13.west);
+
+  % Relasi extend UC-04 setelah UC-03 selesai (tetap di dalam kotak)
+  \draw[ext] (uc4.east) .. controls (3.30,-4.00) and (3.30,-2.75) .. node[right, font=\sffamily\tiny, fill=white, inner sep=1pt] {\texttt{<<extend>>}} (uc3.east);
+\end{tikzpicture}
+\caption{Diagram \textit{Use Case} Sistem UMKM JajanRia}
+\label{fig:use-case}
+\end{figure}
+
+% Macro ringkas tabel identifikasi Use Case agar konsisten
+\newcommand{\printusecase}[8]{%
+\needspace{7.5cm}
+\noindent
+\renewcommand{\arraystretch}{1.22}
+\begin{tabularx}{\textwidth}{|L{3.3cm}|Y|}
+\hline
+\rowcolor{TableHeadBg}
+\multicolumn{2}{|l|}{\textbf{Identifikasi Use Case}} \\
+\hline
+\textbf{Nomor} & #1 \\
+\hline
+\textbf{Nama} & #2 \\
+\hline
+\textbf{Deskripsi} & #3 \\
+\hline
+\textbf{Aktor} & #4 \\
+\hline
+\textbf{Kondisi awal} & #5 \\
+\hline
+\textbf{Kondisi akhir} & #6 \\
+\hline
+\textbf{Skenario Utama} & #7 \\
+\hline
+\textbf{Skenario Alternatif} & #8 \\
+\hline
+\end{tabularx}
+\vspace{0.35cm}
+}
+
+\paragraph{Use Case 1 -- Login dan Registrasi Akun}
+\textit{Use case} UC-01 mengatur autentikasi tiga peran pengguna. Pengunjung masuk melalui \textit{Google Sign-In} (\textit{Firebase}) dengan pendaftaran otomatis, Penjual mendaftar mandiri lalu masuk memakai surel dan kata sandi setelah disetujui Admin, dan Admin masuk memakai surel serta kata sandi.
+
+\printusecase{UC-01}{Login dan Registrasi Akun}
+{Pengguna memverifikasi identitas untuk mengakses fitur sesuai hak akses perannya.}
+{Pengunjung, Penjual (\textit{Seller}), Administrator}
+{Pengguna belum memiliki sesi masuk aktif.}
+{Sesi pengguna terbentuk pada sistem dan mengarahkan pengguna ke halaman beranda, Dasbor Penjual, atau Panel Administrator sesuai peran.}
+{\begin{uclist}
+  \item {[Pengunjung]} Menekan tombol masuk dengan Google pada halaman masuk atau laci autentikasi.
+  \item {[Pengunjung]} Sistem memproses autentikasi melalui \textit{Firebase Authentication}, membuat akun otomatis bila belum terdaftar, dan mengarahkan ke katalog utama.
+  \item {[Penjual/Admin]} Memasukkan surel dan kata sandi pada formulir masuk.
+  \item {[Penjual/Admin]} Sistem memverifikasi kecocokan kata sandi, keaktifan akun, dan status persetujuan sebelum membuka Dasbor Penjual atau Panel Administrator.
+\end{uclist}}
+{\begin{ucbullet}
+  \item Jika Penjual belum memiliki akun, Penjual membuka formulir pendaftaran mitra, mengisi data pemilik, lapak, area, serta unggah foto usaha (opsional), lalu akun tersimpan dengan status \textit{menunggu} verifikasi Admin (UC-09).
+  \item Jika kredensial salah, akun dinonaktifkan, atau status Penjual masih \textit{menunggu}/\textit{ditolak}, sistem menolak akses dan menampilkan pesan status pada halaman masuk.
+\end{ucbullet}}
+
+\paragraph{Use Case 2 -- Cari dan Saring Produk}
+\textit{Use case} UC-02 mengatur alur Pengunjung dalam menemukan jajanan pada beranda katalog memakai kata kunci atau penyaring kategori, rentang harga, dan area lapak, serta membuka rincian profil lapak.
+
+\printusecase{UC-02}{Cari dan Saring Produk}
+{Pengunjung mencari produk kuliner memakai kata kunci atau kombinasi penyaring, lalu meninjau detail profil UMKM dan ulasan publik.}
+{Pengunjung}
+{Pengunjung berada pada halaman katalog utama.}
+{Sistem menampilkan daftar lapak aktif dan terverifikasi yang memenuhi kriteria pencarian, beserta detail menu saat lapak dibuka.}
+{\begin{uclist}
+  \item Pengunjung mengetik kata kunci atau memilih filter kategori, rentang harga, serta area pada halaman katalog.
+  \item Sistem menyaring daftar lapak terverifikasi dan aktif (pada pencarian, lapak luar area kampus juga ditampilkan).
+  \item Pengunjung memilih salah satu kartu lapak untuk membuka halaman detail lapak.
+  \item Sistem menampilkan profil usaha, daftar menu terkelompok per kategori, ketersediaan menu, rata-rata peringkat, dan ulasan publik.
+\end{uclist}}
+{\begin{ucbullet}
+  \item Jika tidak ada lapak atau produk yang cocok dengan kriteria, sistem menampilkan pesan bahwa hasil tidak ditemukan agar Pengunjung mengubah kata kunci atau penyaring.
+\end{ucbullet}}
+
+\paragraph{Use Case 3 -- Checkout Pesanan dan Unggah Bukti Pembayaran}
+\textit{Use case} UC-03 menggantikan alur pemesanan via obrolan dengan pemesanan mandiri langsung dari halaman detail lapak. Pengunjung memilih porsi menu ke keranjang, melakukan \textit{checkout} tercatat ke sistem, dan mengunggah foto bukti transfer atau QRIS manual.
+
+\printusecase{UC-03}{Checkout Pesanan dan Unggah Bukti Pembayaran}
+{Pengunjung yang telah masuk memesan menu melalui keranjang lapak, mencatat pesanan ke sistem, dan mengunggah foto bukti pembayaran manual.}
+{Pengunjung}
+{Pengunjung sudah masuk akun dan membuka halaman detail lapak aktif.}
+{Pesanan tercatat di sistem berstatus \textit{diproses} dengan total harga terhitung dari server serta status pembayaran \textit{belum\_bayar} atau \textit{menunggu\_verifikasi}.}
+{\begin{uclist}
+  \item Pengunjung menambahkan porsi menu tersedia ke keranjang dan menekan tombol ``Checkout \& Pembayaran''.
+  \item Sistem membuka modal ringkasan menu, informasi pembayaran lapak, kolom unggah foto bukti transfer (berkas gambar \texttt{.jpg}/\texttt{.png} maks.\ 3 MB, opsional saat \textit{checkout}), dan kolom catatan pembeli.
+  \item Pengunjung mengonfirmasi pesanan sehingga sistem memvalidasi ketersediaan produk, menghitung total harga berdasarkan data server, menyimpan catatan pembeli, dan merekam transaksi pesanan.
+  \item Jika foto bukti belum dilampirkan atau ditolak Admin, Pengunjung mengunggah ulang foto bukti melalui laci \textit{History Pesanan}.
+\end{uclist}}
+{\begin{ucbullet}
+  \item Jika Pengunjung belum masuk akun, sistem mengarahkan ke gerbang masuk Google terlebih dahulu (F020).
+  \item Jika salah satu menu berubah status menjadi habis saat \textit{checkout}, sistem menolak pesanan dengan pesan ketersediaan menu.
+  \item Jika pesanan sudah berstatus pembayaran \textit{lunas}, sistem menolak unggah ulang bukti bayar.
+\end{ucbullet}}
+
+\paragraph{Use Case 4 -- Beri Peringkat dan Ulasan}
+\textit{Use case} UC-04 merupakan kelanjutan (\textit{extend}) setelah pembayaran pesanan diverifikasi \textit{lunas} oleh Admin (UC-12) dan pesanan ditandai \textit{selesai} oleh Penjual (UC-07). Tombol penilaian muncul otomatis pada menu \textit{History Pesanan}.
+
+\printusecase{UC-04}{Beri Peringkat dan Ulasan}
+{Pengunjung menilai lapak UMKM dengan bintang 1--5 dan ulasan teks setelah transaksi rampung sepenuhnya.}
+{Pengunjung}
+{Pengunjung sudah masuk akun; pesanan memiliki status \textit{selesai} dan status pembayaran \textit{lunas}, serta belum pernah diulas.}
+{Peringkat dan ulasan tersimpan secara unik per pesanan dan tampil pada halaman detail lapak.}
+{\begin{uclist}
+  \item Pengunjung membuka laci \textit{History Pesanan}.
+  \item Sistem menampilkan tombol ``Beri Penilaian'' pada pesanan yang memenuhi syarat (\textit{selesai} dan \textit{lunas}).
+  \item Pengunjung memilih peringkat 1--5 bintang, menulis komentar (opsional), lalu menekan kirim.
+  \item Sistem memvalidasi syarat status pesanan serta pembayaran, menyimpan ulasan, dan menyegarkan daftar riwayat di laci tanpa keluar dari \textit{History Pesanan}.
+\end{uclist}}
+{\begin{ucbullet}
+  \item Pengunjung dapat menunda pengisian ulasan; tombol ``Beri Penilaian'' tetap tersedia pada pesanan terkait hingga ulasan dikirim.
+  \item Upaya mengirim ulasan atas pesanan yang belum \textit{lunas} atau belum \textit{selesai} ditolak oleh sistem.
+\end{ucbullet}}
+
+\paragraph{Use Case 5 -- Kelola Profil UMKM}
+\textit{Use case} UC-05 mengatur pembaruan identitas dan informasi lokasi lapak oleh Penjual pada tab ``Profil Lapak UMKM'' di Dasbor Penjual.
+
+\printusecase{UC-05}{Kelola Profil UMKM}
+{Penjual memperbarui nama usaha, area, alamat lokasi, kontak, deskripsi, dan foto usaha milik lapaknya sendiri.}
+{Penjual (\textit{Seller})}
+{Penjual sudah masuk ke Dasbor Penjual.}
+{Informasi profil lapak diperbarui dan Penjual tetap berada pada tab ``Profil Lapak UMKM''.}
+{\begin{uclist}
+  \item Penjual membuka menu ``Profil Lapak UMKM'' pada bilah samping dasbor.
+  \item Penjual memperbarui data usaha termasuk area (mendukung area dalam maupun luar sekitar kampus).
+  \item Penjual menekan tombol simpan perubahan.
+  \item Sistem memvalidasi masukan, menyimpan perubahan profil, dan mempertahankan tampilan pada tab profil.
+\end{uclist}}
+{\begin{ucbullet}
+  \item Jika kolom wajib kosong atau format tautan foto tidak valid, sistem mengembalikan Penjual ke tab profil disertai pesan galat validasi.
+\end{ucbullet}}
+
+\paragraph{Use Case 6 -- Kelola Produk}
+\textit{Use case} UC-06 mengatur pengelolaan daftar menu UMKM oleh Penjual (tambah, lihat, ubah, dan hapus produk) pada tab ``Kelola Menu \& Katalog''.
+
+\printusecase{UC-06}{Kelola Produk}
+{Penjual menambah, melihat, mengubah, dan menghapus menu makanan atau minuman milik lapaknya.}
+{Penjual (\textit{Seller})}
+{Penjual sudah masuk ke Dasbor Penjual.}
+{Daftar menu lapak dan katalog publik diperbarui, sementara Penjual tetap berada pada tab ``Kelola Menu \& Katalog''.}
+{\begin{uclist}
+  \item Penjual membuka tab ``Kelola Menu \& Katalog'' pada Dasbor Penjual.
+  \item Penjual memilih aksi tambah menu baru, sunting menu, atau hapus menu.
+  \item Penjual mengisi nama produk, kategori, harga, deskripsi, dan status ketersediaan.
+  \item Sistem menyimpan perubahan dan mempertahankan tampilan pada tab produk.
+\end{uclist}}
+{\begin{ucbullet}
+  \item Jika nama produk, kategori, atau harga belum lengkap atau bernilai negatif, sistem menampilkan pesan validasi pada tab produk tanpa menyimpan data.
+\end{ucbullet}}
+
+\paragraph{Use Case 7 -- Kelola Pesanan Self Pick-up dan Ketersediaan Menu}
+\textit{Use case} UC-07 mengatur alur Penjual dalam memantau pesanan masuk dan menuntaskan pesanan yang telah berstatus \textit{lunas}. Penjual juga dapat mengubah status ketersediaan menu menjadi habis tanpa pengurangan stok otomatis.
+
+\printusecase{UC-07}{Kelola Pesanan Self Pick-up dan Ketersediaan Menu}
+{Penjual memantau item pesanan beserta catatan pembeli dan menyelesaikan pesanan berstatus \textit{lunas}. Penjual juga mengatur ketersediaan menu menjadi \textit{Tersedia} atau \textit{Habis}.}
+{Penjual (\textit{Seller})}
+{Penjual masuk ke Dasbor Penjual dan terdapat pesanan masuk atau menu yang perlu diubah ketersediaannya.}
+{Status pesanan atau ketersediaan menu diperbarui, dengan posisi tab tetap aktif pada Dasbor Penjual.}
+{\begin{uclist}
+  \item Penjual membuka tab ``Pesan \& Pesanan'' untuk melihat daftar item pesanan, catatan pembeli, dan status verifikasi pembayaran.
+  \item Setelah melihat status pembayaran \textit{lunas}, Penjual menyiapkan menu untuk pengambilan di tempat.
+  \item Saat pesanan diserahkan kepada pembeli, Penjual menekan tombol selesai sehingga status berubah menjadi \textit{selesai}.
+  \item Untuk mengatur stok tanpa pengurangan otomatis, Penjual menekan tombol status ketersediaan pada tab produk agar menu bertanda habis tidak dapat dipesan.
+\end{uclist}}
+{\begin{ucbullet}
+  \item Jika Penjual mencoba menandai \textit{selesai} pada pesanan yang belum diverifikasi \textit{lunas} oleh Admin, sistem menolak permintaan dengan pesan kesalahan pada tab pesanan.
+  \item Verifikasi pembayaran tidak tersedia bagi Penjual karena kewenangan tersebut terpusat pada Administrator.
+\end{ucbullet}}
+
+\paragraph{Use Case 8 -- Tanggapi Ulasan}
+\textit{Use case} UC-08 mengatur pemberian balasan oleh Penjual atas ulasan pelanggan yang masuk khusus untuk lapaknya sendiri.
+
+\printusecase{UC-08}{Tanggapi Ulasan}
+{Penjual meninjau ulasan masuk dari pembeli pada tab ulasan dan mengirimkan tanggapan resmi penjual.}
+{Penjual (\textit{Seller})}
+{Penjual masuk ke Dasbor Penjual dan memiliki ulasan pelanggan pada lapaknya.}
+{Tanggapan penjual tersimpan dan tampil pada halaman detail lapak.}
+{\begin{uclist}
+  \item Penjual membuka tab ``Rating \& Ulasan''.
+  \item Penjual membaca peringkat, komentar pembeli, dan status tampil ulasan.
+  \item Penjual mengisi kolom balasan dan mengirimkan tanggapan.
+  \item Sistem memvalidasi kepemilikan UMKM atas ulasan, menyimpan balasan, dan menjaga Penjual tetap di tab ulasan.
+\end{uclist}}
+{\begin{ucbullet}
+  \item Jika isi tanggapan kosong, sistem menolak dengan pesan validasi.
+  \item Jika ulasan disembunyikan oleh Admin (UC-11), sistem melarang Penjual menanggapi ulasan tersebut.
+  \item Percobaan membalas ulasan milik UMKM lain ditolak oleh sistem.
+\end{ucbullet}}
+
+\paragraph{Use Case 9 -- Verifikasi Pengguna dan Seller}
+\textit{Use case} UC-09 mengatur alur Admin dalam meninjau pendaftaran mitra UMKM baru serta mengaktifkan atau menonaktifkan akun pengguna.
+
+\printusecase{UC-09}{Verifikasi Pengguna dan Seller}
+{Admin memeriksa pengajuan mitra Penjual baru dan mengatur status keaktifan seluruh akun pengguna.}
+{Administrator}
+{Admin masuk ke Panel Administrator dan terdapat akun Penjual berstatus \textit{menunggu} atau pengguna yang perlu dikelola.}
+{Status verifikasi atau keaktifan akun diperbarui, dan Admin tetap berada di tab verifikasi atau manajemen pengguna.}
+{\begin{uclist}
+  \item Admin membuka tab ``Verifikasi Seller Baru''.
+  \item Admin meninjau data pemilik serta profil lapak calon mitra UMKM.
+  \item Admin memilih keputusan setujui (\textit{terverifikasi}) atau tolak (\textit{ditolak}).
+  \item Untuk pengelolaan akun umum, Admin membuka tab ``Manajemen User'' dan mengubah status aktif atau nonaktif akun pengguna.
+\end{uclist}}
+{\begin{ucbullet}
+  \item Admin tidak diizinkan menonaktifkan akun Administrator yang sedang digunakan untuk masuk saat itu; sistem mengembalikan pesan penolakan pada tab pengguna.
+\end{ucbullet}}
+
+\paragraph{Use Case 10 -- Kelola UMKM dan Kategori}
+\textit{Use case} UC-10 memfasilitasi Admin untuk mengawasi daftar mitra UMKM terdaftar serta menambah atau menghapus kategori menu platform.
+
+\printusecase{UC-10}{Kelola UMKM dan Kategori}
+{Admin memantau daftar lapak UMKM serta mengelola daftar kategori menu untuk menjaga konsistensi pengelompokan produk.}
+{Administrator}
+{Admin masuk ke Panel Administrator.}
+{Daftar kategori menu diperbarui dan Admin tetap berada pada tab ``Kelola Kategori Menu''.}
+{\begin{uclist}
+  \item Admin membuka tab ``Kelola Mitra UMKM'' atau ``Kelola Kategori Menu''.
+  \item Pada tab kategori, Admin menambah kategori baru dengan nama unik atau memilih hapus pada kategori yang tidak terpakai.
+  \item Sistem menyimpan pembaruan ke basis data dan menampilkan kembali tab kategori.
+\end{uclist}}
+{\begin{ucbullet}
+  \item Jika nama kategori sudah terdaftar, validasi unik menolak penyimpanan dan menampilkan pesan kesalahan pada tab kategori.
+  \item Jika Admin menghapus kategori yang masih dipakai produk aktif, sistem membatalkan penghapusan dan meminta Admin memindahkan produk terkait terlebih dahulu.
+\end{ucbullet}}
+
+\paragraph{Use Case 11 -- Moderasi Ulasan dan Pemantauan Sistem}
+\textit{Use case} UC-11 mengatur pengawasan aktivitas platform secara menyeluruh beserta moderasi ulasan publik oleh Admin.
+
+\printusecase{UC-11}{Moderasi Ulasan dan Pemantauan Sistem}
+{Admin memantau statistik platform, log aktivitas gabungan, log pesan, dan memoderasi ulasan pembeli yang melanggar ketentuan.}
+{Administrator}
+{Admin masuk ke Panel Administrator.}
+{Statistik serta log terbaru tampil dan status visibilitas ulasan diperbarui tanpa memindahkan tab aktif.}
+{\begin{uclist}
+  \item Admin meninjau kartu metrik dan log aktivitas gabungan pada tab ``Monitoring \& Statistik''.
+  \item Untuk menindak ulasan tidak pantas, Admin membuka tab ``Moderasi Ulasan''.
+  \item Admin menekan tombol sembunyikan atau tampilkan kembali pada ulasan yang dimaksud.
+  \item Sistem memperbarui status visibilitas ulasan sehingga ulasan tersembunyi tidak tampil di katalog publik.
+\end{uclist}}
+{\begin{ucbullet}
+  \item Jika seluruh ulasan sesuai ketentuan, Admin cukup memantau ringkasan aktivitas tanpa menyembunyikan ulasan.
+\end{ucbullet}}
+
+\paragraph{Use Case 12 -- Verifikasi Pembayaran Manual}
+\textit{Use case} UC-12 memusatkan otoritas pemeriksaan bukti transfer atau QRIS pembeli kepada Administrator agar alur pembayaran tetap aman sesuai batasan proyek tanpa gerbang pembayaran otomatis.
+
+\printusecase{UC-12}{Verifikasi Pembayaran Manual}
+{Admin memeriksa foto bukti pembayaran yang diunggah pembeli pada pesanan dan menetapkan status \textit{lunas} atau \textit{ditolak}.}
+{Administrator}
+{Admin masuk ke Panel Administrator dan terdapat pesanan dengan status menunggu verifikasi atau bukti foto baru.}
+{Status pembayaran berubah menjadi \textit{lunas} atau \textit{ditolak} beserta catatan Admin, dan Admin tetap di tab ``Verifikasi Pembayaran''.}
+{\begin{uclist}
+  \item Admin membuka tab ``Verifikasi Pembayaran'' pada Panel Administrator.
+  \item Admin melihat pratinjau foto bukti transfer, total tagihan, rincian item, serta catatan pembeli.
+  \item Jika dana sesuai, Admin memilih aksi setujui menjadi \textit{lunas}.
+  \item Pesanan berstatus \textit{lunas} kemudian dapat ditandai \textit{selesai} oleh Penjual pada Dasbor Penjual.
+\end{uclist}}
+{\begin{ucbullet}
+  \item Jika foto struk buram, tidak valid, atau nominal kurang, Admin menekan tombol tolak, mengisi alasan pada modal penolakan, dan menyimpan status \textit{ditolak} agar pembeli dapat mengunggah ulang bukti pembayaran melalui \textit{History Pesanan}.
+\end{ucbullet}}
+
+\paragraph{Use Case 13 -- Layanan Customer Support Terpusat}
+\textit{Use case} UC-13 menyediakan saluran bantuan dua arah antara pengguna dan tim pengelola platform (Admin) untuk menyelesaikan kendala akun, pesanan, maupun pembayaran.
+
+\printusecase{UC-13}{Layanan Customer Support Terpusat}
+{Pengunjung mengirim pesan kendala atau pertanyaan ke pusat bantuan, kemudian Admin membalas tiket tersebut dari Panel Administrator.}
+{Pengunjung, Administrator}
+{Pengunjung sudah masuk akun untuk mengirim tiket; Admin masuk ke Panel Administrator.}
+{Pesan tiket serta balasan Admin tersimpan dan tampil pada laci Bantuan Pengunjung maupun tab ``Customer Support'' Admin.}
+{\begin{uclist}
+  \item Pengunjung menekan tombol ``Bantuan'' pada kartu toko atau menu ``Customer Support'' pada peluncur \textit{Navigasi}.
+  \item Pengunjung menuliskan keluhan atau pertanyaan lalu menekan kirim.
+  \item Admin membuka tab ``Customer Support'', membaca riwayat percakapan pelanggan, dan mengirim balasan melalui modal balasan.
+  \item Balasan tersimpan dengan label \textit{Admin Support} dan langsung terlihat oleh Pengunjung di laci bantuan.
+\end{uclist}}
+{\begin{ucbullet}
+  \item Jika Pengunjung belum masuk akun, laci bantuan menampilkan gerbang autentikasi Google terlebih dahulu.
+  \item Jika Admin mengirimkan balasan kosong, sistem menolak dan mempertahankan tab aktif dengan pesan validasi.
+\end{ucbullet}}

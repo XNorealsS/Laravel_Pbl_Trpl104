@@ -62,6 +62,18 @@
             <span>{{ session('success') }}</span>
           </div>
         @endif
+        @if(session('error'))
+          <div class="auth-alert-error">
+            <i class='bx bx-error-circle'></i>
+            <span>{{ session('error') }}</span>
+          </div>
+        @endif
+        @if($errors->any())
+          <div class="auth-alert-error">
+            <i class='bx bx-error-circle'></i>
+            <span>{{ $errors->first() }}</span>
+          </div>
+        @endif
 
         <!-- Form Elemen -->
         <form action="{{ route('login') }}" method="POST" id="loginForm">

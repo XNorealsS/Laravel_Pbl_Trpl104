@@ -1,0 +1,526 @@
+\clearpage
+\section{Deskripsi Perancangan Perangkat Lunak}
+
+\subsection{Deskripsi Perancangan Data}
+
+Perancangan data sistem JajanRia disusun dalam dua tahap: model konseptual-logis (\textit{Logical Entity-Relationship Diagram}) pada Gambar~\ref{fig:erd-jajanria} untuk menggambarkan entitas bisnis, atribut, dan aturan kardinalitas, serta model fisik basis data pada Tabel~\ref{tab:skema-user} hingga Tabel~\ref{tab:skema-ulasan}. Pemetaan seluruh relasi antar-entitas logis dirangkum pada Tabel~\ref{tab:kardinalitas-erd}.
+
+\begin{figure}[!htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  ent/.style={draw=PolibatamBlue, very thick, rounded corners=2pt, fill=ActorFill, align=center, font=\sffamily\footnotesize\bfseries, inner sep=4pt, minimum width=2.3cm, minimum height=0.72cm, text=PolibatamBlue},
+  dia/.style={diamond, aspect=2.1, draw=JajanGreen, thick, fill=green!7, align=center, font=\sffamily\tiny\bfseries, inner sep=1pt, minimum width=1.35cm, minimum height=0.72cm},
+  att/.style={ellipse, draw=PolibatamBlue!75, thin, fill=white, align=center, font=\sffamily\tiny, inner sep=1.2pt, minimum height=0.40cm},
+  rel/.style={draw=black!80, semithick},
+  attline/.style={draw=PolibatamBlue!65, thin},
+  card/.style={font=\sffamily\tiny\bfseries, fill=white, inner sep=1pt, text=PolibatamBlue}
+]
+  % === 7 ENTITAS LOGIS ===
+  \node[ent] (user)    at (0.5, 5.4)  {Pengguna};
+  \node[ent] (kat)     at (5.6, 5.4)  {Kategori};
+  \node[ent] (pesan)   at (-2.9, 2.8) {Pesan};
+  \node[ent] (umkm)    at (0.8, 1.1)  {UMKM};
+  \node[ent] (produk)  at (5.6, 1.1)  {Produk};
+  \node[ent] (pesanan) at (-2.9, -2.2){Pesanan};
+  \node[ent] (ulasan)  at (0.8, -5.8) {Ulasan};
+
+  % === ATRIBUT ELIPS: PENGGUNA ===
+  \node[att] (u1) at (-2.0, 6.2) {\underline{id\_pengguna}};
+  \node[att] (u2) at (-1.3, 7.1) {nama};
+  \node[att] (u3) at (-0.2, 7.6) {email};
+  \node[att] (u4) at (1.1, 7.6)  {kata\_sandi};
+  \node[att] (u5) at (2.3, 7.1)  {firebase\_uid};
+  \node[att] (u6) at (3.0, 6.3)  {peran};
+  \node[att] (u7) at (3.2, 5.4)  {status\_verifikasi};
+  \node[att] (u8) at (2.9, 4.5)  {status\_aktif};
+  \foreach \a in {u1,u2,u3,u4,u5,u6,u7,u8} {\draw[attline] (user) -- (\a);}
+
+  % === ATRIBUT ELIPS: KATEGORI ===
+  \node[att] (k1) at (4.7, 6.8) {\underline{id\_kategori}};
+  \node[att] (k2) at (6.6, 6.8) {nama\_kategori};
+  \foreach \a in {k1,k2} {\draw[attline] (kat) -- (\a);}
+
+  % === ATRIBUT ELIPS: PESAN ===
+  \node[att] (m1) at (-4.3, 3.9) {\underline{id\_pesan}};
+  \node[att] (m2) at (-5.1, 3.2) {pengirim};
+  \node[att] (m3) at (-5.2, 2.5) {isi\_pesan};
+  \node[att] (m4) at (-4.9, 1.8) {tipe\_pesan};
+  \node[att] (m5) at (-4.0, 1.3) {lampiran};
+  \node[att] (m6) at (-2.9, 1.3) {waktu};
+  \foreach \a in {m1,m2,m3,m4,m5,m6} {\draw[attline] (pesan) -- (\a);}
+
+  % === ATRIBUT ELIPS: UMKM ===
+  \node[att] (s1) at (2.8, 1.2)  {\underline{id\_umkm}};
+  \node[att] (s2) at (3.2, 0.5)  {nama\_usaha};
+  \node[att] (s3) at (3.0, -0.2) {deskripsi};
+  \node[att] (s4) at (2.6, -0.9) {lokasi};
+  \node[att] (s5) at (2.0, -1.5) {area};
+  \node[att] (s6) at (1.5, -2.1) {kontak};
+  \foreach \a in {s1,s2,s3,s4,s5,s6} {\draw[attline] (umkm) -- (\a);}
+
+  % === ATRIBUT ELIPS: PRODUK ===
+  \node[att] (p1) at (7.3, 2.3)  {\underline{id\_produk}};
+  \node[att] (p2) at (7.6, 1.6)  {nama\_produk};
+  \node[att] (p3) at (7.6, 0.9)  {deskripsi};
+  \node[att] (p4) at (7.5, 0.2)  {harga};
+  \node[att] (p5) at (7.2, -0.5) {tersedia};
+  \node[att] (p6) at (6.7, -1.1) {foto\_produk};
+  \foreach \a in {p1,p2,p3,p4,p5,p6} {\draw[attline] (produk) -- (\a);}
+
+  % === ATRIBUT ELIPS: PESANAN ===
+  \node[att] (o1) at (-4.5, -0.9) {\underline{id\_pesanan}};
+  \node[att] (o2) at (-5.2, -1.5) {rincian\_menu};
+  \node[att] (o3) at (-5.3, -2.2) {catatan};
+  \node[att] (o4) at (-5.3, -2.85){total\_harga};
+  \node[att] (o5) at (-5.1, -3.5) {bukti\_bayar};
+  \node[att] (o6) at (-5.0, -4.15){status\_bayar};
+  \node[att] (o7) at (-3.25,-4.45){status\_pesanan};
+  \foreach \a in {o1,o2,o3,o4,o5,o6,o7} {\draw[attline] (pesanan) -- (\a);}
+
+  % === ATRIBUT ELIPS: ULASAN ===
+  \node[att] (r1) at (-2.0, -7.1) {\underline{id\_ulasan}};
+  \node[att] (r2) at (-0.65,-7.5) {rating};
+  \node[att] (r3) at (0.65, -7.5) {komentar};
+  \node[att] (r4) at (2.35, -7.5) {balasan\_seller};
+  \node[att] (r5) at (4.05, -7.1) {status\_moderasi};
+  \foreach \a in {r1,r2,r3,r4,r5} {\draw[attline] (ulasan) -- (\a);}
+
+  % === 11 RELASI BELAH KETUPAT (LOGICAL CHEN) ===
+  \node[dia] (d_kelola)     at (0.8, 3.25)  {mengelola};
+  \node[dia] (d_kirim)      at (-2.9, 4.35) {mengirim};
+  \node[dia] (d_trm_psn)    at (-1.1, 2.2)  {menerima};
+  \node[dia, minimum width=1.2cm] (d_buat) at (-6.2, 0.4) {membuat};
+  \node[dia] (d_proses_ord) at (-1.1, -0.5) {memproses};
+  \node[dia, aspect=2.5, minimum width=2.2cm] (d_kel) at (5.6, 3.25) {mengelompokkan};
+  \node[dia] (d_milik)      at (3.2, 2.35)  {memiliki};
+  \node[dia] (d_dp_umkm)    at (0.8, -3.0)  {mendapat};
+  \node[dia] (d_dp_prod)    at (5.6, -2.5)  {mendapat};
+  \node[dia] (d_picu)       at (-1.4, -4.55){memicu};
+  \node[dia, minimum width=1.2cm] (d_tulis) at (-7.1, -4.1) {menulis};
+
+  % 1. Pengguna -> mengelola -> UMKM (1 : N)
+  \draw[rel] ([xshift=0.3cm]user.south) -- node[card, right=1pt, pos=0.35] {1} (d_kelola.north);
+  \draw[rel] (d_kelola.south) -- node[card, right=1pt, pos=0.65] {N} (umkm.north);
+
+  % 2. Pengguna -> mengirim -> Pesan (1 : N)
+  \draw[rel] (user.west) -| node[card, above=1pt, pos=0.25] {1} (d_kirim.north);
+  \draw[rel] (d_kirim.south) -- node[card, right=1pt, pos=0.5] {N} (pesan.north);
+
+  % 3. UMKM -> menerima -> Pesan (0..1 : N)
+  \draw[rel] ([yshift=0.2cm]umkm.west) -| node[card, above=1pt, pos=0.3] {0..1} (d_trm_psn.south);
+  \draw[rel] (d_trm_psn.north) |- node[card, above=1pt, pos=0.75] {N} (pesan.east);
+
+  % 4. Pengguna -> membuat -> Pesanan (1 : N)
+  \draw[rel] ([yshift=-0.18cm]user.west) -- (-6.2, 5.22) node[card, below=1pt, pos=0.4] {1} -- (d_buat.north);
+  \draw[rel] (d_buat.south) |- node[card, left=1pt, pos=0.3] {N} ([yshift=0.12cm]pesanan.west);
+
+  % 5. UMKM -> memproses -> Pesanan (1 : N)
+  \draw[rel] ([yshift=-0.2cm]umkm.west) -| node[card, below=1pt, pos=0.3] {1} (d_proses_ord.north);
+  \draw[rel] (d_proses_ord.south) |- node[card, above=1pt, pos=0.75] {N} (pesanan.east);
+
+  % 6. Kategori -> mengelompokkan -> Produk (1 : N)
+  \draw[rel] (kat.south) -- node[card, right=1pt, pos=0.4] {1} (d_kel.north);
+  \draw[rel] (d_kel.south) -- node[card, right=1pt, pos=0.6] {N} (produk.north);
+
+  % 7. UMKM -> memiliki -> Produk (1 : N)
+  \draw[rel] ([xshift=0.6cm]umkm.north) |- (d_milik.west) node[card, above=1pt, pos=0.7] {1};
+  \draw[rel] (d_milik.east) -| ([xshift=-0.7cm]produk.north) node[card, left=1pt, pos=0.75] {N};
+
+  % 8. UMKM -> mendapat -> Ulasan (1 : N)
+  \draw[rel] (umkm.south) -- node[card, right=1pt, pos=0.3] {1} (d_dp_umkm.north);
+  \draw[rel] (d_dp_umkm.south) -- node[card, right=1pt, pos=0.7] {N} (ulasan.north);
+
+  % 9. Produk -> mendapat -> Ulasan (0..1 : N)
+  \draw[rel] (produk.south) -- node[card, right=1pt, pos=0.35] {0..1} (d_dp_prod.north);
+  \draw[rel] (d_dp_prod.south) |- node[card, above=1pt, pos=0.75] {N} (ulasan.east);
+
+  % 10. Pesanan -> memicu -> Ulasan (1 : 0..1)
+  \draw[rel] ([xshift=0.85cm]pesanan.south) |- node[card, left=1pt, pos=0.4] {1} (d_picu.west);
+  \draw[rel] (d_picu.east) -| ([xshift=-0.7cm]ulasan.north) node[card, above=1pt, pos=0.25] {0..1};
+
+  % 11. Pengguna -> menulis -> Ulasan (1 : N)
+  \draw[rel] ([yshift=0.18cm]user.west) -- (-7.1, 5.58) node[card, above=1pt, pos=0.45] {1} -- (d_tulis.north);
+  \draw[rel] (d_tulis.south) |- node[card, above=1pt, pos=0.75] {N} (ulasan.west);
+\end{tikzpicture}%
+}
+\caption{\textit{Logical Entity-Relationship Diagram} (ERD) Sistem \mbox{JajanRia}}
+\label{fig:erd-jajanria}
+\end{figure}
+
+\paragraph*{Aturan Bisnis dan Pemetaan Entitas Logis}
+Model data logis pada Gambar~\ref{fig:erd-jajanria} memisahkan konsep entitas bisnis dari struktur fisik tabel basis data dan menerapkan aturan bisnis utama berikut:
+\begin{enumerate}[leftmargin=1.5em, itemsep=2pt, topsep=2pt]
+  \item \textbf{Kepemilikan lapak UMKM:} satu akun Pengguna berperan Penjual dapat mengelola satu atau lebih entitas UMKM (\texttt{1:N}), dengan identitas unik pada tiap entitas (\textit{Primary Key}, PK, ditandai garis bawah).
+  \item \textbf{Dukungan pelanggan dan pesan:} satu Pengguna dapat mengirim banyak Pesan (\texttt{1:N}), sedangkan keterkaitan UMKM terhadap Pesan bersifat opsional (\texttt{0..1:N}) karena tiket bantuan \textit{Customer Support} ditujukan langsung kepada Administrator tanpa merujuk lapak.
+  \item \textbf{Alur pemesanan hingga ulasan:} satu Pesanan yang telah berstatus \textit{selesai} dan terverifikasi \textit{lunas} memicu maksimal satu kesempatan Ulasan (\texttt{1:0..1}). Ulasan selalu terikat ke UMKM terkait (\texttt{1:N}), sedangkan keterkaitannya dengan Produk bersifat opsional (\texttt{0..1:N}).
+  \item \textbf{Klasifikasi katalog:} Kategori mengelompokkan banyak Produk (\texttt{1:N}), terpisah dari relasi kepemilikan menu oleh masing-masing UMKM (\texttt{1:N}).
+\end{enumerate}
+
+\renewcommand{\arraystretch}{1.22}
+\begin{longtable}{|C{0.75cm}|L{2.05cm}|L{3.15cm}|L{1.95cm}|C{1.35cm}|L{\dimexpr\textwidth-0.75cm-2.05cm-3.15cm-1.95cm-1.35cm-12\tabcolsep-7\arrayrulewidth\relax}|}
+\caption{Kardinalitas dan Relasi Logis Sistem JajanRia}
+\label{tab:kardinalitas-erd} \\
+\hline
+\rowcolor{TableHeadBg}
+\textbf{No} & \textbf{Entitas Asal} & \textbf{Relasi} & \textbf{Entitas Tujuan} & \textbf{Kardi\-nalitas} & \textbf{Keterangan} \\
+\hline
+\endfirsthead
+\hline
+\rowcolor{TableHeadBg}
+\textbf{No} & \textbf{Entitas Asal} & \textbf{Relasi} & \textbf{Entitas Tujuan} & \textbf{Kardi\-nalitas} & \textbf{Keterangan} \\
+\hline
+\endhead
+\hline
+\endfoot
+1 & Pengguna & Mengelola & UMKM & 1:N & Satu pemilik (\textit{Seller}) dapat mengelola lapak UMKM. \\
+\hline
+2 & Pengguna & Mengirim & Pesan & 1:N & Satu Pengunjung dapat mengirim banyak pesan atau tiket bantuan. \\
+\hline
+3 & UMKM & Menerima & Pesan & 0..1:N & Pesan ke lapak merujuk UMKM terkait; tiket bantuan Admin tidak terikat lapak. \\
+\hline
+4 & UMKM & Memiliki & Produk & 1:N & Satu UMKM memiliki banyak menu kuliner. \\
+\hline
+5 & Kategori & Mengelompokkan & Produk & 1:N & Satu kategori mengelompokkan banyak menu. \\
+\hline
+6 & Pengguna & Membuat & Pesanan & 1:N & Satu Pengunjung dapat membuat banyak pesanan. \\
+\hline
+7 & UMKM & Memproses & Pesanan & 1:N & Satu lapak UMKM memproses banyak pesanan. \\
+\hline
+8 & Pesanan & Memicu & Ulasan & 1:0..1 & Pesanan \textit{selesai} dan \textit{lunas} memicu tepat satu kesempatan ulasan unik. \\
+\hline
+9 & Pengguna & Menulis & Ulasan & 1:N & Satu Pengunjung dapat menulis banyak ulasan pada pesanan berbeda. \\
+\hline
+10 & UMKM & Mendapat & Ulasan & 1:N & Satu UMKM menerima banyak ulasan dari pembeli. \\
+\hline
+11 & Produk & Mendapat & Ulasan & 0..1:N & Ulasan dapat dikaitkan ke produk spesifik atau langsung ke lapak. \\
+\hline
+\end{longtable}
+
+Rincian skema tujuh tabel domain yang saling terhubung melalui kunci asing (\textit{Foreign Key}, FK) pada basis data relasional \textit{Structured Query Language} (MySQL) JajanRia dijelaskan pada Tabel~\ref{tab:skema-user} hingga Tabel~\ref{tab:skema-ulasan}.
+
+\subsubsection{Tabel \texttt{t\_user}}
+Tabel \texttt{t\_user} menyimpan akun seluruh pengguna platform beserta metode autentikasi (\textit{Google Sign-In} atau kata sandi terenkripsi \texttt{bcrypt}), peran, status verifikasi Penjual, dan status keaktifan akun.
+
+\renewcommand{\arraystretch}{1.20}
+\begin{longtable}{|L{3.85cm}|L{2.4cm}|C{1.65cm}|L{\dimexpr\textwidth-3.85cm-2.4cm-1.65cm-8\tabcolsep-5\arrayrulewidth\relax}|}
+\caption{Struktur Tabel \texttt{t\_user} (\textit{Primary Key}: \texttt{id\_user})}
+\label{tab:skema-user} \\
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Nama Kolom} & \textbf{Tipe} & \textbf{Panjang} & \textbf{Deskripsi} \\
+\hline
+\endfirsthead
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Nama Kolom} & \textbf{Tipe} & \textbf{Panjang} & \textbf{Deskripsi} \\
+\hline
+\endhead
+\hline
+\endfoot
+\texttt{id\_user} & \texttt{int unsigned} & 10 & Kunci utama otomatis (\textit{auto increment}). \\
+\hline
+\texttt{nama} & \texttt{varchar} & 100 & Nama lengkap pengguna. \\
+\hline
+\texttt{email} & \texttt{varchar} & 100 & Alamat surel unik untuk autentikasi. \\
+\hline
+\texttt{password} & \texttt{varchar} & 255 & \textit{Hash} kata sandi (\textit{null} bagi akun Google). \\
+\hline
+\texttt{firebase\_uid} & \texttt{varchar} & 128 & Identitas unik dari \textit{Firebase Authentication}. \\
+\hline
+\texttt{foto\_profil} & \texttt{varchar} & 255 & Tautan foto profil pengguna (\textit{nullable}). \\
+\hline
+\texttt{role} & \texttt{enum} & -- & Peran: \texttt{pengunjung}, \texttt{seller}, atau \texttt{admin}. \\
+\hline
+\texttt{status\_verifikasi} & \texttt{enum} & -- & Status: \texttt{menunggu}, \texttt{terverifikasi}, atau \texttt{ditolak}. \\
+\hline
+\texttt{is\_active} & \texttt{tinyint(1)} & 1 & Status keaktifan akun (bawaan \texttt{1}/aktif). \\
+\hline
+\texttt{created\_at}, \texttt{updated\_at} & \texttt{timestamp} & -- & Stempel waktu pembuatan dan pembaruan baris. \\
+\hline
+\end{longtable}
+
+\subsubsection{Tabel \texttt{t\_umkm}}
+Tabel \texttt{t\_umkm} menyimpan identitas usaha setiap Penjual, mencakup nama lapak, deskripsi, alamat lokasi, kawasan area terstruktur untuk penyaringan lokasi, nomor kontak, dan foto usaha.
+
+\renewcommand{\arraystretch}{1.20}
+\begin{longtable}{|L{3.85cm}|L{2.4cm}|C{1.65cm}|L{\dimexpr\textwidth-3.85cm-2.4cm-1.65cm-8\tabcolsep-5\arrayrulewidth\relax}|}
+\caption{Struktur Tabel \texttt{t\_umkm} (PK: \texttt{id\_umkm}; FK: \texttt{id\_user} $\rightarrow$ \texttt{t\_user})}
+\label{tab:skema-umkm} \\
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Nama Kolom} & \textbf{Tipe} & \textbf{Panjang} & \textbf{Deskripsi} \\
+\hline
+\endfirsthead
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Nama Kolom} & \textbf{Tipe} & \textbf{Panjang} & \textbf{Deskripsi} \\
+\hline
+\endhead
+\hline
+\endfoot
+\texttt{id\_umkm} & \texttt{int unsigned} & 10 & Kunci utama otomatis (\textit{auto increment}). \\
+\hline
+\texttt{id\_user} & \texttt{int unsigned} & 10 & Kunci asing ke pemilik akun di \texttt{t\_user}. \\
+\hline
+\texttt{nama\_usaha} & \texttt{varchar} & 150 & Nama lapak atau warung UMKM. \\
+\hline
+\texttt{deskripsi} & \texttt{text} & -- & Keterangan usaha (\textit{nullable}). \\
+\hline
+\texttt{lokasi} & \texttt{varchar} & 255 & Alamat atau titik lokasi rinci usaha. \\
+\hline
+\texttt{area} & \texttt{varchar} & 100 & Area kawasan untuk penyaring lokasi katalog. \\
+\hline
+\texttt{kontak} & \texttt{varchar} & 30 & Nomor kontak atau nomor pembayaran lapak. \\
+\hline
+\texttt{foto\_usaha} & \texttt{varchar} & 255 & Jalur berkas atau tautan foto lapak (\textit{nullable}). \\
+\hline
+\texttt{created\_at}, \texttt{updated\_at} & \texttt{timestamp} & -- & Stempel waktu pembuatan dan pembaruan baris. \\
+\hline
+\end{longtable}
+
+\subsubsection{Tabel \texttt{t\_kategori}}
+Tabel \texttt{t\_kategori} menyimpan daftar unik kategori menu kuliner agar pengelompokan pada etalase publik dan filter katalog tetap konsisten.
+
+\renewcommand{\arraystretch}{1.20}
+\begin{longtable}{|L{3.85cm}|L{2.4cm}|C{1.65cm}|L{\dimexpr\textwidth-3.85cm-2.4cm-1.65cm-8\tabcolsep-5\arrayrulewidth\relax}|}
+\caption{Struktur Tabel \texttt{t\_kategori} (PK: \texttt{id\_kategori})}
+\label{tab:skema-kategori} \\
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Nama Kolom} & \textbf{Tipe} & \textbf{Panjang} & \textbf{Deskripsi} \\
+\hline
+\endfirsthead
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Nama Kolom} & \textbf{Tipe} & \textbf{Panjang} & \textbf{Deskripsi} \\
+\hline
+\endhead
+\hline
+\endfoot
+\texttt{id\_kategori} & \texttt{int unsigned} & 10 & Kunci utama otomatis (\textit{auto increment}). \\
+\hline
+\texttt{nama\_kategori} & \texttt{varchar} & 100 & Nama kategori menu unik. \\
+\hline
+\texttt{created\_at}, \texttt{updated\_at} & \texttt{timestamp} & -- & Stempel waktu pembuatan dan pembaruan baris. \\
+\hline
+\end{longtable}
+
+\subsubsection{Tabel \texttt{t\_produk}}
+Tabel \texttt{t\_produk} menyimpan katalog menu yang dijual tiap lapak berikut harga satuan dan penanda ketersediaan fleksibel (\texttt{tersedia}).
+
+\renewcommand{\arraystretch}{1.20}
+\begin{longtable}{|L{3.85cm}|L{2.4cm}|C{1.65cm}|L{\dimexpr\textwidth-3.85cm-2.4cm-1.65cm-8\tabcolsep-5\arrayrulewidth\relax}|}
+\caption{Struktur Tabel \texttt{t\_produk} (PK: \texttt{id\_produk}; FK: \texttt{id\_umkm}, \texttt{id\_kategori})}
+\label{tab:skema-produk} \\
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Nama Kolom} & \textbf{Tipe} & \textbf{Panjang} & \textbf{Deskripsi} \\
+\hline
+\endfirsthead
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Nama Kolom} & \textbf{Tipe} & \textbf{Panjang} & \textbf{Deskripsi} \\
+\hline
+\endhead
+\hline
+\endfoot
+\texttt{id\_produk} & \texttt{int unsigned} & 10 & Kunci utama otomatis (\textit{auto increment}). \\
+\hline
+\texttt{id\_umkm} & \texttt{int unsigned} & 10 & Kunci asing ke lapak pemilik di \texttt{t\_umkm}. \\
+\hline
+\texttt{id\_kategori} & \texttt{int unsigned} & 10 & Kunci asing ke kategori menu di \texttt{t\_kategori}. \\
+\hline
+\texttt{nama\_produk} & \texttt{varchar} & 150 & Nama menu makanan atau minuman. \\
+\hline
+\texttt{foto\_produk} & \texttt{varchar} & 255 & Jalur berkas atau tautan foto menu (\textit{nullable}). \\
+\hline
+\texttt{deskripsi} & \texttt{text} & -- & Rincian komposisi atau porsi menu (\textit{nullable}). \\
+\hline
+\texttt{harga} & \texttt{decimal} & 10,2 & Harga satuan menu dalam rupiah. \\
+\hline
+\texttt{tersedia} & \texttt{tinyint(1)} & 1 & Status menu tersedia (\texttt{1}) atau habis (\texttt{0}). \\
+\hline
+\texttt{created\_at}, \texttt{updated\_at} & \texttt{timestamp} & -- & Stempel waktu pembuatan dan pembaruan baris. \\
+\hline
+\end{longtable}
+
+\subsubsection{Tabel \texttt{t\_pesan}}
+Tabel \texttt{t\_pesan} menyimpan percakapan layanan \textit{Customer Support} terpusat serta riwayat pesan lama. Untuk tiket dukungan pelanggan, kolom \texttt{id\_umkm} bernilai kosong (\textit{null}) dan kolom \texttt{tipe\_pesan} bernilai \texttt{support}.
+
+\renewcommand{\arraystretch}{1.20}
+\begin{longtable}{|L{3.85cm}|L{2.4cm}|C{1.65cm}|L{\dimexpr\textwidth-3.85cm-2.4cm-1.65cm-8\tabcolsep-5\arrayrulewidth\relax}|}
+\caption{Struktur Tabel \texttt{t\_pesan} (PK: \texttt{id\_pesan}; FK: \texttt{id\_pengunjung}, \texttt{id\_umkm})}
+\label{tab:skema-pesan} \\
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Nama Kolom} & \textbf{Tipe} & \textbf{Panjang} & \textbf{Deskripsi} \\
+\hline
+\endfirsthead
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Nama Kolom} & \textbf{Tipe} & \textbf{Panjang} & \textbf{Deskripsi} \\
+\hline
+\endhead
+\hline
+\endfoot
+\texttt{id\_pesan} & \texttt{int unsigned} & 10 & Kunci utama otomatis (\textit{auto increment}). \\
+\hline
+\texttt{id\_pengunjung} & \texttt{int unsigned} & 10 & Kunci asing ke akun pelanggan di \texttt{t\_user}. \\
+\hline
+\texttt{id\_umkm} & \texttt{int unsigned} & 10 & Kunci asing ke lapak (\textit{null} untuk tiket bantuan Admin). \\
+\hline
+\texttt{pengirim} & \texttt{enum} & -- & Penanda pengirim pesan (\texttt{pengunjung} atau \texttt{seller}). \\
+\hline
+\texttt{isi\_pesan} & \texttt{text} & -- & Teks pesan atau isi tiket bantuan. \\
+\hline
+\texttt{tipe\_pesan} & \texttt{varchar} & 30 & Jenis pesan: \texttt{teks} atau \texttt{support}. \\
+\hline
+\texttt{lampiran\_url} & \texttt{varchar} & 255 & Tautan lampiran media pesan bila ada (\textit{nullable}). \\
+\hline
+\texttt{waktu} & \texttt{datetime} & -- & Stempel waktu pengiriman pesan. \\
+\hline
+\texttt{created\_at}, \texttt{updated\_at} & \texttt{timestamp} & -- & Stempel waktu pembuatan dan pembaruan baris. \\
+\hline
+\end{longtable}
+
+\subsubsection{Tabel \texttt{t\_pesanan}}
+Tabel \texttt{t\_pesanan} menjadi inti transaksi pemesanan langsung dan verifikasi pembayaran manual. Tabel ini memisahkan catatan permintaan pembeli (\texttt{catatan\_pembeli}) dari catatan penolakan verifikator (\texttt{catatan\_admin}).
+
+\renewcommand{\arraystretch}{1.20}
+\begin{longtable}{|L{3.85cm}|L{2.4cm}|C{1.65cm}|L{\dimexpr\textwidth-3.85cm-2.4cm-1.65cm-8\tabcolsep-5\arrayrulewidth\relax}|}
+\caption{Struktur Tabel \texttt{t\_pesanan} (PK: \texttt{id\_pesanan}; FK: \texttt{id\_pengunjung}, \texttt{id\_umkm})}
+\label{tab:skema-pesanan} \\
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Nama Kolom} & \textbf{Tipe} & \textbf{Panjang} & \textbf{Deskripsi} \\
+\hline
+\endfirsthead
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Nama Kolom} & \textbf{Tipe} & \textbf{Panjang} & \textbf{Deskripsi} \\
+\hline
+\endhead
+\hline
+\endfoot
+\texttt{id\_pesanan} & \texttt{int unsigned} & 10 & Kunci utama otomatis (\textit{auto increment}). \\
+\hline
+\texttt{id\_pengunjung} & \texttt{int unsigned} & 10 & Kunci asing ke pemesan pada \texttt{t\_user}. \\
+\hline
+\texttt{id\_umkm} & \texttt{int unsigned} & 10 & Kunci asing ke lapak penerima di \texttt{t\_umkm}. \\
+\hline
+\texttt{items\_detail} & \texttt{longtext} & -- & Larik \textit{JavaScript Object Notation} (JSON) daftar menu, harga satuan, jumlah, dan subtotal. \\
+\hline
+\texttt{catatan\_pembeli} & \texttt{text} & -- & Catatan khusus pesanan dari pembeli (\textit{nullable}). \\
+\hline
+\texttt{total\_harga} & \texttt{int unsigned} & 10 & Total tagihan pesanan hasil hitung server. \\
+\hline
+\texttt{bukti\_pembayaran} & \texttt{varchar} & 255 & Jalur foto struk bukti transfer/QRIS (\textit{nullable}). \\
+\hline
+\texttt{status\_pembayaran} & \texttt{enum} & -- & Status bayar: \texttt{belum\_bayar}, \texttt{menunggu\_\allowbreak verifikasi}, \texttt{lunas}, atau \texttt{ditolak}. \\
+\hline
+\texttt{catatan\_admin} & \texttt{varchar} & 255 & Alasan penolakan bukti bayar dari Admin (\textit{nullable}). \\
+\hline
+\texttt{waktu\_pembayaran} & \texttt{datetime} & -- & Waktu terakhir bukti pembayaran diunggah (\textit{nullable}). \\
+\hline
+\texttt{status} & \texttt{enum} & -- & Status pemrosesan lapak: \texttt{diproses} atau \texttt{selesai}. \\
+\hline
+\texttt{waktu\_selesai} & \texttt{datetime} & -- & Waktu pesanan ditandai selesai oleh Penjual (\textit{nullable}). \\
+\hline
+\texttt{created\_at}, \texttt{updated\_at} & \texttt{timestamp} & -- & Stempel waktu pembuatan dan pembaruan baris. \\
+\hline
+\end{longtable}
+
+\subsubsection{Tabel \texttt{t\_ulasan}}
+{\emergencystretch=1.5em
+Tabel \texttt{t\_ulasan} menyimpan peringkat bintang dan komentar pembeli per transaksi selesai dan lunas, beserta balasan resmi Penjual serta penanda moderasi Admin. Model \texttt{Ulasan.php} juga menyediakan nama alias (\texttt{isi\_ulasan}, \texttt{tanggapan\_seller}, dan \texttt{dimoderasi}) yang merujuk ke kolom fisik \texttt{komentar}, \texttt{balasan\_seller}, serta \texttt{disembunyikan}.\par}
+
+\renewcommand{\arraystretch}{1.20}
+\begin{longtable}{|L{3.85cm}|L{2.4cm}|C{1.65cm}|L{\dimexpr\textwidth-3.85cm-2.4cm-1.65cm-8\tabcolsep-5\arrayrulewidth\relax}|}
+\caption{Struktur Tabel \texttt{t\_ulasan} (PK: \texttt{id\_ulasan}; FK: \texttt{id\_pesanan}, \texttt{id\_pengunjung}, \texttt{id\_umkm}, \texttt{id\_produk})}
+\label{tab:skema-ulasan} \\
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Nama Kolom} & \textbf{Tipe} & \textbf{Panjang} & \textbf{Deskripsi} \\
+\hline
+\endfirsthead
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Nama Kolom} & \textbf{Tipe} & \textbf{Panjang} & \textbf{Deskripsi} \\
+\hline
+\endhead
+\hline
+\endfoot
+\texttt{id\_ulasan} & \texttt{int unsigned} & 10 & Kunci utama otomatis (\textit{auto increment}). \\
+\hline
+\texttt{id\_pesanan} & \texttt{int unsigned} & 10 & Kunci asing unik ke \texttt{t\_pesanan} (satu ulasan per pesanan). \\
+\hline
+\texttt{id\_pengunjung} & \texttt{int unsigned} & 10 & Kunci asing ke pembeli pengirim ulasan di \texttt{t\_user}. \\
+\hline
+\texttt{id\_umkm} & \texttt{int unsigned} & 10 & Kunci asing ke lapak tujuan ulasan di \texttt{t\_umkm}. \\
+\hline
+\texttt{id\_produk} & \texttt{int unsigned} & 10 & Kunci asing ke produk terkait (\textit{nullable}). \\
+\hline
+\texttt{rating} & \texttt{tinyint unsigned} & 3 & Skor peringkat antara 1 sampai 5 bintang. \\
+\hline
+\texttt{komentar} & \texttt{text} & -- & Isi komentar ulasan pembeli (\textit{nullable}). \\
+\hline
+\texttt{balasan\_seller} & \texttt{text} & -- & Tanggapan resmi Penjual atas ulasan (\textit{nullable}). \\
+\hline
+\texttt{disembunyikan} & \texttt{tinyint(1)} & 1 & Status moderasi Admin (\texttt{0} tampil, \texttt{1} tersembunyi). \\
+\hline
+\texttt{created\_at}, \texttt{updated\_at} & \texttt{timestamp} & -- & Stempel waktu pembuatan dan pembaruan baris. \\
+\hline
+\end{longtable}
+
+\subsection{Deskripsi Perancangan Antarmuka}
+
+Antarmuka JajanRia dirancang responsif untuk peramban desktop, tablet, dan ponsel dengan warna identitas hijau \texttt{\#2E8B3D}. Seluruh panel pengelolaan Penjual dan Admin mengikuti tata letak baku templat dasbor terbuka \textit{AdminLTE}~3. Sementara itu, halaman pemesanan pelanggan terintegrasi langsung pada alur katalog sebagaimana ditunjukkan pada Gambar~\ref{fig:alur-antarmuka}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  scr/.style={draw=PolibatamBlue, thick, rounded corners=3pt, fill=ActorFill, minimum width=2.55cm, minimum height=1.0cm, align=center, font=\sffamily\scriptsize, inner sep=3pt},
+  admb/.style={draw=JajanGreen, thick, rounded corners=3pt, fill=green!6, minimum width=2.85cm, minimum height=1.0cm, align=center, font=\sffamily\scriptsize, inner sep=3pt},
+  arr/.style={->, >=Stealth, thick, PolibatamBlue},
+  lbl/.style={font=\sffamily\tiny, fill=white, inner sep=1pt, align=center}
+]
+  \node[scr] (land) at (-5.2, 1.55) {\textbf{Beranda Katalog}\\Utama};
+  \node[scr] (toko) at (-1.55, 1.55) {\textbf{Detail Lapak}\\UMKM};
+  \node[scr] (chk)  at (2.1, 1.55)  {\textbf{Modal \textit{Checkout}}\\Keranjang \& Bukti};
+  \node[scr] (hist) at (5.5, 1.55)  {\textbf{\textit{History Pesanan}}\\Unggah \& Nilai};
+
+  \node[scr] (auth) at (-5.2, -1.55) {\textbf{Halaman Masuk}\\Daftar Mitra};
+  \node[admb] (adm) at (-1.1, -1.55) {\textbf{Panel Administrator}\\Verifikasi Bayar \& \textit{Support}};
+  \node[admb] (sel) at (3.2, -1.55)  {\textbf{Dasbor Penjual}\\Menu \& Selesai Pesanan};
+
+  \draw[arr] (land) -- node[lbl, above] {Pilih lapak} (toko);
+  \draw[arr] (toko) -- node[lbl, above] {Tambah\\[-1pt]porsi} (chk);
+  \draw[arr] (chk)  -- node[lbl, above] {Catat} (hist);
+  \draw[arr] (land.south) -- node[lbl, left] {Masuk} (auth.north);
+  \draw[arr] (auth.east) -- node[lbl, below] {Peran} (adm.west);
+  \draw[arr] (adm.east) -- node[lbl, below] {Lunas} (sel.west);
+  \draw[arr] (sel.east) -| node[lbl, right, pos=0.72] {Selesai} (hist.south);
+  \draw[arr, dashed, JajanGreen] ([xshift=-0.5cm]hist.south) .. controls (4.6,-0.1) and (-1.55,0.15) .. node[lbl, above, pos=0.52] {Status \textit{lunas} + \textit{selesai} memicu ``Beri Penilaian''} (toko.south);
+\end{tikzpicture}
+\caption{Alur Navigasi Antarmuka Transaksi Lintas Peran JajanRia}
+\label{fig:alur-antarmuka}
+\end{figure}
+
+\subsubsection{Rancangan Beranda dan Katalog Utama}
+Halaman beranda katalog dirancang terbuka bagi pengunjung tanpa wajib masuk akun. Area atas memuat bilah pencarian kata kunci, penyaring kategori menu, penyaring rentang harga, dan penyaring area kampus. Bagian tengah menampilkan deretan kartu lapak UMKM terverifikasi di area sekitar Politeknik Negeri Batam lengkap dengan rata-rata peringkat dan tombol ``Bantuan'' ke layanan pelanggan.
+
+\subsubsection{Rancangan Halaman Masuk dan Pendaftaran Mitra}
+Halaman masuk menyediakan pilihan \textit{Google Sign-In} satu klik bagi Pembeli serta formulir surel dan kata sandi bagi Penjual maupun Administrator. Halaman pendaftaran mitra menghimpun nama pemilik, nama lapak, kontak, area kampus atau luar kampus, alamat lokasi, unggah foto usaha opsional, dan kata sandi dengan umpan balik galat validasi pada antarmuka.
+
+\subsubsection{Rancangan Halaman Detail Lapak, Keranjang, dan Modal Checkout}
+Halaman detail lapak menyajikan profil usaha, menu dikelompokkan per kategori, penanda menu habis yang tidak bisa dipilih, serta daftar ulasan publik. Di bagian bawah tampil bilah keranjang mengambang dengan kontrol tambah/kurang porsi. Saat tombol ``Checkout \& Pembayaran'' ditekan, modal ringkasan menampilkan rincian menu, informasi kontak bayar toko, kolom unggah foto bukti transfer opsional, dan kolom catatan pesanan.
+
+\subsubsection{Rancangan Laci History Pesanan dan Customer Support}
+Peluncur \textit{Navigasi} di sudut kanan bawah membuka dua laci utama: \textit{History Pesanan} dan \textit{Customer Support}. Laci \textit{History Pesanan} memperlihatkan status pesanan (\textit{diproses}/\textit{selesai}), status verifikasi pembayaran beserta catatan penolakan Admin, form unggah ulang bukti transfer, serta tombol ``Beri Penilaian'' saat pesanan berstatus \textit{selesai} dan \textit{lunas}. Laci \textit{Customer Support} mengunci gulir halaman luar agar hanya area percakapan bantuan dengan Admin yang bergulir.
+
+\subsubsection{Rancangan Dasbor Penjual}
+Dasbor Penjual memakai bilah navigasi samping dengan lima tab tetap: Ringkasan Toko, Kelola Menu \& Katalog, Pesan \& Pesanan, Profil Lapak UMKM, serta Rating \& Ulasan. Rancangan ini memisahkan wewenang keuangan sehingga Penjual hanya memantau status \textit{lunas} dari Admin sebelum menekan tombol selesai. Selain itu, Penjual mengatur ketersediaan menu (\textit{Tersedia}/\textit{Habis}) serta membalas ulasan publik tanpa menyertakan modul akuntansi maupun promosi di luar lingkup proyek.
+
+\subsubsection{Rancangan Panel Administrator}
+Panel Administrator menyediakan delapan tab manajemen yang mempertahankan posisi tab setelah setiap aksi. Empat tab pertama meliputi Monitoring \& Statistik, Verifikasi Seller Baru, Verifikasi Pembayaran, serta Kelola Mitra UMKM. Empat tab lainnya mencakup Kelola Kategori Menu, Moderasi Ulasan, \textit{Customer Support}, dan Manajemen User.

@@ -56,19 +56,33 @@
         <!-- Judul Form -->
         <h2 class="form-header-title">Form Registrasi</h2>
 
+        @if(session('error'))
+          <div class="auth-alert-error">
+            <i class='bx bx-error-circle'></i>
+            <span>{{ session('error') }}</span>
+          </div>
+        @endif
+        @if($errors->any())
+          <div class="auth-alert-error">
+            <i class='bx bx-error-circle'></i>
+            <span>{{ $errors->first() }}</span>
+          </div>
+        @endif
+
         <!-- Form Elemen -->
         <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data" id="registerForm">
           @csrf
 
           <!-- Field 1: Nama Lengkap -->
           <div class="form-group">
-            <label for="name" class="form-label">Nama Lengkap</label>
+            <label for="nama" class="form-label">Nama Lengkap</label>
             <input 
               type="text" 
-              id="name" 
-              name="name" 
+              id="nama" 
+              name="nama" 
               class="form-input" 
               placeholder="Contoh: Budi Santoso" 
+              value="{{ old('nama') }}"
               required
               autofocus
             >
@@ -76,13 +90,14 @@
 
           <!-- Field 2: Nama Usaha -->
           <div class="form-group">
-            <label for="store_name" class="form-label">Nama Usaha</label>
+            <label for="nama_usaha" class="form-label">Nama Usaha</label>
             <input 
               type="text" 
-              id="store_name" 
-              name="store_name" 
+              id="nama_usaha" 
+              name="nama_usaha" 
               class="form-input" 
               placeholder="Contoh: Batagor & Siomay Berkah" 
+              value="{{ old('nama_usaha') }}"
               required
             >
           </div>
@@ -96,24 +111,50 @@
               name="email" 
               class="form-input" 
               placeholder="email.aktif@domain.com" 
+              value="{{ old('email') }}"
               required
             >
           </div>
 
           <!-- Field 4: Nomor Kontak -->
           <div class="form-group">
-            <label for="phone" class="form-label">Nomor Kontak</label>
+            <label for="kontak" class="form-label">Nomor Kontak</label>
             <input 
               type="tel" 
-              id="phone" 
-              name="phone" 
+              id="kontak" 
+              name="kontak" 
               class="form-input" 
               placeholder="0812-xxxx-xxxx" 
+              value="{{ old('kontak') }}"
               required
             >
           </div>
 
-          <!-- Field 5: Foto Usaha (Dengan Upload & Ukuran Maksimal) -->
+          <!-- Field 5: Area & Alamat Lapak -->
+          <div class="form-group">
+            <label for="area" class="form-label">Area Lingkungan Kampus</label>
+            <select id="area" name="area" class="form-input" required>
+              <option value="">-- Pilih Area Kampus --</option>
+              @foreach(config('jajanria.area_sekitar', ['Kantin Gedung Utama', 'Gerbang Utama', 'Tower A', 'Ruko KDA', 'Halte Kampus', 'Pujasera']) as $ar)
+                <option value="{{ $ar }}" {{ old('area') === $ar ? 'selected' : '' }}>{{ $ar }}</option>
+              @endforeach
+              <option value="Luar Area Kampus" {{ old('area') === 'Luar Area Kampus' ? 'selected' : '' }}>Luar Area Kampus</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="lokasi" class="form-label">Alamat Detail Lapak</label>
+            <input 
+              type="text" 
+              id="lokasi" 
+              name="lokasi" 
+              class="form-input" 
+              placeholder="Contoh: Kantin Gedung Utama Lt. 1, Polibatam" 
+              value="{{ old('lokasi') }}"
+            >
+          </div>
+
+          <!-- Field 6: Foto Usaha (Dengan Upload & Ukuran Maksimal) -->
           <div class="form-group">
             <div class="form-label-row">
               <label for="store_photo" class="form-label" style="margin-bottom: 0;">Foto Usaha</label>
@@ -133,11 +174,11 @@
                 <i class='bx bx-upload'></i>
                 <span>Upload File</span>
               </button>
-              <span class="file-name-display" id="photoChosenName">resiko_spanduk_.jpg (17KB)</span>
+              <span class="file-name-display" id="photoChosenName">Belum ada file dipilih (opsional)</span>
             </div>
           </div>
 
-          <!-- Field 6: Kata Sandi -->
+          <!-- Field 7: Kata Sandi -->
           <div class="form-group">
             <label for="reg_password" class="form-label">Kata Sandi</label>
             <div class="password-input-wrap">
@@ -146,7 +187,7 @@
                 id="reg_password" 
                 name="password" 
                 class="form-input" 
-                placeholder="••••••••••••" 
+                placeholder="Minimal 4 karakter" 
                 required
               >
               <button type="button" class="toggle-password-btn" id="toggleRegPasswordBtn" aria-label="Lihat kata sandi">
@@ -157,7 +198,7 @@
 
           <!-- Tombol Aksi Hijau #2E8B3D -->
           <button type="submit" class="btn-submit-green">
-            MASUK
+            DAFTAR MITRA
           </button>
         </form>
 

@@ -59,7 +59,7 @@ Route::prefix('api')->group(function () {
 });
 
 // 4. Dashboard Seller (Pelaku UMKM - UC-05, UC-06, UC-07, UC-08, F011, F012, F013, F014)
-Route::prefix('seller')->group(function () {
+Route::prefix('seller')->middleware('role:seller')->group(function () {
     Route::get('/', [SellerController::class, 'index'])->name('seller');
     Route::get('/dashboard', fn () => redirect()->route('seller'));
 
@@ -77,7 +77,7 @@ Route::prefix('seller')->group(function () {
 });
 
 // 5. Panel Administrator (Pengelola Platform - UC-09, UC-10, UC-11, F015, F016)
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware('role:admin')->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin');
     Route::get('/dashboard', fn () => redirect()->route('admin'));
 

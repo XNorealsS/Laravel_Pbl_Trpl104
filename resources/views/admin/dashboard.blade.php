@@ -44,48 +44,49 @@
         <!-- Sidebar Navigation Menu -->
         <nav class="panel-nav">
           <span class="panel-nav-header">Manajemen Sistem</span>
-          <button type="button" class="panel-nav-btn active" data-tab="tab-monitoring">
+          @php $activeTab = $activeTab ?? 'monitoring'; @endphp
+          <button type="button" class="panel-nav-btn {{ $activeTab === 'monitoring' ? 'active' : '' }}" data-tab="tab-monitoring">
             <i class='bx bx-line-chart'></i>
             <span>Monitoring & Statistik</span>
             <i class='bx bx-chevron-right panel-nav-chevron'></i>
           </button>
-          <button type="button" class="panel-nav-btn" data-tab="tab-verification">
+          <button type="button" class="panel-nav-btn {{ $activeTab === 'verification' ? 'active' : '' }}" data-tab="tab-verification">
             <i class='bx bx-user-check'></i>
             <span>Verifikasi Seller Baru</span>
             @if($stats['pending_verifikasi'] > 0)
               <span class="panel-nav-badge badge-amber" id="pendingVerifyBadge">{{ $stats['pending_verifikasi'] }}</span>
             @endif
           </button>
-          <button type="button" class="panel-nav-btn" data-tab="tab-payments">
+          <button type="button" class="panel-nav-btn {{ $activeTab === 'payments' ? 'active' : '' }}" data-tab="tab-payments">
             <i class='bx bx-receipt'></i>
             <span>Verifikasi Pembayaran</span>
             @if(($stats['pending_pembayaran'] ?? 0) > 0)
               <span class="panel-nav-badge badge-amber" id="pendingPaymentsBadge">{{ $stats['pending_pembayaran'] }}</span>
             @endif
           </button>
-          <button type="button" class="panel-nav-btn" data-tab="tab-umkm">
+          <button type="button" class="panel-nav-btn {{ $activeTab === 'umkm' ? 'active' : '' }}" data-tab="tab-umkm">
             <i class='bx bx-store-alt'></i>
             <span>Kelola Mitra UMKM</span>
             <span class="panel-nav-badge badge-emerald">{{ $stats['total_umkm'] }}</span>
           </button>
-          <button type="button" class="panel-nav-btn" data-tab="tab-categories">
+          <button type="button" class="panel-nav-btn {{ $activeTab === 'categories' ? 'active' : '' }}" data-tab="tab-categories">
             <i class='bx bx-category'></i>
             <span>Kelola Kategori Menu</span>
             <span class="panel-nav-badge">{{ $kategoriList->count() }}</span>
           </button>
-          <button type="button" class="panel-nav-btn" data-tab="tab-moderation">
+          <button type="button" class="panel-nav-btn {{ $activeTab === 'moderation' ? 'active' : '' }}" data-tab="tab-moderation">
             <i class='bx bx-shield-quarter'></i>
             <span>Moderasi Ulasan</span>
             <span class="panel-nav-badge badge-danger">{{ $ulasanList->count() }}</span>
           </button>
-          <button type="button" class="panel-nav-btn" data-tab="tab-support">
+          <button type="button" class="panel-nav-btn {{ $activeTab === 'support' ? 'active' : '' }}" data-tab="tab-support">
             <i class='bx bx-support'></i>
             <span>Customer Support</span>
             @if(($stats['total_support'] ?? 0) > 0)
               <span class="panel-nav-badge badge-primary">{{ $stats['total_support'] }}</span>
             @endif
           </button>
-          <button type="button" class="panel-nav-btn" data-tab="tab-users">
+          <button type="button" class="panel-nav-btn {{ $activeTab === 'users' ? 'active' : '' }}" data-tab="tab-users">
             <i class='bx bx-user-pin'></i>
             <span>Manajemen User</span>
             <span class="panel-nav-badge badge-primary">{{ $allUsers->count() }}</span>
@@ -171,11 +172,17 @@
             <span>{{ session('error') }}</span>
           </div>
         @endif
+        @if($errors->any())
+          <div style="background: #F8D7DA; border: 1px solid #F5C6CB; color: #721C24; padding: 10px 16px; border-radius: 4px; margin-bottom: 20px; font-weight: 600; font-size: 0.88rem; display: flex; align-items: center; gap: 8px;">
+            <i class='bx bx-error-circle' style="font-size: 1.25rem;"></i>
+            <span>{{ $errors->first() }}</span>
+          </div>
+        @endif
 
         <!-- ====================================================================
              1. TAB: MONITORING & STATISTIK (UC-11 / F019)
              ==================================================================== -->
-        <section class="tab-view active" id="tab-monitoring">
+        <section class="tab-view {{ $activeTab === 'monitoring' ? 'active' : '' }}" id="tab-monitoring">
           <!-- AdminLTE Iconic Small-Boxes Grid (Persis Seperti Contoh STIKesMu) -->
           <div class="stats-cards-grid grid-5">
             <!-- Card 1: Blue (Total Mitra UMKM Aktif) -->
@@ -377,18 +384,21 @@
                 </thead>
                 <tbody>
                   @forelse($pesanList as $pIdx => $msg)
+                    @php $isSupportMsg = is_null($msg->id_umkm) || $msg->tipe_pesan === 'support'; @endphp
                     <tr>
                       <td style="text-align: center; font-weight: 600; color: #6C757D;">{{ $pIdx + 1 }}</td>
                       <td>{{ $msg->waktu ? $msg->waktu->format('d/m/Y H:i') : '-' }}</td>
                       <td>
                         @if($msg->pengirim === 'pengunjung')
                           <span class="badge-adminlte badge-info">Pengunjung</span>
+                        @elseif($isSupportMsg)
+                          <span class="badge-adminlte badge-primary">Admin Support</span>
                         @else
                           <span class="badge-adminlte badge-success">Seller</span>
                         @endif
                       </td>
                       <td><strong>{{ $msg->pengunjung ? $msg->pengunjung->nama : 'Customer' }}</strong></td>
-                      <td>{{ $msg->umkm ? $msg->umkm->nama_usaha : '-' }}</td>
+                      <td>{{ $msg->umkm ? $msg->umkm->nama_usaha : ($isSupportMsg ? 'Pusat Bantuan (Support)' : '-') }}</td>
                       <td>{{ Str::limit($msg->isi_pesan, 70) }}</td>
                     </tr>
                   @empty
@@ -407,7 +417,7 @@
         <!-- ====================================================================
              2. TAB: VERIFIKASI SELLER BARU (UC-09 / F015)
              ==================================================================== -->
-        <section class="tab-view" id="tab-verification">
+        <section class="tab-view {{ $activeTab === 'verification' ? 'active' : '' }}" id="tab-verification">
           <!-- Filter Tabs -->
           <div class="filter-tab-pills">
             <button type="button" class="filter-tab-pill active">
@@ -503,7 +513,7 @@
         <!-- ====================================================================
              TAB: VERIFIKASI BUKTI PEMBAYARAN PESANAN
              ==================================================================== -->
-        <section class="tab-view" id="tab-payments">
+        <section class="tab-view {{ $activeTab === 'payments' ? 'active' : '' }}" id="tab-payments">
           <!-- Filter Tabs -->
           <div class="filter-tab-pills">
             <button type="button" class="filter-tab-pill active">
@@ -565,6 +575,9 @@
                           </ul>
                         @else
                           <span style="font-size: 0.78rem; color: #6C757D;">Pesanan via percakapan</span>
+                        @endif
+                        @if(!empty($ord->catatan_pembeli))
+                          <div style="font-size: 0.72rem; color: #4B5563; margin-top: 3px;">Catatan: {{ $ord->catatan_pembeli }}</div>
                         @endif
                       </td>
                       <td style="text-align: right; font-weight: 800; color: #2E8B3D; font-size: 0.92rem;">
@@ -629,7 +642,7 @@
         <!-- ====================================================================
              3. TAB: KELOLA MITRA UMKM & PENGGUNA (UC-10 / F016)
              ==================================================================== -->
-        <section class="tab-view" id="tab-umkm">
+        <section class="tab-view {{ $activeTab === 'umkm' ? 'active' : '' }}" id="tab-umkm">
           <div class="filter-tab-pills">
             <button type="button" class="filter-tab-pill active">
               <span>Semua Mitra</span>
@@ -731,7 +744,7 @@
         <!-- ====================================================================
              4. TAB: KELOLA KATEGORI PRODUK (UC-10 / F016)
              ==================================================================== -->
-        <section class="tab-view" id="tab-categories">
+        <section class="tab-view {{ $activeTab === 'categories' ? 'active' : '' }}" id="tab-categories">
           <div class="panel-card">
             <div class="panel-card-header">
               <h3 class="panel-card-title">
@@ -789,7 +802,7 @@
         <!-- ====================================================================
              5. TAB: MODERASI ULASAN (UC-11 / F017)
              ==================================================================== -->
-        <section class="tab-view" id="tab-moderation">
+        <section class="tab-view {{ $activeTab === 'moderation' ? 'active' : '' }}" id="tab-moderation">
           <div class="filter-tab-pills">
             <button type="button" class="filter-tab-pill active">
               <span>Semua Ulasan</span>
@@ -868,7 +881,7 @@
         <!-- ====================================================================
              TAB: CUSTOMER SUPPORT & PUSAT BANTUAN PENGGUNA
              ==================================================================== -->
-        <section class="tab-view" id="tab-support">
+        <section class="tab-view {{ $activeTab === 'support' ? 'active' : '' }}" id="tab-support">
           <div class="panel-card">
             <div class="panel-card-header">
               <h3 class="panel-card-title">
@@ -934,7 +947,7 @@
         <!-- ====================================================================
              6. TAB: MANAJEMEN USER & ACTIVITY LOG SUMMARY (UC-09, UC-11 / F015, F018, F019)
              ==================================================================== -->
-        <section class="tab-view" id="tab-users">
+        <section class="tab-view {{ $activeTab === 'users' ? 'active' : '' }}" id="tab-users">
           <!-- Quick Filter Pills -->
           <div class="filter-tab-pills">
             <button type="button" class="filter-tab-pill filter-user-pill active" id="pillUserAll" onclick="filterUserByPill('all', this)">
@@ -1182,6 +1195,8 @@
         </div>
       </form>
     </div>
+  </div>
+
   <!-- ==========================================================================
        MODAL: TOLAK BUKTI PEMBAYARAN
        ========================================================================== -->

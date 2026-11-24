@@ -613,8 +613,9 @@
         if (res.status === 'success') {
           if (reviewModal) reviewModal.style.display = 'none';
           if (reviewPrompt) reviewPrompt.style.display = 'none';
+          if (reviewComment) reviewComment.value = '';
           alert('Terima kasih! Ulasan Anda berhasil dikirim.');
-          loadMessages(activeUmkmId);
+          openHistoryDrawer();
         } else {
           alert(res.message || 'Gagal mengirim ulasan.');
         }
@@ -662,6 +663,12 @@
     proofFileInput.addEventListener('change', function() {
       const file = this.files[0];
       if (file) {
+        if (file.size > 3 * 1024 * 1024) {
+          alert('Ukuran foto bukti transfer maksimal 3 MB.');
+          this.value = '';
+          if (proofPreviewContainer) proofPreviewContainer.style.display = 'none';
+          return;
+        }
         const reader = new FileReader();
         reader.onload = function(e) {
           if (proofImagePreview) proofImagePreview.src = e.target.result;
@@ -813,7 +820,7 @@
             }
 
             let reviewBtnHtml = '';
-            if (isSelesai && !o.sudah_ulasan) {
+            if (isSelesai && o.status_pembayaran === 'lunas' && !o.sudah_ulasan) {
               reviewBtnHtml = `<button type="button" class="btn-history-review" onclick="window.triggerReviewDariHistory(${o.id_pesanan})">⭐ Beri Penilaian</button>`;
             }
 

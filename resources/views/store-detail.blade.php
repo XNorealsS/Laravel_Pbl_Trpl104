@@ -476,7 +476,7 @@
 
       // Render item ringkasan
       const itemsContainer = document.getElementById('checkoutItemsList');
-      const totalDisplay = document.getElementById('checkoutModal  Total');
+      const totalDisplay = document.getElementById('checkoutModalTotal');
       let totalHarga = 0;
 
       if (itemsContainer) {
@@ -487,13 +487,21 @@
 
           const row = document.createElement('div');
           row.className = 'checkout-item-line';
-          row.innerHTML = `
-            <div class="item-line-left">
-              <span class="item-line-name">${item.nama_produk}</span>
-              <span class="item-line-qty">x ${item.qty}</span>
-            </div>
-            <span class="item-line-price">${formatRupiah(subtotal)}</span>
-          `;
+          const left = document.createElement('div');
+          left.className = 'item-line-left';
+          const nameSpan = document.createElement('span');
+          nameSpan.className = 'item-line-name';
+          nameSpan.textContent = item.nama_produk;
+          const qtySpan = document.createElement('span');
+          qtySpan.className = 'item-line-qty';
+          qtySpan.textContent = 'x ' + item.qty;
+          left.appendChild(nameSpan);
+          left.appendChild(qtySpan);
+          const priceSpan = document.createElement('span');
+          priceSpan.className = 'item-line-price';
+          priceSpan.textContent = formatRupiah(subtotal);
+          row.appendChild(left);
+          row.appendChild(priceSpan);
           itemsContainer.appendChild(row);
         });
       }

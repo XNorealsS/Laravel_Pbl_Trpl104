@@ -13,11 +13,19 @@ use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
+    private const TABS = ['monitoring', 'verification', 'payments', 'umkm', 'categories', 'moderation', 'support', 'users'];
+
+    private function resolveTab(?string $tab, string $default = 'monitoring'): string
+    {
+        return in_array($tab, self::TABS, true) ? $tab : $default;
+    }
+
     /**
      * Tampilkan Panel Administrator (UC-09, UC-10, UC-11).
      */
-    public function index()
+    public function index(Request $request)
     {
+        $activeTab = $this->resolveTab($request->query('tab'), 'monitoring');
         // 1. Verifikasi seller baru yang menunggu persetujuan (UC-09)
         $pendingSellers = Pengguna::where('role', 'seller')
             ->where('status_verifikasi', 'menunggu')
@@ -95,13 +103,17 @@ class AdminController extends Controller
         });
 
         $chatEvents = Pesan::with(['pengunjung', 'umkm'])->latest('waktu')->take(6)->get()->map(function ($p) {
+            $isSupport = is_null($p->id_umkm) || $p->tipe_pesan === 'support';
+            $senderLabel = $p->pengirim === 'pengunjung'
+                ? ($p->pengunjung ? $p->pengunjung->nama : 'Customer')
+                : ($isSupport ? 'Admin Support' : 'Seller');
             return [
                 'type' => 'chat',
-                'icon' => 'bx-message-square-detail',
+                'icon' => $isSupport ? 'bx-support' : 'bx-message-square-detail',
                 'badge_class' => 'badge-primary',
-                'badge_label' => 'Chat',
-                'title' => 'Obrolan Chat Internal',
-                'desc' => ($p->pengirim === 'pengunjung' ? ($p->pengunjung ? $p->pengunjung->nama : 'Customer') : 'Seller') . ' ➔ "' . \Illuminate\Support\Str::limit($p->isi_pesan, 38) . '"',
+                'badge_label' => $isSupport ? 'Support' : 'Chat',
+                'title' => $isSupport ? 'Tiket Customer Support' : 'Obrolan Chat Internal',
+                'desc' => $senderLabel . ' ➔ "' . \Illuminate\Support\Str::limit($p->isi_pesan, 38) . '"',
                 'time' => $p->waktu,
                 'status' => 'Terkirim',
             ];
@@ -127,6 +139,7 @@ class AdminController extends Controller
         ];
 
         return view('admin.dashboard', compact(
+            'activeTab',
             'pendingSellers',
             'allUmkms',
             'kategoriList',
@@ -141,32 +154,55 @@ class AdminController extends Controller
     }
 
     /**
+     * Redirect kembali ke tab aktif agar admin tetap berada di halaman aksi.
+     */
+    private function redirectToTab(Request $request, string $defaultTab = 'monitoring')
+    {
+        $tab = $this->resolveTab($request->input('active_tab'), $defaultTab);
+
+        return $tab === 'monitoring'
+            ? redirect()->route('admin')
+            : redirect()->route('admin', ['tab' => $tab]);
+    }
+
+    /**
      * Verifikasi pendaftaran Seller baru: Setujui / Tolak (UC-09, F015).
      */
     public function verifySeller(Request $request, int $idUser)
     {
-        $status = $request->input('status', 'terverifikasi');
+        $request->validate([
+            'status' => 'required|in:terverifikasi,ditolak',
+        ]);
+
+        $status = $request->input('status');
         $user = Pengguna::where('id_user', $idUser)->where('role', 'seller')->firstOrFail();
 
         $user->update([
             'status_verifikasi' => $status,
         ]);
 
-        return back()->with('success', 'Status pendaftaran seller berhasil diubah menjadi: ' . strtoupper($status));
+        return $this->redirectToTab($request, 'verification')
+            ->with('success', 'Status pendaftaran seller berhasil diubah menjadi: ' . strtoupper($status));
     }
 
     /**
      * Nonaktifkan atau aktifkan akun pengguna (UC-09).
      */
-    public function toggleUserStatus(int $idUser)
+    public function toggleUserStatus(Request $request, int $idUser)
     {
         $user = Pengguna::findOrFail($idUser);
+        if ($user->id_user === (int) session('user.id_user')) {
+            return $this->redirectToTab($request, 'users')
+                ->with('error', 'Anda tidak dapat menonaktifkan akun Administrator yang sedang aktif.');
+        }
+
         $user->update([
             'is_active' => !$user->is_active,
         ]);
 
         $statusText = $user->is_active ? 'diaktifkan kembali' : 'dinonaktifkan';
-        return back()->with('success', 'Akun pengguna ' . $user->nama . ' berhasil ' . $statusText);
+        return $this->redirectToTab($request, 'users')
+            ->with('success', 'Akun pengguna ' . $user->nama . ' berhasil ' . $statusText);
     }
 
     /**
@@ -182,22 +218,30 @@ class AdminController extends Controller
             'nama_kategori' => $request->input('nama_kategori'),
         ]);
 
-        return back()->with('success', 'Kategori baru berhasil ditambahkan!');
+        return $this->redirectToTab($request, 'categories')
+            ->with('success', 'Kategori baru berhasil ditambahkan!');
     }
 
     /**
-     * Hapus Kategori (UC-10).
+     * Hapus Kategori (UC-10 Skenario Alternatif: cegah hapus jika masih memiliki produk aktif).
      */
-    public function deleteCategory(int $idKategori)
+    public function deleteCategory(Request $request, int $idKategori)
     {
-        Kategori::findOrFail($idKategori)->delete();
-        return back()->with('success', 'Kategori berhasil dihapus!');
+        $kategori = Kategori::findOrFail($idKategori);
+        if ($kategori->produk()->exists()) {
+            return $this->redirectToTab($request, 'categories')
+                ->with('error', 'Kategori "' . $kategori->nama_kategori . '" tidak dapat dihapus karena masih digunakan oleh produk aktif.');
+        }
+
+        $kategori->delete();
+        return $this->redirectToTab($request, 'categories')
+            ->with('success', 'Kategori berhasil dihapus!');
     }
 
     /**
      * Moderasi Ulasan: Sembunyikan atau Tampilkan Ulasan (UC-11).
      */
-    public function toggleHideReview(int $idUlasan)
+    public function toggleHideReview(Request $request, int $idUlasan)
     {
         $ulasan = Ulasan::findOrFail($idUlasan);
         $ulasan->update([
@@ -205,7 +249,8 @@ class AdminController extends Controller
         ]);
 
         $statusText = $ulasan->disembunyikan ? 'disembunyikan dari publik' : 'ditampilkan kembali';
-        return back()->with('success', 'Ulasan pembeli berhasil ' . $statusText);
+        return $this->redirectToTab($request, 'moderation')
+            ->with('success', 'Ulasan pembeli berhasil ' . $statusText);
     }
 
     /**
@@ -227,7 +272,8 @@ class AdminController extends Controller
             'catatan_admin' => $catatan ?: null,
         ]);
 
-        return back()->with('success', 'Status pembayaran pesanan #' . $idPesanan . ' berhasil diubah menjadi: ' . strtoupper($status));
+        return $this->redirectToTab($request, 'payments')
+            ->with('success', 'Status pembayaran pesanan #' . $idPesanan . ' berhasil diubah menjadi: ' . strtoupper($status));
     }
 
     /**
@@ -241,7 +287,8 @@ class AdminController extends Controller
 
         $isiPesan = trim((string) $request->input('isi_pesan'));
         if ($isiPesan === '') {
-            return back()->with('error', 'Pesan balasan tidak boleh kosong.');
+            return $this->redirectToTab($request, 'support')
+                ->with('error', 'Pesan balasan tidak boleh kosong.');
         }
 
         Pesan::create([
@@ -253,6 +300,7 @@ class AdminController extends Controller
             'waktu' => now(),
         ]);
 
-        return back()->with('success', 'Balasan Customer Support berhasil dikirim ke pelanggan.');
+        return $this->redirectToTab($request, 'support')
+            ->with('success', 'Balasan Customer Support berhasil dikirim ke pelanggan.');
     }
 }

@@ -33,14 +33,15 @@ class AuthController extends Controller
 
         // 1. Cek Google Sign-In / Login cepat Pengunjung
         if ($request->input('provider') === 'google' || $request->input('quick_role') === 'pengunjung') {
-            $user = Pengguna::where('role', 'pengunjung')->first();
+            $user = Pengguna::where('role', 'pengunjung')->where('is_active', true)->first();
             if (!$user) {
                 $user = Pengguna::create([
                     'nama' => "Pengunjung Google",
                     'email' => 'pengunjung@jajanria.test',
-                    'password' => Hash::make('password'),
+                    'password' => 'password',
                     'role' => 'pengunjung',
                     'status_verifikasi' => 'terverifikasi',
+                    'is_active' => true,
                 ]);
             }
             session(['user' => [
@@ -54,7 +55,10 @@ class AuthController extends Controller
 
         // 2. Quick login untuk Seller / Admin (kemudahan pengujian penguji/dosen)
         if ($request->input('quick_role') === 'seller') {
-            $user = Pengguna::where('role', 'seller')->where('status_verifikasi', 'terverifikasi')->first();
+            $user = Pengguna::where('role', 'seller')
+                ->where('status_verifikasi', 'terverifikasi')
+                ->where('is_active', true)
+                ->first();
             if ($user) {
                 session(['user' => [
                     'id_user' => $user->id_user,
@@ -64,10 +68,11 @@ class AuthController extends Controller
                 ]]);
                 return redirect()->route('seller')->with('success', 'Selamat datang di Dashboard Seller!');
             }
+            return back()->with('error', 'Belum ada akun Seller aktif dan terverifikasi untuk akses cepat.');
         }
 
         if ($request->input('quick_role') === 'admin') {
-            $user = Pengguna::where('role', 'admin')->first();
+            $user = Pengguna::where('role', 'admin')->where('is_active', true)->first();
             if ($user) {
                 session(['user' => [
                     'id_user' => $user->id_user,
@@ -81,7 +86,7 @@ class AuthController extends Controller
 
         // 3. Login email biasa
         $user = Pengguna::where('email', $email)->first();
-        if ($user && ($user->password === $password || Hash::check($password, $user->password) || $password === 'password')) {
+        if ($user && !empty($user->password) && Hash::check($password, $user->password)) {
             // Skenario Alternatif UC-01: Akun nonaktif atau belum terverifikasi ditolak
             if (!$user->is_active) {
                 return back()->with('error', 'Akun Anda dinonaktifkan oleh Administrator. Hubungi pengelola platform untuk info lebih lanjut.');
@@ -133,8 +138,10 @@ class AuthController extends Controller
             'email' => 'required|email|max:100',
             'password' => 'required|string|min:4',
             'nama_usaha' => 'required|string|max:150',
-            'area' => 'required|string',
-            'kontak' => 'required|string',
+            'area' => 'required|string|max:100',
+            'lokasi' => 'nullable|string|max:255',
+            'kontak' => 'required|string|max:30',
+            'store_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
         $existing = Pengguna::where('email', $request->input('email'))->first();
@@ -142,22 +149,30 @@ class AuthController extends Controller
             return back()->with('error', 'Email sudah terdaftar. Silakan gunakan email lain atau masuk.')->withInput();
         }
 
+        $fotoPath = null;
+        if ($request->hasFile('store_photo')) {
+            $file = $request->file('store_photo');
+            $filename = 'umkm_' . time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $fotoPath = $file->storeAs('umkm', $filename, 'public');
+        }
+
         $user = Pengguna::create([
             'nama' => $request->input('nama'),
             'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password')),
+            'password' => $request->input('password'),
             'role' => 'seller',
             'status_verifikasi' => 'menunggu', // menunggu verifikasi admin (UC-09)
+            'is_active' => true,
         ]);
 
         Umkm::create([
             'id_user' => $user->id_user,
             'nama_usaha' => $request->input('nama_usaha'),
-            'deskripsi' => $request->input('deskripsi', 'Lapak jajanan UMKM di area kampus Polibatam.'),
-            'lokasi' => $request->input('lokasi', $request->input('area')),
+            'deskripsi' => trim((string) $request->input('deskripsi')) ?: 'Lapak jajanan UMKM di area kampus Polibatam.',
+            'lokasi' => trim((string) $request->input('lokasi')) ?: $request->input('area'),
             'area' => $request->input('area'),
             'kontak' => $request->input('kontak'),
-            'foto_usaha' => null,
+            'foto_usaha' => $fotoPath,
         ]);
 
         return redirect()->route('login')->with('success', 'Pendaftaran Mitra UMKM berhasil! Akun Anda sedang menunggu verifikasi Administrator.');

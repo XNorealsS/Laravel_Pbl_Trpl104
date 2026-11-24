@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Pengguna;
 use App\Models\Pesan;
 use App\Models\Pesanan;
+use App\Models\Produk;
 use App\Models\Ulasan;
 use App\Models\Umkm;
 use Carbon\Carbon;
@@ -13,14 +14,20 @@ use Illuminate\Http\Request;
 class ChatController extends Controller
 {
     /**
-     * Dapatkan id pengunjung dari session login.
+     * Dapatkan id pengunjung dari session login (pastikan akun masih aktif).
      */
     private function getPengunjungId(): ?int
     {
-        if (session()->has('user.id_user')) {
-            return (int) session('user.id_user');
+        $idUser = session('user.id_user');
+        if (!$idUser) {
+            return null;
         }
-        return null;
+        $user = Pengguna::find((int) $idUser);
+        if (!$user || !$user->is_active) {
+            session()->forget('user');
+            return null;
+        }
+        return (int) $user->id_user;
     }
 
     /**
@@ -83,7 +90,7 @@ class ChatController extends Controller
             ->get()
             ->map(function ($o) {
                 $sudahUlasan = false;
-                if ($o->status === 'selesai') {
+                if ($o->status === 'selesai' && $o->status_pembayaran === 'lunas') {
                     $sudahUlasan = Ulasan::where('id_pesanan', $o->id_pesanan)->exists();
                 }
 
@@ -93,6 +100,7 @@ class ChatController extends Controller
                     'status_pembayaran' => $o->status_pembayaran ?? 'belum_bayar',
                     'total_harga' => $o->total_harga ?? 0,
                     'items_detail' => $o->items_detail ?? [],
+                    'catatan_pembeli' => $o->catatan_pembeli,
                     'bukti_pembayaran' => $o->bukti_pembayaran ? asset($o->bukti_pembayaran) : null,
                     'catatan_admin' => $o->catatan_admin,
                     'waktu_selesai' => $o->waktu_selesai ? $o->waktu_selesai->format('d M Y, H:i') : null,
@@ -262,14 +270,21 @@ class ChatController extends Controller
         $request->validate([
             'id_umkm' => 'required|integer',
             'items' => 'required|array|min:1',
-            'items.*.nama_produk' => 'required|string',
-            'items.*.harga' => 'required|numeric',
+            'items.*.id_produk' => 'required|integer',
             'items.*.qty' => 'required|integer|min:1',
             'catatan' => 'nullable|string|max:500',
             'bukti_foto' => 'nullable|image|mimes:jpeg,png,jpg|max:3072',
         ]);
 
         $idUmkm = (int) $request->input('id_umkm');
+        $umkm = Umkm::tampil()->find($idUmkm);
+        if (!$umkm) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Lapak UMKM tidak ditemukan atau sedang tidak aktif.',
+            ], 422);
+        }
+
         $items = $request->input('items');
         $catatan = trim((string) $request->input('catatan'));
 
@@ -277,14 +292,34 @@ class ChatController extends Controller
         $itemsDetail = [];
 
         foreach ($items as $item) {
+            $prodId = (int) $item['id_produk'];
+            $produk = Produk::where('id_produk', $prodId)
+                ->where('id_umkm', $idUmkm)
+                ->first();
+
+            if (!$produk) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Menu yang dipilih tidak ditemukan pada lapak ini.',
+                ], 422);
+            }
+
+            if (!$produk->tersedia) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Menu "' . $produk->nama_produk . '" sedang habis / tidak tersedia.',
+                ], 422);
+            }
+
             $qty = (int) $item['qty'];
-            $harga = (int) $item['harga'];
+            // Gunakan harga asli dari database agar nominal tidak bisa dimanipulasi di client
+            $harga = (int) round($produk->harga);
             $subtotal = $qty * $harga;
             $totalHarga += $subtotal;
 
             $itemsDetail[] = [
-                'id_produk' => $item['id_produk'] ?? null,
-                'nama_produk' => $item['nama_produk'],
+                'id_produk' => $produk->id_produk,
+                'nama_produk' => $produk->nama_produk,
                 'harga' => $harga,
                 'qty' => $qty,
                 'subtotal' => $subtotal,
@@ -311,11 +346,12 @@ class ChatController extends Controller
             'id_umkm' => $idUmkm,
             'status' => 'diproses',
             'items_detail' => $itemsDetail,
+            'catatan_pembeli' => $catatan !== '' ? $catatan : null,
             'total_harga' => $totalHarga,
             'bukti_pembayaran' => $publicUrl,
             'status_pembayaran' => $statusPembayaran,
             'waktu_pembayaran' => $waktuPembayaran,
-            'catatan_admin' => $catatan !== '' ? $catatan : null,
+            'catatan_admin' => null,
             'waktu_selesai' => null,
         ]);
 
@@ -364,17 +400,30 @@ class ChatController extends Controller
             ], 404);
         }
 
+        if ($pesanan->status_pembayaran === 'lunas') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Pembayaran pesanan ini sudah terverifikasi Lunas.',
+            ], 400);
+        }
+
         $file = $request->file('bukti_foto');
         $filename = 'bukti_' . $pesanan->id_pesanan . '_' . time() . '.' . $file->getClientOriginalExtension();
         $path = $file->storeAs('bukti_pembayaran', $filename, 'public');
         $publicUrl = '/storage/' . $path;
 
-        $pesanan->update([
+        $catatan = trim((string) $request->input('catatan'));
+        $updatePayload = [
             'bukti_pembayaran' => $publicUrl,
             'status_pembayaran' => 'menunggu_verifikasi',
             'waktu_pembayaran' => Carbon::now(),
             'catatan_admin' => null,
-        ]);
+        ];
+        if ($catatan !== '' && empty($pesanan->catatan_pembeli)) {
+            $updatePayload['catatan_pembeli'] = $catatan;
+        }
+
+        $pesanan->update($updatePayload);
 
         return response()->json([
             'status' => 'success',
@@ -493,10 +542,10 @@ class ChatController extends Controller
             ], 404);
         }
 
-        if ($pesanan->status !== 'selesai') {
+        if ($pesanan->status !== 'selesai' || $pesanan->status_pembayaran !== 'lunas') {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Penilaian hanya dapat diberikan setelah penjual menandai pesanan selesai.',
+                'message' => 'Penilaian hanya dapat diberikan setelah pembayaran terverifikasi Lunas dan penjual menandai pesanan selesai.',
             ], 400);
         }
 

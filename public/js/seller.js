@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initSellerModals();
   initMobileSidebar();
   initSellerFilters();
+  initSellerFormTabSync();
 });
 
 /**
@@ -33,6 +34,27 @@ function initSellerNav() {
   }
 }
 
+function getActiveSellerTabSlug() {
+  const activeSection = document.querySelector('.tab-view.active');
+  return activeSection ? activeSection.id.replace(/^tab-/, '') : 'overview';
+}
+
+function initSellerFormTabSync() {
+  document.addEventListener('submit', (e) => {
+    const form = e.target;
+    if (!(form instanceof HTMLFormElement) || form.method.toUpperCase() !== 'POST') return;
+
+    let input = form.querySelector('input[name="active_tab"]');
+    if (!input) {
+      input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'active_tab';
+      form.appendChild(input);
+    }
+    input.value = getActiveSellerTabSlug();
+  });
+}
+
 function switchSellerTab(tabId) {
   const navBtns = document.querySelectorAll('.panel-nav-btn[data-tab]');
   const tabViews = document.querySelectorAll('.tab-view');
@@ -42,6 +64,19 @@ function switchSellerTab(tabId) {
 
   navBtns.forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === tabId));
   tabViews.forEach(v => v.classList.toggle('active', v.id === tabId));
+
+  // Keep ?tab= synced in URL so refresh, validation redirect, and back() stay on this tab
+  if (window.history && window.history.replaceState) {
+    const url = new URL(window.location.href);
+    const tabSlug = tabId.replace(/^tab-/, '');
+    if (tabSlug === 'overview') {
+      url.searchParams.delete('tab');
+    } else {
+      url.searchParams.set('tab', tabSlug);
+    }
+    url.hash = '';
+    window.history.replaceState(null, '', url.toString());
+  }
 
   const tabMeta = {
     'tab-overview': {

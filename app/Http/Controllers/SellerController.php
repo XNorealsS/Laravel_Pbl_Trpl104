@@ -14,25 +14,28 @@ use Illuminate\Http\Request;
 
 class SellerController extends Controller
 {
+    private const TABS = ['overview', 'products', 'orders', 'profile', 'reviews'];
+
+    private function resolveTab(?string $tab, string $default = 'overview'): string
+    {
+        return in_array($tab, self::TABS, true) ? $tab : $default;
+    }
+
     /**
-     * Dapatkan UMKM milik seller yang sedang aktif.
+     * Dapatkan UMKM milik seller yang sedang aktif tanpa fallback lintas akun.
      */
     private function getSellerUmkm(): ?Umkm
     {
         $userId = session('user.id_user');
-        if ($userId) {
-            $umkm = Umkm::where('id_user', $userId)->first();
-            if ($umkm) return $umkm;
-        }
-        // Fallback demo: ambil lapak pertama yang terverifikasi
-        return Umkm::tampil()->first();
+        return $userId ? Umkm::where('id_user', $userId)->first() : null;
     }
 
     /**
      * Tampilkan Dashboard Seller (UC-05, UC-06, UC-07, UC-08).
      */
-    public function index()
+    public function index(Request $request)
     {
+        $activeTab = $this->resolveTab($request->query('tab'), 'overview');
         $umkm = $this->getSellerUmkm();
         if (!$umkm) {
             return redirect()->route('login')->with('error', 'Silakan masuk sebagai Seller.');
@@ -65,6 +68,7 @@ class SellerController extends Controller
         $rataRating = $ulasanList->avg('rating');
 
         return view('seller.dashboard', compact(
+            'activeTab',
             'umkm',
             'kategoriList',
             'produk',
@@ -76,20 +80,45 @@ class SellerController extends Controller
     }
 
     /**
+     * Redirect kembali ke tab aktif agar seller tetap berada di halaman aksi.
+     */
+    private function redirectToTab(Request $request, string $defaultTab = 'overview')
+    {
+        $tab = $this->resolveTab($request->input('active_tab'), $defaultTab);
+
+        return $tab === 'overview'
+            ? redirect()->route('seller')
+            : redirect()->route('seller', ['tab' => $tab]);
+    }
+
+    /**
      * Update profil UMKM (UC-05, F012).
      */
     public function updateProfile(Request $request)
     {
         $umkm = $this->getSellerUmkm();
-        if (!$umkm) return back()->with('error', 'Lapak tidak ditemukan');
+        if (!$umkm) return $this->redirectToTab($request, 'profile')->with('error', 'Lapak tidak ditemukan');
 
         $request->validate([
             'nama_usaha' => 'required|string|max:150',
-            'area' => 'required|string',
-            'lokasi' => 'required|string',
-            'kontak' => 'required|string',
+            'area' => 'required|string|max:100',
+            'lokasi' => 'required|string|max:255',
+            'kontak' => 'required|string|max:30',
             'deskripsi' => 'nullable|string',
+            'foto_url' => 'nullable|url|max:255',
         ]);
+
+        $fotoUsaha = $umkm->foto_usaha;
+        if ($request->filled('foto_url')) {
+            $rawUrl = trim((string) $request->input('foto_url'));
+            $basePrefix = rtrim(url('/'), '/') . '/';
+            if (str_starts_with($rawUrl, $basePrefix)) {
+                $relPath = ltrim(substr($rawUrl, strlen($basePrefix)), '/');
+                $fotoUsaha = str_starts_with($relPath, 'storage/') ? substr($relPath, strlen('storage/')) : $relPath;
+            } else {
+                $fotoUsaha = $rawUrl;
+            }
+        }
 
         $umkm->update([
             'nama_usaha' => $request->input('nama_usaha'),
@@ -97,9 +126,10 @@ class SellerController extends Controller
             'lokasi' => $request->input('lokasi'),
             'kontak' => $request->input('kontak'),
             'deskripsi' => $request->input('deskripsi'),
+            'foto_usaha' => $fotoUsaha,
         ]);
 
-        return back()->with('success', 'Profil UMKM berhasil diperbarui!');
+        return $this->redirectToTab($request, 'profile')->with('success', 'Profil UMKM berhasil diperbarui!');
     }
 
     /**
@@ -108,7 +138,7 @@ class SellerController extends Controller
     public function storeProduct(Request $request)
     {
         $umkm = $this->getSellerUmkm();
-        if (!$umkm) return back()->with('error', 'Lapak tidak ditemukan');
+        if (!$umkm) return $this->redirectToTab($request, 'products')->with('error', 'Lapak tidak ditemukan');
 
         $request->validate([
             'nama_produk' => 'required|string|max:150',
@@ -127,7 +157,7 @@ class SellerController extends Controller
             'tersedia' => true,
         ]);
 
-        return back()->with('success', 'Menu produk baru berhasil ditambahkan!');
+        return $this->redirectToTab($request, 'products')->with('success', 'Menu produk baru berhasil ditambahkan!');
     }
 
     /**
@@ -153,24 +183,24 @@ class SellerController extends Controller
             'tersedia' => $request->has('tersedia'),
         ]);
 
-        return back()->with('success', 'Menu produk berhasil diperbarui!');
+        return $this->redirectToTab($request, 'products')->with('success', 'Menu produk berhasil diperbarui!');
     }
 
     /**
      * Hapus produk (UC-06).
      */
-    public function deleteProduct(int $id)
+    public function deleteProduct(Request $request, int $id)
     {
         $umkm = $this->getSellerUmkm();
         Produk::where('id_produk', $id)->where('id_umkm', $umkm->id_umkm)->delete();
 
-        return back()->with('success', 'Produk berhasil dihapus!');
+        return $this->redirectToTab($request, 'products')->with('success', 'Produk berhasil dihapus!');
     }
 
     /**
      * Kosongkan ketersediaan atau aktifkan ketersediaan produk (UC-07 Skenario Alternatif).
      */
-    public function toggleProductAvailability(int $id)
+    public function toggleProductAvailability(Request $request, int $id)
     {
         $umkm = $this->getSellerUmkm();
         $produk = Produk::where('id_produk', $id)->where('id_umkm', $umkm->id_umkm)->firstOrFail();
@@ -180,57 +210,45 @@ class SellerController extends Controller
         ]);
 
         $statusText = $produk->tersedia ? 'Tersedia' : 'Kosong / Habis';
-        return back()->with('success', "Status ketersediaan \"{$produk->nama_produk}\" berhasil diubah menjadi: {$statusText}");
+        return $this->redirectToTab($request, 'products')->with('success', "Status ketersediaan \"{$produk->nama_produk}\" berhasil diubah menjadi: {$statusText}");
     }
 
     /**
      * Update status pesanan: "diproses" -> "selesai" (UC-07, F007).
-     * Memicu tombol "Beri Penilaian" pada chat pembeli.
+     * Selaras dengan AGENTS.md: hanya bisa diselesaikan setelah pembayaran diverifikasi LUNAS oleh Admin.
      */
     public function updateOrderStatus(Request $request, int $id)
     {
+        $request->validate([
+            'status' => 'required|in:diproses,selesai',
+        ]);
+
         $umkm = $this->getSellerUmkm();
+        if (!$umkm) return $this->redirectToTab($request, 'orders')->with('error', 'Lapak tidak ditemukan.');
+
         $pesanan = Pesanan::where('id_pesanan', $id)->where('id_umkm', $umkm->id_umkm)->firstOrFail();
         $status = $request->input('status', 'selesai');
-        $statusPembayaran = $request->input('status_pembayaran');
 
-        $updateData = [
-            'status' => $status,
-            'waktu_selesai' => $status === 'selesai' ? Carbon::now() : null,
-        ];
-
-        if ($statusPembayaran) {
-            $updateData['status_pembayaran'] = $statusPembayaran;
+        if ($status === 'selesai' && $pesanan->status_pembayaran !== 'lunas') {
+            return $this->redirectToTab($request, 'orders')
+                ->with('error', 'Pesanan #' . $id . ' belum dapat diselesaikan karena pembayaran belum diverifikasi LUNAS oleh Admin.');
         }
 
-        $pesanan->update($updateData);
+        $pesanan->update([
+            'status' => $status,
+            'waktu_selesai' => $status === 'selesai' ? Carbon::now() : null,
+        ]);
 
-        return back()->with('success', 'Status pesanan berhasil diubah menjadi: ' . strtoupper($status) . '! Tombol ulasan kini aktif untuk pembeli.');
+        return $this->redirectToTab($request, 'orders')->with('success', 'Status pesanan berhasil diubah menjadi: ' . strtoupper($status) . '! Tombol ulasan kini aktif untuk pembeli.');
     }
 
     /**
-     * Seller memverifikasi bukti struk transfer mandiri dari pembeli (Lunas / Ditolak).
-     * Memberikan otonomi transaksi langsung ke mitra UMKM tanpa bottleneck admin.
+     * Verifikasi pembayaran dipusatkan pada Administrator sesuai aturan AGENTS.md.
      */
     public function verifyPayment(Request $request, int $id)
     {
-        $request->validate([
-            'status' => 'required|in:lunas,ditolak',
-            'catatan' => 'nullable|string|max:255',
-        ]);
-
-        $umkm = $this->getSellerUmkm();
-        $pesanan = Pesanan::where('id_pesanan', $id)
-            ->where('id_umkm', $umkm->id_umkm)
-            ->firstOrFail();
-
-        $pesanan->update([
-            'status_pembayaran' => $request->input('status'),
-            'catatan_admin' => $request->input('catatan') ?: null,
-        ]);
-
-        $label = $request->input('status') === 'lunas' ? 'LUNAS (Siap Dimasak)' : 'DITOLAK';
-        return back()->with('success', 'Status pembayaran pesanan #' . $id . ' berhasil dikonfirmasi: ' . $label);
+        return $this->redirectToTab($request, 'orders')
+            ->with('error', 'Verifikasi bukti transfer dilakukan secara terpusat oleh Administrator.');
     }
 
     /**
@@ -252,15 +270,26 @@ class SellerController extends Controller
             'waktu' => Carbon::now(),
         ]);
 
-        return back()->with('success', 'Pesan berhasil dikirim ke pembeli!');
+        return $this->redirectToTab($request, 'orders')->with('success', 'Pesan berhasil dikirim ke pembeli!');
     }
 
     /**
-     * Tanggapi ulasan dari pembeli (UC-08, F011).
+     * Tanggapi ulasan dari pembeli milik UMKM terkait (UC-08, F011).
      */
     public function replyReview(Request $request, int $id)
     {
-        $ulasan = Ulasan::findOrFail($id);
+        $umkm = $this->getSellerUmkm();
+        if (!$umkm) return $this->redirectToTab($request, 'reviews')->with('error', 'Lapak tidak ditemukan.');
+
+        $ulasan = Ulasan::where('id_ulasan', $id)
+            ->where('id_umkm', $umkm->id_umkm)
+            ->firstOrFail();
+
+        if ($ulasan->disembunyikan) {
+            return $this->redirectToTab($request, 'reviews')
+                ->with('error', 'Ulasan yang telah disembunyikan oleh Admin tidak dapat ditanggapi.');
+        }
+
         $request->validate([
             'balasan_seller' => 'required|string|max:500',
         ]);
@@ -269,6 +298,6 @@ class SellerController extends Controller
             'balasan_seller' => $request->input('balasan_seller'),
         ]);
 
-        return back()->with('success', 'Tanggapan ulasan berhasil disimpan!');
+        return $this->redirectToTab($request, 'reviews')->with('success', 'Tanggapan ulasan berhasil disimpan!');
     }
 }

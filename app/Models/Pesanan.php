@@ -15,6 +15,7 @@ class Pesanan extends Model
         'id_pengunjung',
         'id_umkm',
         'items_detail',
+        'catatan_pembeli',
         'total_harga',
         'bukti_pembayaran',
         'status_pembayaran',

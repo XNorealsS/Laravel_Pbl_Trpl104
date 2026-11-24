@@ -1,0 +1,209 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[indonesian]{babel}
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\setsansfont{Arial}
+\setmonofont{Consolas}[Scale=0.88]
+
+\usepackage[top=3cm,bottom=2.5cm,left=3.5cm,right=2.5cm,headheight=15pt]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{needspace}
+\usepackage{tocloft}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,backgrounds}
+\usepackage{listings}
+\usepackage{hyperref}
+
+\definecolor{PolibatamBlue}{HTML}{2F5496}
+\definecolor{TableHeadBg}{HTML}{E8EEF6}
+\definecolor{RowShade}{HTML}{F5F7FA}
+\definecolor{JajanGreen}{HTML}{2E8B3D}
+\definecolor{ActorFill}{HTML}{F0F6FC}
+
+\renewcommand{\lstlistingname}{Kode}
+\lstset{
+  basicstyle=\ttfamily\fontsize{9}{11}\selectfont,
+  backgroundcolor=\color{RowShade},
+  frame=single,
+  rulecolor=\color{PolibatamBlue},
+  breaklines=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  commentstyle=\color{JajanGreen}\itshape,
+  keywordstyle=\color{PolibatamBlue}\bfseries,
+  stringstyle=\color{black!75}
+}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=PolibatamBlue,
+  urlcolor=PolibatamBlue,
+  citecolor=PolibatamBlue,
+  pdftitle={Dokumentasi Pembangunan Perangkat Lunak - Aplikasi Lapak UMKM JajanRia},
+  pdfauthor={Tim PBL TRPL 104 Polibatam}
+}
+
+% Penomoran dan gaya heading standar Polibatam TRPL104
+\renewcommand{\thesection}{\Roman{section}}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
+\renewcommand{\thesubsubsection}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}}
+\renewcommand{\theparagraph}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.\arabic{paragraph}}
+\setcounter{secnumdepth}{4}
+\setcounter{tocdepth}{3}
+
+\titleformat{\section}
+  {\normalfont\fontsize{14}{17}\bfseries}
+  {\textcolor{PolibatamBlue}{\thesection.}}
+  {0.7em}
+  {}
+\titleformat{\subsection}
+  {\normalfont\fontsize{13}{16}\bfseries}
+  {\textcolor{PolibatamBlue}{\thesubsection}}
+  {0.7em}
+  {}
+\titleformat{\subsubsection}
+  {\normalfont\fontsize{12}{15}\bfseries}
+  {\thesubsubsection}
+  {0.6em}
+  {}
+\titleformat{\paragraph}[block]
+  {\normalfont\fontsize{12}{15}\bfseries}
+  {\theparagraph}
+  {0.6em}
+  {}
+
+\titlespacing*{\section}{0pt}{12pt}{6pt}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+\titlespacing*{\subsubsection}{0pt}{8pt}{4pt}
+\titlespacing*{\paragraph}{0pt}{10pt}{4pt}
+
+% Penomoran Gambar dan Tabel per Bab (Gambar 1.1, Tabel 1.1)
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+\renewcommand{\thefigure}{\arabic{section}.\arabic{figure}}
+\renewcommand{\thetable}{\arabic{section}.\arabic{table}}
+
+% Tata letak Daftar Isi
+\renewcommand{\contentsname}{\fontsize{16}{20}\selectfont\bfseries Daftar Isi}
+\renewcommand{\cftsecfont}{\bfseries\fontsize{12}{15}\selectfont}
+\renewcommand{\cftsecpagefont}{\bfseries\fontsize{12}{15}\selectfont}
+\renewcommand{\cftsubsecfont}{\fontsize{11.5}{14}\selectfont}
+\renewcommand{\cftsubsubsecfont}{\fontsize{11}{13.5}\selectfont}
+\setlength{\cftbeforesecskip}{6pt}
+
+% Kolom tabel rata kiri rapi (anti-stretch)
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+% Footer standar Polibatam TRPL104 (termasuk gaya plain untuk Daftar Isi)
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \renewcommand{\footrulewidth}{0pt}%
+  \fancyfoot[C]{%
+    \fontsize{9.5}{11}\selectfont\sffamily
+    \begin{tabular*}{\textwidth}{@{}l@{\extracolsep{\fill}}c@{\extracolsep{\fill}}r@{}}
+      Prodi Teknologi Rekayasa Perangkat Lunak Polibatam & PBL-TRPL104 & Halaman \thepage{} dari \pageref{LastPage} halaman
+    \end{tabular*}%
+  }%
+}
+\pagestyle{plain}
+
+% Makro diagram aktor UML untuk Use Case
+\newcommand{\umlactor}[3]{%
+  \begin{scope}[shift={(#1)}]
+    \draw[thick, draw=PolibatamBlue, fill=ActorFill] (0,0.45) circle (0.18cm);
+    \draw[thick, draw=PolibatamBlue] (0,0.27) -- (0,-0.25);
+    \draw[thick, draw=PolibatamBlue] (-0.28,0.10) -- (0.28,0.10);
+    \draw[thick, draw=PolibatamBlue] (0,-0.25) -- (-0.22,-0.62);
+    \draw[thick, draw=PolibatamBlue] (0,-0.25) -- (0.22,-0.62);
+    \node[below=0.70cm, font=\sffamily\footnotesize\bfseries, align=center] (#2) at (0,0) {#3};
+  \end{scope}
+}
+
+% Lingkungan daftar ringkas di dalam sel tabel Use Case
+\newlist{uclist}{enumerate}{1}
+\setlist[uclist]{label=\arabic*., leftmargin=1.3em, itemsep=1.5pt, parsep=0pt, topsep=1pt, partopsep=0pt}
+\newlist{ucbullet}{itemize}{1}
+\setlist[ucbullet]{label=\textbullet, leftmargin=1.1em, itemsep=1.5pt, parsep=0pt, topsep=1pt, partopsep=0pt}
+
+\begin{document}
+
+\input{cover.tex}
+
+% Halaman 2: Daftar Isi (lanjut penomoran halaman setelah sampul = 2)
+\clearpage
+\setcounter{page}{2}
+\tableofcontents
+
+% Halaman 3: Riwayat Pengerjaan dan Kontribusi Anggota
+\clearpage
+\begin{center}
+  {\fontsize{15}{19}\selectfont\bfseries Riwayat Pengerjaan dan Kontribusi Anggota\par}
+\end{center}
+\vspace{0.25cm}
+
+\noindent
+\renewcommand{\arraystretch}{1.16}
+\begin{tabularx}{\textwidth}{|C{1.5cm}|L{2.2cm}|Y|L{3.5cm}|}
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Minggu ke} & \textbf{Tahapan} & \textbf{Luaran yang Dihasilkan} & \textbf{Anggota Tim yang Mengerjakan} \\
+\hline
+1 & Perencanaan & Merencanakan pengembangan aplikasi lapak usaha mikro, kecil, dan menengah (UMKM) berbasis web sebagai media promosi serta pemesanan kuliner sekitar kampus Politeknik Negeri Batam. & Muhammad Rifaa, Nadira Ramadhani, Karin Azrika Putri, Geovany Silitonga, Davincy Serunting, M.~Rifqi Rizani \\
+\hline
+2 & Analisis & Mengidentifikasi permasalahan UMKM kuliner jalanan (\textit{street food}) serta memetakan kebutuhan fitur lintas peran. & Muhammad Rifaa, Nadira Ramadhani, Karin Azrika Putri, Geovany Silitonga, Davincy Serunting, M.~Rifqi Rizani \\
+\hline
+3 & Desain & Merancang desain antarmuka pengguna (\textit{User Interface} dan pengalaman pengguna) untuk katalog publik, detail toko, dasbor penjual, dan panel administrator. & Nadira Ramadhani, Geovany Silitonga \\
+\hline
+4 & Implementasi & Membangun modul autentikasi, profil UMKM, serta katalog menu (tambah, lihat, ubah, dan hapus data berikut status ketersediaan). Tim juga membangun pencarian produk, keranjang dan \textit{checkout} langsung, unggah bukti bayar manual, verifikasi Admin, layanan bantuan, pembaruan pesanan, ulasan, dan panel peran. & Muhammad Rifaa, Davincy Serunting, M.~Rifqi Rizani \\
+\hline
+\end{tabularx}
+
+\vspace{0.35cm}
+
+\noindent
+\renewcommand{\arraystretch}{1.16}
+\begin{tabularx}{\textwidth}{|L{4.1cm}|Y|}
+\hline
+\rowcolor{TableHeadBg}
+\textbf{Nama Anggota} & \textbf{Kontribusi} \\
+\hline
+Muhammad Rifaa & Merancang sistem \textit{back-end} (autentikasi, produk, pesan bantuan, pesanan). \\
+\hline
+Davincy Serunting & Merancang sistem \textit{back-end} (\textit{checkout}, verifikasi pembayaran, peringkat dan ulasan, integrasi). \\
+\hline
+M.~Rifqi Rizani & Merancang sistem \textit{front-end} (etalase publik, detail toko, dasbor penjual, panel administrator). \\
+\hline
+Geovany Silitonga & Merancang desain antarmuka pengguna dan pengalaman pengguna. \\
+\hline
+Nadira Ramadhani & Merancang desain antarmuka pengguna dan pengalaman pengguna. \\
+\hline
+Karin Azrika Putri & Menyusun spesifikasi kebutuhan perangkat lunak (SRS) dan pengujian fungsional. \\
+\hline
+\end{tabularx}
+
+% Konten Utama: Bab I s.d. Bab IV
+\clearpage
+\input{chapters/bab1.tex}
+\input{chapters/bab2.tex}
+\input{chapters/bab3.tex}
+\input{chapters/bab4.tex}
+
+\end{document}
