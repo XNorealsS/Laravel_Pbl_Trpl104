@@ -161,6 +161,23 @@ function initSellerModals() {
   if (cancelReplyBtn && replyModal) {
     cancelReplyBtn.addEventListener('click', () => replyModal.classList.remove('open'));
   }
+
+  // Reject Payment Modal (Seller Verify Payment)
+  const rejectPayModal = document.getElementById('sellerRejectPaymentModalBackdrop');
+  const closeRejectPayBtn = document.getElementById('btnCloseSellerRejectModal');
+  const cancelRejectPayBtn = document.getElementById('btnCancelSellerRejectModal');
+
+  if (closeRejectPayBtn && rejectPayModal) {
+    closeRejectPayBtn.addEventListener('click', () => rejectPayModal.classList.remove('open'));
+  }
+  if (cancelRejectPayBtn && rejectPayModal) {
+    cancelRejectPayBtn.addEventListener('click', () => rejectPayModal.classList.remove('open'));
+  }
+  if (rejectPayModal) {
+    rejectPayModal.addEventListener('click', (e) => {
+      if (e.target === rejectPayModal) rejectPayModal.classList.remove('open');
+    });
+  }
 }
 
 window.openAddProductModalShortcut = function() {
@@ -201,6 +218,17 @@ window.openReplyModal = function(idUlasan, namaPengunjung, quoteText) {
   document.getElementById('replyReviewUser').textContent = `Ulasan dari: ${namaPengunjung}`;
   document.getElementById('replyReviewQuote').textContent = `"${quoteText}"`;
 
+  modal.classList.add('open');
+};
+
+window.openSellerRejectPaymentModal = function(idPesanan) {
+  const modal = document.getElementById('sellerRejectPaymentModalBackdrop');
+  const form = document.getElementById('sellerRejectPaymentForm');
+  const noteInput = document.getElementById('sellerRejectNote');
+  if (!modal || !form) return;
+
+  form.action = `/seller/orders/${idPesanan}/verify-payment`;
+  if (noteInput) noteInput.value = '';
   modal.classList.add('open');
 };
 

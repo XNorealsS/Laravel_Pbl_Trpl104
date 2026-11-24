@@ -140,4 +140,73 @@ class F006F007CheckoutTest extends TestCase
         $blockedRes->assertStatus(400)
             ->assertJson(['status' => 'error']);
     }
+
+    public function test_seller_can_verify_and_reject_own_order_payment_and_blocked_cross_umkm(): void
+    {
+        $umkms = Umkm::tampil()->take(2)->get();
+        if ($umkms->count() < 2) {
+            $this->markTestSkipped('Butuh minimal 2 UMKM aktif untuk uji isolasi.');
+        }
+
+        $umkmA = $umkms[0];
+        $umkmB = $umkms[1];
+        $sellerA = Pengguna::findOrFail($umkmA->id_user);
+        $pengunjung = Pengguna::where('role', 'pengunjung')->where('is_active', true)->firstOrFail();
+
+        $orderA = Pesanan::create([
+            'id_pengunjung' => $pengunjung->id_user,
+            'id_umkm' => $umkmA->id_umkm,
+            'status' => 'diproses',
+            'items_detail' => [['id_produk' => 1, 'nama_produk' => 'Menu Uji', 'harga' => 15000, 'qty' => 1, 'subtotal' => 15000]],
+            'total_harga' => 15000,
+            'status_pembayaran' => 'menunggu_verifikasi',
+        ]);
+
+        $orderB = Pesanan::create([
+            'id_pengunjung' => $pengunjung->id_user,
+            'id_umkm' => $umkmB->id_umkm,
+            'status' => 'diproses',
+            'items_detail' => [['id_produk' => 1, 'nama_produk' => 'Menu Uji B', 'harga' => 20000, 'qty' => 1, 'subtotal' => 20000]],
+            'total_harga' => 20000,
+            'status_pembayaran' => 'menunggu_verifikasi',
+        ]);
+
+        $sellerASession = [
+            'user' => [
+                'id_user' => $sellerA->id_user,
+                'nama' => $sellerA->nama,
+                'email' => $sellerA->email,
+                'role' => 'seller',
+            ],
+        ];
+
+        // 1. Seller A menolak pembayaran pesanan A dengan catatan
+        $rejectRes = $this->withSession($sellerASession)->post(route('seller.orders.verify_payment', $orderA->id_pesanan), [
+            'status' => 'ditolak',
+            'catatan' => 'Bukti buram',
+        ]);
+        $rejectRes->assertRedirect();
+        $this->assertDatabaseHas('t_pesanan', [
+            'id_pesanan' => $orderA->id_pesanan,
+            'status_pembayaran' => 'ditolak',
+            'catatan_admin' => 'Bukti buram',
+        ]);
+
+        // 2. Seller A menyetujui pembayaran pesanan A menjadi lunas
+        $approveRes = $this->withSession($sellerASession)->post(route('seller.orders.verify_payment', $orderA->id_pesanan), [
+            'status' => 'lunas',
+        ]);
+        $approveRes->assertRedirect();
+        $this->assertDatabaseHas('t_pesanan', [
+            'id_pesanan' => $orderA->id_pesanan,
+            'status_pembayaran' => 'lunas',
+            'catatan_admin' => null,
+        ]);
+
+        // 3. Seller A tidak boleh memverifikasi pesanan milik UMKM B (404)
+        $crossRes = $this->withSession($sellerASession)->post(route('seller.orders.verify_payment', $orderB->id_pesanan), [
+            'status' => 'lunas',
+        ]);
+        $crossRes->assertStatus(404);
+    }
 }

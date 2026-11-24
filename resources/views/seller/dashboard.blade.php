@@ -514,11 +514,14 @@
                         @endif
                         <div style="margin-top: 4px;">
                           @if($order->status_pembayaran === 'lunas')
-                            <span class="badge-adminlte badge-success">✓ Lunas (Admin)</span>
+                            <span class="badge-adminlte badge-success">✓ Lunas</span>
                           @elseif($order->status_pembayaran === 'menunggu_verifikasi')
-                            <span class="badge-adminlte badge-warning">⏳ Cek Admin</span>
+                            <span class="badge-adminlte badge-warning">⏳ Menunggu Verifikasi</span>
                           @elseif($order->status_pembayaran === 'ditolak')
-                            <span class="badge-adminlte badge-danger">✗ Ditolak Admin</span>
+                            <span class="badge-adminlte badge-danger">✗ Ditolak</span>
+                            @if(!empty($order->catatan_admin))
+                              <div style="font-size: 0.72rem; color: #b91c1c; margin-top: 2px;">Alasan: {{ $order->catatan_admin }}</div>
+                            @endif
                           @else
                             <span class="badge-adminlte" style="background:#e5e7eb; color:#4b5563;">Belum Bayar</span>
                           @endif
@@ -541,8 +544,23 @@
                                 <i class='bx bx-check-double'></i> Selesai
                               </button>
                             </form>
+                          @elseif($order->status_pembayaran === 'menunggu_verifikasi' || !empty($order->bukti_pembayaran))
+                            <div style="display:inline-flex; gap:4px; flex-wrap:wrap; justify-content:center;">
+                              <form action="{{ route('seller.orders.verify_payment', $order->id_pesanan) }}" method="POST" style="display:inline;">
+                                @csrf
+                                <input type="hidden" name="status" value="lunas">
+                                <button type="submit" class="btn-action-sm btn-action-outline-primary" style="color:#2E8B3D; border-color:#2E8B3D;" title="Verifikasi bukti transfer sah dan tandai Lunas">
+                                  <i class='bx bx-check'></i> Lunas
+                                </button>
+                              </form>
+                              <button type="button" class="btn-action-sm" style="background:#fff; color:#dc2626; border:1px solid #dc2626;" onclick="openSellerRejectPaymentModal({{ $order->id_pesanan }})" title="Tolak bukti transfer jika tidak sesuai">
+                                <i class='bx bx-x'></i> Tolak
+                              </button>
+                            </div>
+                          @elseif($order->status_pembayaran === 'ditolak')
+                            <span style="font-size: 0.76rem; color: #b91c1c;">Menunggu Upload Ulang</span>
                           @else
-                            <span style="font-size: 0.76rem; color: #6C757D;">Menunggu Verif Lunas</span>
+                            <span style="font-size: 0.76rem; color: #6C757D;">Menunggu Bukti Bayar</span>
                           @endif
                         @else
                           <span style="color: #28A745; font-weight: 700; font-size: 0.82rem;">
@@ -854,6 +872,40 @@
           <button type="submit" class="btn-adminlte-green">
             <i class='bx bx-send'></i>
             <span>Kirim Tanggapan</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: TOLAK BUKTI PEMBAYARAN OLEH SELLER -->
+  <div class="review-modal-backdrop" id="sellerRejectPaymentModalBackdrop">
+    <div class="review-modal-dialog">
+      <div class="review-modal-header">
+        <div class="review-header-title-box">
+          <i class='bx bx-error-circle' style="font-size: 1.4rem; color: #dc2626;"></i>
+          <div>
+            <h3 class="review-modal-title">Tolak Bukti Pembayaran</h3>
+            <p class="review-modal-sub">Berikan alasan agar pembeli dapat mengunggah ulang struk yang benar</p>
+          </div>
+        </div>
+        <button type="button" class="btn-review-close" id="btnCloseSellerRejectModal">
+          <i class='bx bx-x'></i>
+        </button>
+      </div>
+
+      <form id="sellerRejectPaymentForm" method="POST" class="review-modal-body">
+        @csrf
+        <input type="hidden" name="status" value="ditolak">
+        <div>
+          <label class="form-label" for="sellerRejectNote">Alasan Penolakan:</label>
+          <textarea name="catatan" id="sellerRejectNote" class="panel-input" rows="3" placeholder="Contoh: Foto struk buram / nominal transfer tidak sesuai." required></textarea>
+        </div>
+        <div class="review-modal-actions">
+          <button type="button" class="btn-review-skip" id="btnCancelSellerRejectModal">Batal</button>
+          <button type="submit" class="btn-adminlte-green" style="background:#dc2626;">
+            <i class='bx bx-x-circle'></i>
+            <span>Tolak Pembayaran</span>
           </button>
         </div>
       </form>

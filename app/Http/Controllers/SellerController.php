@@ -231,7 +231,7 @@ class SellerController extends Controller
 
         if ($status === 'selesai' && $pesanan->status_pembayaran !== 'lunas') {
             return $this->redirectToTab($request, 'orders')
-                ->with('error', 'Pesanan #' . $id . ' belum dapat diselesaikan karena pembayaran belum diverifikasi LUNAS oleh Admin.');
+                ->with('error', 'Pesanan #' . $id . ' belum dapat diselesaikan karena pembayaran belum diverifikasi LUNAS.');
         }
 
         $pesanan->update([
@@ -243,12 +243,34 @@ class SellerController extends Controller
     }
 
     /**
-     * Verifikasi pembayaran dipusatkan pada Administrator sesuai aturan AGENTS.md.
+     * Verifikasi bukti pembayaran pesanan oleh Seller untuk lapaknya sendiri.
      */
     public function verifyPayment(Request $request, int $id)
     {
+        $request->validate([
+            'status' => 'required|in:lunas,ditolak',
+            'catatan' => 'nullable|string|max:255',
+        ]);
+
+        $umkm = $this->getSellerUmkm();
+        if (!$umkm) {
+            return $this->redirectToTab($request, 'orders')->with('error', 'Lapak tidak ditemukan.');
+        }
+
+        $pesanan = Pesanan::where('id_pesanan', $id)
+            ->where('id_umkm', $umkm->id_umkm)
+            ->firstOrFail();
+
+        $status = $request->input('status');
+        $catatan = trim((string) $request->input('catatan'));
+
+        $pesanan->update([
+            'status_pembayaran' => $status,
+            'catatan_admin' => $status === 'lunas' ? null : ($catatan ?: null),
+        ]);
+
         return $this->redirectToTab($request, 'orders')
-            ->with('error', 'Verifikasi bukti transfer dilakukan secara terpusat oleh Administrator.');
+            ->with('success', 'Status pembayaran pesanan #' . $id . ' berhasil diubah menjadi: ' . strtoupper($status));
     }
 
     /**
