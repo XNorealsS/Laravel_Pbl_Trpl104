@@ -9,34 +9,27 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    /**
-     * Tampilkan formulir login.
-     */
     public function showLogin()
     {
         if (session()->has('user')) {
-            $role = session('user.role');
-            if ($role === 'seller') return redirect()->route('seller');
-            if ($role === 'admin') return redirect()->route('admin');
-            return redirect()->route('landing');
+            return $this->redirectByRole((string) session('user.role'));
         }
+
         return view('auth.login');
     }
 
-    /**
-     * Proses login (Email + Password atau Google Sign-In simulation).
-     */
     public function login(Request $request)
     {
-        $email = trim((string) $request->input('email', ''));
-        $password = (string) $request->input('password', '');
+        $provider = $request->input('provider');
+        $quickRole = $request->input('quick_role');
 
-        // 1. Cek Google Sign-In / Login cepat Pengunjung
-        if ($request->input('provider') === 'google' || $request->input('quick_role') === 'pengunjung') {
+        // Akses cepat untuk demo dan pengujian per peran
+        if ($provider === 'google' || $quickRole === 'pengunjung') {
             $user = Pengguna::where('role', 'pengunjung')->where('is_active', true)->first();
+
             if (!$user) {
                 $user = Pengguna::create([
-                    'nama' => "Pengunjung Google",
+                    'nama' => 'Pengunjung Google',
                     'email' => 'pengunjung@jajanria.test',
                     'password' => 'password',
                     'role' => 'pengunjung',
@@ -44,96 +37,76 @@ class AuthController extends Controller
                     'is_active' => true,
                 ]);
             }
-            session(['user' => [
-                'id_user' => $user->id_user,
-                'nama' => $user->nama,
-                'email' => $user->email,
-                'role' => $user->role,
-            ]]);
-            return redirect()->route('landing')->with('success', 'Berhasil masuk dengan akun Google! Fitur chat tersedia di pojok kanan bawah.');
+
+            $this->setUserSession($user);
+            return redirect()->route('landing')
+                ->with('success', 'Berhasil masuk dengan akun Google! Fitur chat tersedia di pojok kanan bawah.');
         }
 
-        // 2. Quick login untuk Seller / Admin (kemudahan pengujian penguji/dosen)
-        if ($request->input('quick_role') === 'seller') {
+        if ($quickRole === 'seller') {
             $user = Pengguna::where('role', 'seller')
                 ->where('status_verifikasi', 'terverifikasi')
                 ->where('is_active', true)
                 ->first();
-            if ($user) {
-                session(['user' => [
-                    'id_user' => $user->id_user,
-                    'nama' => $user->nama,
-                    'email' => $user->email,
-                    'role' => $user->role,
-                ]]);
-                return redirect()->route('seller')->with('success', 'Selamat datang di Dashboard Seller!');
+
+            if (!$user) {
+                return back()->with('error', 'Belum ada akun Seller aktif dan terverifikasi untuk akses cepat.');
             }
-            return back()->with('error', 'Belum ada akun Seller aktif dan terverifikasi untuk akses cepat.');
+
+            $this->setUserSession($user);
+            return redirect()->route('seller')->with('success', 'Selamat datang di Dashboard Seller!');
         }
 
-        if ($request->input('quick_role') === 'admin') {
+        if ($quickRole === 'admin') {
             $user = Pengguna::where('role', 'admin')->where('is_active', true)->first();
+
             if ($user) {
-                session(['user' => [
-                    'id_user' => $user->id_user,
-                    'nama' => $user->nama,
-                    'email' => $user->email,
-                    'role' => $user->role,
-                ]]);
+                $this->setUserSession($user);
                 return redirect()->route('admin')->with('success', 'Selamat datang di Panel Admin JajanRia!');
             }
         }
 
-        // 3. Login email biasa
+        $email = trim((string) $request->input('email', ''));
+        $password = (string) $request->input('password', '');
         $user = Pengguna::where('email', $email)->first();
-        if ($user && !empty($user->password) && Hash::check($password, $user->password)) {
-            // Skenario Alternatif UC-01: Akun nonaktif atau belum terverifikasi ditolak
-            if (!$user->is_active) {
-                return back()->with('error', 'Akun Anda dinonaktifkan oleh Administrator. Hubungi pengelola platform untuk info lebih lanjut.');
-            }
 
-            if ($user->role === 'seller') {
-                if ($user->status_verifikasi === 'menunggu') {
-                    return back()->with('error', 'Pendaftaran akun Seller Anda masih dalam proses peninjauan / menunggu verifikasi Admin.');
-                }
-                if ($user->status_verifikasi === 'ditolak') {
-                    return back()->with('error', 'Mohon maaf, pengajuan pendaftaran Seller Anda ditolak oleh Admin.');
-                }
-            }
-
-            session(['user' => [
-                'id_user' => $user->id_user,
-                'nama' => $user->nama,
-                'email' => $user->email,
-                'role' => $user->role,
-            ]]);
-
-            if ($user->role === 'seller') {
-                return redirect()->route('seller')->with('success', 'Berhasil masuk ke Dashboard Seller!');
-            }
-            if ($user->role === 'admin') {
-                return redirect()->route('admin')->with('success', 'Berhasil masuk ke Panel Administrator!');
-            }
-            return redirect()->route('landing')->with('success', 'Berhasil masuk! Selamat berbelanja jajanan.');
+        if (!$user || empty($user->password) || !Hash::check($password, $user->password)) {
+            return back()->with('error', 'Email atau kata sandi tidak cocok. Silakan coba lagi.');
         }
 
-        return back()->with('error', 'Email atau kata sandi tidak cocok. Silakan coba lagi.');
+        if (!$user->is_active) {
+            return back()->with('error', 'Akun Anda dinonaktifkan oleh Administrator. Hubungi pengelola platform untuk info lebih lanjut.');
+        }
+
+        if ($user->role === 'seller' && $user->status_verifikasi === 'menunggu') {
+            return back()->with('error', 'Pendaftaran akun Seller Anda masih dalam proses peninjauan / menunggu verifikasi Admin.');
+        }
+
+        if ($user->role === 'seller' && $user->status_verifikasi === 'ditolak') {
+            return back()->with('error', 'Mohon maaf, pengajuan pendaftaran Seller Anda ditolak oleh Admin.');
+        }
+
+        $this->setUserSession($user);
+
+        if ($user->role === 'seller') {
+            return redirect()->route('seller')->with('success', 'Berhasil masuk ke Dashboard Seller!');
+        }
+
+        if ($user->role === 'admin') {
+            return redirect()->route('admin')->with('success', 'Berhasil masuk ke Panel Administrator!');
+        }
+
+        return redirect()->route('landing')->with('success', 'Berhasil masuk! Selamat berbelanja jajanan.');
     }
 
-    /**
-     * Tampilkan formulir registrasi Seller.
-     */
     public function showRegister()
     {
         return view('auth.register');
     }
 
-    /**
-     * Proses pendaftaran Seller baru (UC-01 & UC-05).
-     */
     public function register(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'nama' => 'required|string|max:100',
             'email' => 'required|email|max:100',
             'password' => 'required|string|min:4',
@@ -144,8 +117,7 @@ class AuthController extends Controller
             'store_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:5120',
         ]);
 
-        $existing = Pengguna::where('email', $request->input('email'))->first();
-        if ($existing) {
+        if (Pengguna::where('email', $data['email'])->exists()) {
             return back()->with('error', 'Email sudah terdaftar. Silakan gunakan email lain atau masuk.')->withInput();
         }
 
@@ -156,57 +128,54 @@ class AuthController extends Controller
             $fotoPath = $file->storeAs('umkm', $filename, 'public');
         }
 
+        // Akun Seller baru berstatus menunggu sampai disetujui Administrator
         $user = Pengguna::create([
-            'nama' => $request->input('nama'),
-            'email' => $request->input('email'),
-            'password' => $request->input('password'),
+            'nama' => $data['nama'],
+            'email' => $data['email'],
+            'password' => $data['password'],
             'role' => 'seller',
-            'status_verifikasi' => 'menunggu', // menunggu verifikasi admin (UC-09)
+            'status_verifikasi' => 'menunggu',
             'is_active' => true,
         ]);
 
         Umkm::create([
             'id_user' => $user->id_user,
-            'nama_usaha' => $request->input('nama_usaha'),
+            'nama_usaha' => $data['nama_usaha'],
             'deskripsi' => trim((string) $request->input('deskripsi')) ?: 'Lapak jajanan UMKM di area kampus Polibatam.',
-            'lokasi' => trim((string) $request->input('lokasi')) ?: $request->input('area'),
-            'area' => $request->input('area'),
-            'kontak' => $request->input('kontak'),
+            'lokasi' => trim((string) ($data['lokasi'] ?? '')) ?: $data['area'],
+            'area' => $data['area'],
+            'kontak' => $data['kontak'],
             'foto_usaha' => $fotoPath,
         ]);
 
-        return redirect()->route('login')->with('success', 'Pendaftaran Mitra UMKM berhasil! Akun Anda sedang menunggu verifikasi Administrator.');
+        return redirect()->route('login')
+            ->with('success', 'Pendaftaran Mitra UMKM berhasil! Akun Anda sedang menunggu verifikasi Administrator.');
     }
 
-    /**
-     * Otentikasi Pengunjung via Google Sign-In Firebase (F001, UC-01).
-     * Pengunjung otomatis terdaftar tanpa form manual.
-     */
     public function firebaseGoogleLogin(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'email' => 'required|email|max:100',
             'nama' => 'nullable|string|max:100',
             'firebase_uid' => 'nullable|string|max:128',
             'foto_profil' => 'nullable|string|max:255',
         ]);
 
-        $email = strtolower(trim($request->input('email')));
-        $nama = trim($request->input('nama')) ?: 'Pengunjung JajanRia';
-        $uid = $request->input('firebase_uid');
-        $foto = $request->input('foto_profil');
+        $email = strtolower(trim($data['email']));
+        $nama = trim((string) ($data['nama'] ?? '')) ?: 'Pengunjung JajanRia';
+        $uid = $data['firebase_uid'] ?? null;
+        $foto = $data['foto_profil'] ?? null;
 
-        $user = Pengguna::where('email', $email)
-            ->orWhere(function ($q) use ($uid) {
-                if ($uid) $q->where('firebase_uid', $uid);
-            })
-            ->first();
+        $user = Pengguna::where('email', $email)->first();
+        if (!$user && $uid) {
+            $user = Pengguna::where('firebase_uid', $uid)->first();
+        }
 
         if ($user) {
             if (!$user->is_active) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Akun Anda dinonaktifkan oleh Administrator.'
+                    'message' => 'Akun Anda dinonaktifkan oleh Administrator.',
                 ], 403);
             }
 
@@ -218,7 +187,7 @@ class AuthController extends Controller
             }
             $user->save();
         } else {
-            // Otomatis terdaftar tanpa perlu register manual
+            // Pengunjung Google otomatis terdaftar tanpa form registrasi manual
             $user = Pengguna::create([
                 'nama' => $nama,
                 'email' => $email,
@@ -231,36 +200,56 @@ class AuthController extends Controller
             ]);
         }
 
-        session(['user' => [
-            'id_user' => $user->id_user,
-            'nama' => $user->nama,
-            'email' => $user->email,
-            'role' => $user->role,
-            'foto_profil' => $user->foto_profil,
-        ]]);
-
-        $redirect = route('landing');
-        if ($user->role === 'seller') $redirect = route('seller');
-        elseif ($user->role === 'admin') $redirect = route('admin');
+        $this->setUserSession($user, true);
 
         return response()->json([
             'status' => 'success',
             'message' => 'Berhasil masuk dengan akun Google!',
-            'redirect' => $redirect,
+            'redirect' => $this->routeUrlByRole($user->role),
             'user' => [
                 'id_user' => $user->id_user,
                 'nama' => $user->nama,
                 'role' => $user->role,
-            ]
+            ],
         ]);
     }
 
-    /**
-     * Keluar dari sesi.
-     */
     public function logout()
     {
         session()->forget('user');
         return redirect()->route('landing')->with('info', 'Anda telah keluar dari akun.');
+    }
+
+    private function setUserSession(Pengguna $user, bool $includePhoto = false): void
+    {
+        $payload = [
+            'id_user' => $user->id_user,
+            'nama' => $user->nama,
+            'email' => $user->email,
+            'role' => $user->role,
+        ];
+
+        if ($includePhoto) {
+            $payload['foto_profil'] = $user->foto_profil;
+        }
+
+        session(['user' => $payload]);
+    }
+
+    private function redirectByRole(string $role)
+    {
+        return redirect($this->routeUrlByRole($role));
+    }
+
+    private function routeUrlByRole(string $role): string
+    {
+        if ($role === 'seller') {
+            return route('seller');
+        }
+        if ($role === 'admin') {
+            return route('admin');
+        }
+
+        return route('landing');
     }
 }

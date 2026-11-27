@@ -1,7 +1,4 @@
-{{-- =========================================================================
-     Floating Chat Popup (UC-03, UC-04, F006, F008, F009)
-     Muncul di sebelah kanan bawah layar untuk Pengunjung (Customer)
-     ========================================================================= --}}
+{{-- Popup chat & riwayat pesanan mengambang untuk pengunjung --}}
 
 {{-- Speed-Dial Menu Pop-up (Menampilkan Pilihan Chat & History) --}}
 <div class="floating-nav-menu" id="floatingNavMenu" style="display: none;">

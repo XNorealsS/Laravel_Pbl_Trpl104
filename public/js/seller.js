@@ -1,7 +1,4 @@
-/**
- * JajanRia Seller Dashboard Script (UC-05, UC-06, UC-07, UC-08)
- * Vanilla JavaScript (Tab handling, dynamic modals, live filtering, and responsive sidebar)
- */
+// Script dashboard seller: navigasi tab, modal, sidebar mobile, dan filter tabel.
 
 document.addEventListener('DOMContentLoaded', () => {
   initSellerNav();
@@ -11,19 +8,17 @@ document.addEventListener('DOMContentLoaded', () => {
   initSellerFormTabSync();
 });
 
-/**
- * 1. Tab Navigation & Breadcrumb Sync
- */
+// --- Navigasi Tab & Sinkronisasi URL ---
+
 function initSellerNav() {
   const navBtns = document.querySelectorAll('.panel-nav-btn[data-tab]');
-  navBtns.forEach(btn => {
+  navBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
-      const tabId = btn.getAttribute('data-tab');
-      switchSellerTab(tabId);
+      switchSellerTab(btn.getAttribute('data-tab'));
     });
   });
 
-  // Check URL hash or query for deep linking (e.g. #tab-products or ?tab=products)
+  // Baca tab aktif dari ?tab=... atau hash URL
   const urlParams = new URLSearchParams(window.location.search);
   const tabQuery = urlParams.get('tab');
   const hash = window.location.hash.replace('#', '');
@@ -62,10 +57,10 @@ function switchSellerTab(tabId) {
   const pageSubtitle = document.getElementById('pageSubtitleHeading');
   const breadcrumb = document.getElementById('breadcrumbCurrent');
 
-  navBtns.forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === tabId));
-  tabViews.forEach(v => v.classList.toggle('active', v.id === tabId));
+  navBtns.forEach((b) => b.classList.toggle('active', b.getAttribute('data-tab') === tabId));
+  tabViews.forEach((v) => v.classList.toggle('active', v.id === tabId));
 
-  // Keep ?tab= synced in URL so refresh, validation redirect, and back() stay on this tab
+  // Simpan tab aktif di ?tab= agar saat reload/redirect tetap berada di tab ini
   if (window.history && window.history.replaceState) {
     const url = new URL(window.location.href);
     const tabSlug = tabId.replace(/^tab-/, '');
@@ -112,72 +107,42 @@ function switchSellerTab(tabId) {
     if (breadcrumb) breadcrumb.textContent = tabMeta[tabId].breadcrumb;
   }
 
-  // Close mobile sidebar if open
   closeMobileSidebar();
 }
 
 window.switchSellerTab = switchSellerTab;
 
-/**
- * 2. Modals Management (Tambah Produk, Edit Produk, Balas Ulasan)
- */
+// --- Modal (Tambah/Edit Produk, Balas Ulasan, Tolak Pembayaran) ---
+
+function bindModalClose(modalId, buttonIds, closeOnBackdrop = false) {
+  const modal = document.getElementById(modalId);
+  if (!modal) return;
+
+  buttonIds.forEach((btnId) => {
+    const btn = document.getElementById(btnId);
+    if (btn) {
+      btn.addEventListener('click', () => modal.classList.remove('open'));
+    }
+  });
+
+  if (closeOnBackdrop) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('open');
+    });
+  }
+}
+
 function initSellerModals() {
-  // Add Product Modal
   const openAddBtn = document.getElementById('btnOpenAddProductModal');
   const addModal = document.getElementById('productModalBackdrop');
-  const closeAddBtn = document.getElementById('btnCloseProductModal');
-  const cancelAddBtn = document.getElementById('btnCancelProductModal');
-
   if (openAddBtn && addModal) {
     openAddBtn.addEventListener('click', () => addModal.classList.add('open'));
   }
-  if (closeAddBtn && addModal) {
-    closeAddBtn.addEventListener('click', () => addModal.classList.remove('open'));
-  }
-  if (cancelAddBtn && addModal) {
-    cancelAddBtn.addEventListener('click', () => addModal.classList.remove('open'));
-  }
 
-  // Edit Product Modal
-  const editModal = document.getElementById('editProductModalBackdrop');
-  const closeEditBtn = document.getElementById('btnCloseEditModal');
-  const cancelEditBtn = document.getElementById('btnCancelEditModal');
-
-  if (closeEditBtn && editModal) {
-    closeEditBtn.addEventListener('click', () => editModal.classList.remove('open'));
-  }
-  if (cancelEditBtn && editModal) {
-    cancelEditBtn.addEventListener('click', () => editModal.classList.remove('open'));
-  }
-
-  // Reply Review Modal
-  const replyModal = document.getElementById('replyReviewModalBackdrop');
-  const closeReplyBtn = document.getElementById('btnCloseReplyModal');
-  const cancelReplyBtn = document.getElementById('btnCancelReplyModal');
-
-  if (closeReplyBtn && replyModal) {
-    closeReplyBtn.addEventListener('click', () => replyModal.classList.remove('open'));
-  }
-  if (cancelReplyBtn && replyModal) {
-    cancelReplyBtn.addEventListener('click', () => replyModal.classList.remove('open'));
-  }
-
-  // Reject Payment Modal (Seller Verify Payment)
-  const rejectPayModal = document.getElementById('sellerRejectPaymentModalBackdrop');
-  const closeRejectPayBtn = document.getElementById('btnCloseSellerRejectModal');
-  const cancelRejectPayBtn = document.getElementById('btnCancelSellerRejectModal');
-
-  if (closeRejectPayBtn && rejectPayModal) {
-    closeRejectPayBtn.addEventListener('click', () => rejectPayModal.classList.remove('open'));
-  }
-  if (cancelRejectPayBtn && rejectPayModal) {
-    cancelRejectPayBtn.addEventListener('click', () => rejectPayModal.classList.remove('open'));
-  }
-  if (rejectPayModal) {
-    rejectPayModal.addEventListener('click', (e) => {
-      if (e.target === rejectPayModal) rejectPayModal.classList.remove('open');
-    });
-  }
+  bindModalClose('productModalBackdrop', ['btnCloseProductModal', 'btnCancelProductModal']);
+  bindModalClose('editProductModalBackdrop', ['btnCloseEditModal', 'btnCancelEditModal']);
+  bindModalClose('replyReviewModalBackdrop', ['btnCloseReplyModal', 'btnCancelReplyModal']);
+  bindModalClose('sellerRejectPaymentModalBackdrop', ['btnCloseSellerRejectModal', 'btnCancelSellerRejectModal'], true);
 }
 
 window.openAddProductModalShortcut = function() {
@@ -186,9 +151,6 @@ window.openAddProductModalShortcut = function() {
   if (addModal) addModal.classList.add('open');
 };
 
-/**
- * Global Helper: Buka modal edit produk
- */
 window.openEditProductModal = function(produk) {
   const modal = document.getElementById('editProductModalBackdrop');
   const form = document.getElementById('editProductForm');
@@ -206,9 +168,6 @@ window.openEditProductModal = function(produk) {
   modal.classList.add('open');
 };
 
-/**
- * Global Helper: Buka modal tanggapi ulasan
- */
 window.openReplyModal = function(idUlasan, namaPengunjung, quoteText) {
   const modal = document.getElementById('replyReviewModalBackdrop');
   const form = document.getElementById('replyReviewForm');
@@ -232,9 +191,8 @@ window.openSellerRejectPaymentModal = function(idPesanan) {
   modal.classList.add('open');
 };
 
-/**
- * 3. Mobile Sidebar Toggle & Backdrop
- */
+// --- Sidebar Mobile ---
+
 function initMobileSidebar() {
   const toggleBtn = document.getElementById('panelMobileToggle');
   const sidebar = document.getElementById('panelSidebar');
@@ -259,9 +217,8 @@ function closeMobileSidebar() {
   if (backdrop) backdrop.classList.remove('active');
 }
 
-/**
- * 4. Live Filtering for Seller Tables
- */
+// --- Filter Tabel Produk ---
+
 function initSellerFilters() {
   const prodInput = document.getElementById('productSearchInput');
   if (prodInput) {
@@ -276,7 +233,7 @@ window.filterSellerProductTable = function() {
   const cat = document.getElementById('productCategoryFilterSelect')?.value || 'all';
   const rows = document.querySelectorAll('#sellerProductTable tbody tr');
 
-  rows.forEach(row => {
+  rows.forEach((row) => {
     const text = row.textContent.toLowerCase();
     const catCell = (row.children[2]?.textContent || '').toLowerCase();
     const matchesQuery = !q || text.includes(q);

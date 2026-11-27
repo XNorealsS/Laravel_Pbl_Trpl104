@@ -22,9 +22,7 @@
     <!-- Mobile Sidebar Backdrop Overlay -->
     <div class="panel-sidebar-backdrop" id="panelSidebarBackdrop"></div>
 
-    <!-- ==========================================================================
-         Sidebar Navigation Seller (Solid Hijau JajanRia #2E8B3D Sesuai STIKesMu)
-         ========================================================================== -->
+    <!-- Sidebar Navigasi Seller -->
     <aside class="panel-sidebar" id="panelSidebar">
       <div>
         <!-- Brand Header Logo -->
@@ -87,9 +85,7 @@
       </div>
     </aside>
 
-    <!-- ==========================================================================
-         Main Workspace (Navbar + Content + Tables)
-         ========================================================================== -->
+    <!-- Konten Utama Seller -->
     <main class="panel-main">
       <!-- Topbar Header Standar AdminLTE (Sesuai STIKesMu) -->
       <header class="panel-header">
@@ -173,9 +169,7 @@
           </div>
         @endif
 
-        <!-- ====================================================================
-             1. TAB: OVERVIEW / RINGKASAN TOKO
-             ==================================================================== -->
+        <!-- Tab: Ringkasan Toko -->
         <section class="tab-view {{ $activeTab === 'overview' ? 'active' : '' }}" id="tab-overview">
           <!-- AdminLTE Iconic Small-Boxes Grid (Persis Seperti Contoh STIKesMu) -->
           <div class="stats-cards-grid">
@@ -324,9 +318,7 @@
           </div>
         </section>
 
-        <!-- ====================================================================
-             2. TAB: KELOLA PRODUK (CRUD) - UC-06
-             ==================================================================== -->
+        <!-- Tab: Kelola Produk -->
         <section class="tab-view {{ $activeTab === 'products' ? 'active' : '' }}" id="tab-products">
           <div class="filter-tab-pills">
             <button type="button" class="filter-tab-pill active">
@@ -444,9 +436,7 @@
           </div>
         </section>
 
-        <!-- ====================================================================
-             3. TAB: KELOLA PESAN & PESANAN - UC-07
-             ==================================================================== -->
+        <!-- Tab: Pesan & Pesanan -->
         <section class="tab-view {{ $activeTab === 'orders' ? 'active' : '' }}" id="tab-orders">
           <div class="filter-tab-pills">
             <button type="button" class="filter-tab-pill active">
@@ -582,9 +572,7 @@
           </div>
         </section>
 
-        <!-- ====================================================================
-             4. TAB: KELOLA PROFIL UMKM - UC-05
-             ==================================================================== -->
+        <!-- Tab: Profil UMKM -->
         <section class="tab-view {{ $activeTab === 'profile' ? 'active' : '' }}" id="tab-profile">
           <div class="panel-card">
             <div class="panel-card-header">
@@ -646,9 +634,7 @@
           </div>
         </section>
 
-        <!-- ====================================================================
-             5. TAB: RATING & TANGGAPAN ULASAN - UC-08 / F011
-             ==================================================================== -->
+        <!-- Tab: Rating & Ulasan -->
         <section class="tab-view {{ $activeTab === 'reviews' ? 'active' : '' }}" id="tab-reviews">
           <div class="panel-card">
             <div class="panel-card-header">
@@ -720,9 +706,7 @@
     </main>
   </div>
 
-  <!-- ==========================================================================
-       MODAL: TAMBAH PRODUK BARU (UC-06)
-       ========================================================================== -->
+  <!-- Modal: Tambah Produk Baru -->
   <div class="review-modal-backdrop" id="productModalBackdrop">
     <div class="review-modal-dialog">
       <div class="review-modal-header">
@@ -776,9 +760,7 @@
     </div>
   </div>
 
-  <!-- ==========================================================================
-       MODAL: EDIT PRODUK (UC-06)
-       ========================================================================== -->
+  <!-- Modal: Edit Produk -->
   <div class="review-modal-backdrop" id="editProductModalBackdrop">
     <div class="review-modal-dialog">
       <div class="review-modal-header">
@@ -837,9 +819,7 @@
     </div>
   </div>
 
-  <!-- ==========================================================================
-       MODAL: TANGGAPAN SELLER TERHADAP ULASAN (F011)
-       ========================================================================== -->
+  <!-- Modal: Balas Ulasan Pembeli -->
   <div class="review-modal-backdrop" id="replyReviewModalBackdrop">
     <div class="review-modal-dialog">
       <div class="review-modal-header">

@@ -22,9 +22,7 @@
     <!-- Mobile Sidebar Backdrop Overlay -->
     <div class="panel-sidebar-backdrop" id="panelSidebarBackdrop"></div>
 
-    <!-- ==========================================================================
-         Sidebar Navigation Admin (Solid Hijau JajanRia #2E8B3D Sesuai STIKesMu)
-         ========================================================================== -->
+    <!-- Sidebar Navigasi Admin -->
     <aside class="panel-sidebar" id="panelSidebar">
       <div>
         <!-- Brand Header Logo -->
@@ -95,9 +93,7 @@
       </div>
     </aside>
 
-    <!-- ==========================================================================
-         Main Workspace (Navbar + Content + Tables)
-         ========================================================================== -->
+    <!-- Konten Utama Admin -->
     <main class="panel-main">
       <!-- Topbar Header Standar AdminLTE (Sesuai STIKesMu) -->
       <header class="panel-header">
@@ -179,9 +175,7 @@
           </div>
         @endif
 
-        <!-- ====================================================================
-             1. TAB: MONITORING & STATISTIK (UC-11 / F019)
-             ==================================================================== -->
+        <!-- Tab: Monitoring & Statistik -->
         <section class="tab-view {{ $activeTab === 'monitoring' ? 'active' : '' }}" id="tab-monitoring">
           <!-- AdminLTE Iconic Small-Boxes Grid (Persis Seperti Contoh STIKesMu) -->
           <div class="stats-cards-grid grid-5">
@@ -414,9 +408,7 @@
           </div>
         </section>
 
-        <!-- ====================================================================
-             2. TAB: VERIFIKASI SELLER BARU (UC-09 / F015)
-             ==================================================================== -->
+        <!-- Tab: Verifikasi Seller Baru -->
         <section class="tab-view {{ $activeTab === 'verification' ? 'active' : '' }}" id="tab-verification">
           <!-- Filter Tabs -->
           <div class="filter-tab-pills">
@@ -510,9 +502,7 @@
           </div>
         </section>
 
-        <!-- ====================================================================
-             TAB: VERIFIKASI BUKTI PEMBAYARAN PESANAN
-             ==================================================================== -->
+        <!-- Tab: Verifikasi Bukti Pembayaran -->
         <section class="tab-view {{ $activeTab === 'payments' ? 'active' : '' }}" id="tab-payments">
           <!-- Filter Tabs -->
           <div class="filter-tab-pills">
@@ -639,9 +629,7 @@
           </div>
         </section>
 
-        <!-- ====================================================================
-             3. TAB: KELOLA MITRA UMKM & PENGGUNA (UC-10 / F016)
-             ==================================================================== -->
+        <!-- Tab: Kelola Mitra UMKM -->
         <section class="tab-view {{ $activeTab === 'umkm' ? 'active' : '' }}" id="tab-umkm">
           <div class="filter-tab-pills">
             <button type="button" class="filter-tab-pill active">
@@ -741,9 +729,7 @@
           </div>
         </section>
 
-        <!-- ====================================================================
-             4. TAB: KELOLA KATEGORI PRODUK (UC-10 / F016)
-             ==================================================================== -->
+        <!-- Tab: Kelola Kategori Produk -->
         <section class="tab-view {{ $activeTab === 'categories' ? 'active' : '' }}" id="tab-categories">
           <div class="panel-card">
             <div class="panel-card-header">
@@ -799,9 +785,7 @@
           </div>
         </section>
 
-        <!-- ====================================================================
-             5. TAB: MODERASI ULASAN (UC-11 / F017)
-             ==================================================================== -->
+        <!-- Tab: Moderasi Ulasan -->
         <section class="tab-view {{ $activeTab === 'moderation' ? 'active' : '' }}" id="tab-moderation">
           <div class="filter-tab-pills">
             <button type="button" class="filter-tab-pill active">
@@ -878,9 +862,7 @@
           </div>
         </section>
 
-        <!-- ====================================================================
-             TAB: CUSTOMER SUPPORT & PUSAT BANTUAN PENGGUNA
-             ==================================================================== -->
+        <!-- Tab: Customer Support -->
         <section class="tab-view {{ $activeTab === 'support' ? 'active' : '' }}" id="tab-support">
           <div class="panel-card">
             <div class="panel-card-header">
@@ -944,9 +926,7 @@
           </div>
         </section>
 
-        <!-- ====================================================================
-             6. TAB: MANAJEMEN USER & ACTIVITY LOG SUMMARY (UC-09, UC-11 / F015, F018, F019)
-             ==================================================================== -->
+        <!-- Tab: Manajemen User & Log Aktivitas -->
         <section class="tab-view {{ $activeTab === 'users' ? 'active' : '' }}" id="tab-users">
           <!-- Quick Filter Pills -->
           <div class="filter-tab-pills">
@@ -1161,9 +1141,7 @@
     </main>
   </div>
 
-  <!-- ==========================================================================
-       MODAL: TAMBAH KATEGORI BARU (UC-10)
-       ========================================================================== -->
+  <!-- Modal: Tambah Kategori Baru -->
   <div class="review-modal-backdrop" id="categoryModalBackdrop">
     <div class="review-modal-dialog">
       <div class="review-modal-header">
@@ -1197,9 +1175,7 @@
     </div>
   </div>
 
-  <!-- ==========================================================================
-       MODAL: TOLAK BUKTI PEMBAYARAN
-       ========================================================================== -->
+  <!-- Modal: Tolak Bukti Pembayaran -->
   <div class="review-modal-backdrop" id="rejectPaymentModalBackdrop" style="display:none;">
     <div class="review-modal-dialog">
       <div class="review-modal-header">

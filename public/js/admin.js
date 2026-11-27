@@ -1,7 +1,4 @@
-/**
- * JajanRia Admin Panel Script (UC-09, UC-10, UC-11)
- * Pure Vanilla JavaScript (Tab navigation, breadcrumbs, search filters, modals, and responsive controls)
- */
+// Script dashboard admin: navigasi tab, modal, sidebar mobile, dan filter tabel.
 
 document.addEventListener('DOMContentLoaded', () => {
   initAdminNav();
@@ -11,19 +8,17 @@ document.addEventListener('DOMContentLoaded', () => {
   initAdminFormTabSync();
 });
 
-/**
- * 1. Admin Tab Navigation & Breadcrumb Sync
- */
+// --- Navigasi Tab & Sinkronisasi URL ---
+
 function initAdminNav() {
   const navBtns = document.querySelectorAll('.panel-nav-btn[data-tab]');
-  navBtns.forEach(btn => {
+  navBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
-      const tabId = btn.getAttribute('data-tab');
-      switchAdminTab(tabId);
+      switchAdminTab(btn.getAttribute('data-tab'));
     });
   });
 
-  // Check URL hash or query for deep linking (e.g. #tab-verification or ?tab=verification)
+  // Baca tab aktif dari ?tab=... atau hash URL
   const urlParams = new URLSearchParams(window.location.search);
   const tabQuery = urlParams.get('tab');
   const hash = window.location.hash.replace('#', '');
@@ -62,10 +57,10 @@ function switchAdminTab(tabId) {
   const pageSubtitle = document.getElementById('adminPageSubtitle');
   const breadcrumb = document.getElementById('breadcrumbCurrent');
 
-  navBtns.forEach(b => b.classList.toggle('active', b.getAttribute('data-tab') === tabId));
-  tabViews.forEach(v => v.classList.toggle('active', v.id === tabId));
+  navBtns.forEach((b) => b.classList.toggle('active', b.getAttribute('data-tab') === tabId));
+  tabViews.forEach((v) => v.classList.toggle('active', v.id === tabId));
 
-  // Keep ?tab= synced in URL so refresh, validation redirect, and back() stay on this tab
+  // Simpan tab aktif di ?tab= agar saat reload/redirect tetap berada di tab ini
   if (window.history && window.history.replaceState) {
     const url = new URL(window.location.href);
     const tabSlug = tabId.replace(/^tab-/, '');
@@ -127,35 +122,34 @@ function switchAdminTab(tabId) {
     if (breadcrumb) breadcrumb.textContent = tabMeta[tabId].breadcrumb;
   }
 
-  // Close mobile sidebar if open
   closeMobileSidebar();
 }
 
 window.switchAdminTab = switchAdminTab;
 
-/**
- * 2. Admin Modals Management (Tambah Kategori)
- */
+// --- Modal Tambah Kategori ---
+
 function initAdminModals() {
   const openCatBtn = document.getElementById('btnOpenAddCategoryModal');
   const catModal = document.getElementById('categoryModalBackdrop');
   const closeCatBtn = document.getElementById('btnCloseCatModal');
   const cancelCatBtn = document.getElementById('btnCancelCatModal');
 
-  if (openCatBtn && catModal) {
+  if (!catModal) return;
+
+  if (openCatBtn) {
     openCatBtn.addEventListener('click', () => catModal.classList.add('open'));
   }
-  if (closeCatBtn && catModal) {
+  if (closeCatBtn) {
     closeCatBtn.addEventListener('click', () => catModal.classList.remove('open'));
   }
-  if (cancelCatBtn && catModal) {
+  if (cancelCatBtn) {
     cancelCatBtn.addEventListener('click', () => catModal.classList.remove('open'));
   }
 }
 
-/**
- * 3. Mobile Sidebar Toggle & Backdrop
- */
+// --- Sidebar Mobile ---
+
 function initMobileSidebar() {
   const toggleBtn = document.getElementById('panelMobileToggle');
   const sidebar = document.getElementById('panelSidebar');
@@ -180,37 +174,22 @@ function closeMobileSidebar() {
   if (backdrop) backdrop.classList.remove('active');
 }
 
-/**
- * 4. Client-side Table Search & Filter Handlers
- */
+// --- Filter & Pencarian Tabel ---
+
+function bindEnterSearch(inputId, handler) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+
+  input.addEventListener('keyup', (e) => {
+    if (e.key === 'Enter') handler();
+  });
+}
+
 function initAdminFilters() {
-  const monInput = document.getElementById('monitoringSearchInput');
-  if (monInput) {
-    monInput.addEventListener('keyup', (e) => {
-      if (e.key === 'Enter') filterMonitoringTable();
-    });
-  }
-
-  const verInput = document.getElementById('verifySearchInput');
-  if (verInput) {
-    verInput.addEventListener('keyup', (e) => {
-      if (e.key === 'Enter') filterVerifyTable();
-    });
-  }
-
-  const umkmInput = document.getElementById('umkmSearchInput');
-  if (umkmInput) {
-    umkmInput.addEventListener('keyup', (e) => {
-      if (e.key === 'Enter') filterUmkmTable();
-    });
-  }
-
-  const usersInput = document.getElementById('usersSearchInput');
-  if (usersInput) {
-    usersInput.addEventListener('keyup', (e) => {
-      if (e.key === 'Enter') filterUsersTable();
-    });
-  }
+  bindEnterSearch('monitoringSearchInput', filterMonitoringTable);
+  bindEnterSearch('verifySearchInput', filterVerifyTable);
+  bindEnterSearch('umkmSearchInput', filterUmkmTable);
+  bindEnterSearch('usersSearchInput', filterUsersTable);
 }
 
 window.filterMonitoringTable = function() {
@@ -218,16 +197,20 @@ window.filterMonitoringTable = function() {
   const ratingFilter = document.getElementById('monitoringRatingSelect')?.value || 'all';
   const rows = document.querySelectorAll('#monitoringTable tbody tr');
 
-  rows.forEach(row => {
+  rows.forEach((row) => {
     const text = row.textContent.toLowerCase();
     const matchesQuery = !q || text.includes(q);
     let matchesRating = true;
 
     if (ratingFilter !== 'all') {
       const ratingCell = row.children[4]?.textContent || '';
-      if (ratingFilter === '5') matchesRating = ratingCell.includes('5/5');
-      else if (ratingFilter === '4') matchesRating = ratingCell.includes('4/5');
-      else if (ratingFilter === '3') matchesRating = ratingCell.includes('1/5') || ratingCell.includes('2/5') || ratingCell.includes('3/5');
+      if (ratingFilter === '5') {
+        matchesRating = ratingCell.includes('5/5');
+      } else if (ratingFilter === '4') {
+        matchesRating = ratingCell.includes('4/5');
+      } else if (ratingFilter === '3') {
+        matchesRating = ratingCell.includes('1/5') || ratingCell.includes('2/5') || ratingCell.includes('3/5');
+      }
     }
 
     row.style.display = (matchesQuery && matchesRating) ? '' : 'none';
@@ -246,7 +229,7 @@ window.filterVerifyTable = function() {
   const q = (document.getElementById('verifySearchInput')?.value || '').toLowerCase().trim();
   const rows = document.querySelectorAll('#verifyTable tbody tr');
 
-  rows.forEach(row => {
+  rows.forEach((row) => {
     const text = row.textContent.toLowerCase();
     row.style.display = (!q || text.includes(q)) ? '' : 'none';
   });
@@ -257,7 +240,7 @@ window.filterUmkmTable = function() {
   const area = document.getElementById('umkmAreaSelect')?.value || 'all';
   const rows = document.querySelectorAll('#umkmTable tbody tr');
 
-  rows.forEach(row => {
+  rows.forEach((row) => {
     const text = row.textContent.toLowerCase();
     const areaCell = (row.children[3]?.textContent || '').toLowerCase();
     const matchesQuery = !q || text.includes(q);
@@ -274,7 +257,7 @@ window.filterUsersTable = function() {
   const loginType = (document.getElementById('usersLoginSelect')?.value || 'all').toLowerCase();
   const rows = document.querySelectorAll('#usersTable tbody tr');
 
-  rows.forEach(row => {
+  rows.forEach((row) => {
     const text = row.textContent.toLowerCase();
     const rowRole = row.getAttribute('data-role') || '';
     const rowStatus = row.getAttribute('data-status') || '';
@@ -300,14 +283,14 @@ window.resetUsersFilter = function() {
   if (statusSelect) statusSelect.value = 'all';
   if (loginSelect) loginSelect.value = 'all';
 
-  document.querySelectorAll('.filter-user-pill').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.filter-user-pill').forEach((p) => p.classList.remove('active'));
   document.getElementById('pillUserAll')?.classList.add('active');
 
   filterUsersTable();
 };
 
 window.filterUserByPill = function(roleVal, pillEl) {
-  document.querySelectorAll('.filter-user-pill').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.filter-user-pill').forEach((p) => p.classList.remove('active'));
   if (pillEl) pillEl.classList.add('active');
 
   const roleSelect = document.getElementById('usersRoleSelect');
@@ -315,4 +298,3 @@ window.filterUserByPill = function(roleVal, pillEl) {
 
   filterUsersTable();
 };
-
